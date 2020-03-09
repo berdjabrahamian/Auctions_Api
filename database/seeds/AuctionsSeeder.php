@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Database\Seeder;
+use App\Model\Product\Products as Products;
 
 class AuctionsSeeder extends Seeder
 {
@@ -11,6 +12,11 @@ class AuctionsSeeder extends Seeder
      */
     public function run()
     {
-        factory(\App\Model\Auction\Auctions::class, 50)->create();
+        foreach (Products::all() as $product) {
+            factory(\App\Model\Auction\Auctions::class)->create([
+                'product_id' => $product->id,
+            ]);
+        };
+
     }
 }
