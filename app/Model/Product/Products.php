@@ -2,6 +2,7 @@
 
 namespace App\Model\Product;
 
+use App\Model\Auction\Auctions;
 use Illuminate\Database\Eloquent\Model;
 
 class Products extends Model
@@ -11,4 +12,9 @@ class Products extends Model
     protected $fillable = ['title'];
 
     protected $hidden = ['store_id', 'created_at', 'updated_at'];
+
+    public function auction()
+    {
+        return $this->belongsTo(Auctions::class);
+    }
 }
