@@ -9,12 +9,15 @@ class Products extends Model
 {
     protected $table = 'products';
     public $timestamps = true;
-    protected $fillable = ['title'];
+    protected $fillable = ['name'];
 
-    protected $hidden = ['store_id', 'created_at', 'updated_at'];
+    protected $hidden = ['id', 'store_id', 'created_at', 'updated_at'];
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
     public function auction()
     {
-        return $this->belongsTo(Auctions::class);
+        return $this->belongsTo(Auctions::class, 'product_id', 'id');
     }
 }

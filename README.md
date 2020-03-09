@@ -7,5 +7,16 @@ This system will house the API and all logic needed to run a auctions system. Se
 This will be built with multi-tenecy in mind, which means you can host this api in one location, but have multiple users consume this API.
 
 
+#### How Does It Work
+There are 2 ways of approaching this system. Either through your own frontend/backend or through the admin panel that comes with this api.
+Each method will have its own set of instructions on what needs to be done.
 
-#### Check back for more details
+
+##### I want to use my own system
+_coming soon_
+
+---
+##### I want to use the admin panel
+_coming soon_
+
+---
