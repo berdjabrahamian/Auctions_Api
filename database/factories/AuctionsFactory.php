@@ -2,10 +2,10 @@
 
 /** @var \Illuminate\Database\Eloquent\Factory $factory */
 
-use App\Model\Auction\Auctions;
+use App\Model\Auction\Auction;
 use Faker\Generator as Faker;
 
-$factory->define(Auctions::class, function (Faker $faker) {
+$factory->define(Auction::class, function (Faker $faker) {
     return [
         'product_id' => $faker->randomElement([1, 2, 3, 4, 5, 6, 7, 8, 9, 0]),
         'store_id' => $faker->randomElement([1, 2, 3, 4, 5, 6, 7, 8, 9, 0]),

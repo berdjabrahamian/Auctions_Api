@@ -2,10 +2,10 @@
 
 namespace App\Model\Product;
 
-use App\Model\Auction\Auctions;
+use App\Model\Auction\Auction;
 use Illuminate\Database\Eloquent\Model;
 
-class Products extends Model
+class Product extends Model
 {
     protected $table = 'products';
     public $timestamps = true;
@@ -18,6 +18,6 @@ class Products extends Model
      */
     public function auction()
     {
-        return $this->belongsTo(Auctions::class, 'product_id', 'id');
+        return $this->belongsTo(Auction::class, 'product_id', 'id');
     }
 }

@@ -2,10 +2,10 @@
 
 namespace App\Model\Auction;
 
-use App\Model\Product\Products;
+use App\Model\Product\Product;
 use Illuminate\Database\Eloquent\Model;
 
-class Auctions extends Model
+class Auction extends Model
 {
     const ENABLED = 1;
     const DISABLED = 0;
@@ -29,12 +29,12 @@ class Auctions extends Model
      */
     public function product()
     {
-        return $this->hasOne(Products::class, 'id', 'product_id');
+        return $this->hasOne(Product::class, 'id', 'product_id');
     }
 
     public function logs()
     {
-        return $this->hasMany(Logs::class, 'auction_id', 'id');
+        return $this->hasMany(Log::class, 'auction_id', 'id');
     }
 
 

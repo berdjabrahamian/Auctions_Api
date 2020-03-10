@@ -4,7 +4,7 @@ namespace App\Model\Auction;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Logs extends Model
+class Log extends Model
 {
     protected $table = 'logs';
     public $timestamps = true;
@@ -12,6 +12,6 @@ class Logs extends Model
 
     public function auction()
     {
-        return $this->belongsTo(Auctions::class, 'auction_id', 'id');
+        return $this->belongsTo(Auction::class, 'auction_id', 'id');
     }
 }

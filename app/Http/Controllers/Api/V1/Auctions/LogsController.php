@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Model\Auction\Logs;
+use App\Model\Auction\Log;
 use Illuminate\Http\Request;
 
 class LogsController extends Controller
@@ -41,10 +41,10 @@ class LogsController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  \App\Model\Auction\Logs  $logs
+     * @param  \App\Model\Auction\Log  $logs
      * @return \Illuminate\Http\Response
      */
-    public function show(Logs $logs)
+    public function show(Log $logs)
     {
         //
     }
@@ -52,10 +52,10 @@ class LogsController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Model\Auction\Logs  $logs
+     * @param  \App\Model\Auction\Log  $logs
      * @return \Illuminate\Http\Response
      */
-    public function edit(Logs $logs)
+    public function edit(Log $logs)
     {
         //
     }
@@ -64,10 +64,10 @@ class LogsController extends Controller
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Model\Auction\Logs  $logs
+     * @param  \App\Model\Auction\Log  $logs
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Logs $logs)
+    public function update(Request $request, Log $logs)
     {
         //
     }
@@ -75,10 +75,10 @@ class LogsController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Model\Auction\Logs  $logs
+     * @param  \App\Model\Auction\Log  $logs
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Logs $logs)
+    public function destroy(Log $logs)
     {
         //
     }

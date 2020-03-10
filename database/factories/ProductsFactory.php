@@ -2,10 +2,10 @@
 
 /** @var \Illuminate\Database\Eloquent\Factory $factory */
 
-use App\Model\Product\Products;
+use App\Model\Product\Product;
 use Faker\Generator as Faker;
 
-$factory->define(Products::class, function (Faker $faker) {
+$factory->define(Product::class, function (Faker $faker) {
     return [
         'store_id' => $faker->randomElement([1, 2, 3, 4, 5, 6, 7, 8, 9,0]),
         'sku' => $faker->bothify('##??#?#?##?'),

@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Api\V1\Auctions;
 
 use App\Http\Controllers\Api\V1\BaseController;
-use App\Model\Auction\Auctions;
+use App\Model\Auction\Auction;
 use Illuminate\Http\Request;
 
 class AuctionsController extends BaseController
@@ -15,7 +15,7 @@ class AuctionsController extends BaseController
      */
     public function index()
     {
-        return Auctions::all();
+        return Auction::all();
     }
 
     /**
@@ -42,10 +42,10 @@ class AuctionsController extends BaseController
     /**
      * Display the specified resource.
      *
-     * @param \App\Model\Auction\Auctions $auctions
+     * @param \App\Model\Auction\Auction $auctions
      * @return \Illuminate\Http\Response
      */
-    public function show(Auctions $auction)
+    public function show(Auction $auction)
     {
         return $auction;
     }
@@ -53,10 +53,10 @@ class AuctionsController extends BaseController
     /**
      * Show the form for editing the specified resource.
      *
-     * @param \App\Model\Auction\Auctions $auctions
+     * @param \App\Model\Auction\Auction $auctions
      * @return \Illuminate\Http\Response
      */
-    public function edit(Auctions $auctions)
+    public function edit(Auction $auctions)
     {
         return 'Auctions Edit';
     }
@@ -65,10 +65,10 @@ class AuctionsController extends BaseController
      * Update the specified resource in storage.
      *
      * @param \Illuminate\Http\Request $request
-     * @param \App\Model\Auction\Auctions $auctions
+     * @param \App\Model\Auction\Auction $auctions
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Auctions $auctions)
+    public function update(Request $request, Auction $auctions)
     {
         //
     }
@@ -76,10 +76,10 @@ class AuctionsController extends BaseController
     /**
      * Remove the specified resource from storage.
      *
-     * @param \App\Model\Auction\Auctions $auctions
+     * @param \App\Model\Auction\Auction $auctions
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Auctions $auctions)
+    public function destroy(Auction $auctions)
     {
         //
     }
