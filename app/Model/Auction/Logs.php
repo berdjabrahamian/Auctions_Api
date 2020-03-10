@@ -8,8 +8,7 @@ class Logs extends Model
 {
     protected $table = 'logs';
     public $timestamps = true;
-
-
+    protected $hidden = ['store_id'];
 
     public function auction()
     {

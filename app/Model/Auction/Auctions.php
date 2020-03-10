@@ -15,7 +15,7 @@ class Auctions extends Model
     protected $fillable = ['name'];
     protected $hidden = ['store_id', 'created_at', 'updated_at', 'initial_price', 'buyout_price'];
     protected $appends = ['initial_price_cents', 'buyout_price_cents'];
-    protected $with = ['product'];
+    protected $with = ['product', 'logs'];
 
 
     protected $casts = [
@@ -32,7 +32,7 @@ class Auctions extends Model
         return $this->hasOne(Products::class, 'id', 'product_id');
     }
 
-    public function log()
+    public function logs()
     {
         return $this->hasMany(Logs::class, 'auction_id', 'id');
     }
