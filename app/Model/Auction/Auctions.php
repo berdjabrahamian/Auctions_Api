@@ -32,6 +32,11 @@ class Auctions extends Model
         return $this->hasOne(Products::class, 'id', 'product_id');
     }
 
+    public function log()
+    {
+        return $this->hasMany(Logs::class, 'auction_id', 'id');
+    }
+
 
     /**
      * We transform the initial_price attribute, which is a dollar value into cents and give it its own attribute;

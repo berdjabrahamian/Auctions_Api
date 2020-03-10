@@ -16,10 +16,10 @@ class CreateLogsTable extends Migration
         Schema::create('logs', function (Blueprint $table) {
             $table->id();
             $table->integer('auction_id');
+            $table->foreign('auction_id')->references('id')->on('auctions');
             $table->integer('store_id');
             $table->string('activity');
             $table->integer('customer_id');
-
             $table->timestamps();
         });
     }
