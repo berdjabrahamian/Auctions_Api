@@ -8,8 +8,17 @@ indent_style = space
 indent_size = 4
 trim_trailing_whitespace = true
 
+
+[*.php]
+ij_php_align_class_constants = true
+ij_php_align_group_field_declarations = true
+ij_php_align_assignments = true ;
+ij_php_align_multiline_array_initializer_expression = true
+ij_php_comma_after_last_array_element = true
+ij_php_align_key_value_pairs = true
+
 [*.md]
 trim_trailing_whitespace = false
 
-[*.{yml,yaml}]
+[*.{yml, yaml}]
 indent_size = 2
