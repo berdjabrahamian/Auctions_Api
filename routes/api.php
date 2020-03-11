@@ -38,6 +38,9 @@ Route::prefix('v1')->group(function () {
                 Route::namespace('Auctions')->group(function () {
                     Route::resource('auctions', 'AuctionsController')->except(['index', 'show']);
                 });
+                Route::namespace('Products')->group(function () {
+                    Route::resource('products', 'ProductsController');
+                });
             });
         });
     });
