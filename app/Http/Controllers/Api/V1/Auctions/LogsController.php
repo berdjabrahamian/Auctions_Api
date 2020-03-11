@@ -1,11 +1,13 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Api\V1\Auctions;
 
+use App\Http\Controllers\Api\V1\BaseController;
 use App\Model\Auction\Log;
+use App\Model\Auction\Auction;
 use Illuminate\Http\Request;
 
-class LogsController extends Controller
+class LogsController extends BaseController
 {
     /**
      * Display a listing of the resource.
@@ -14,72 +16,17 @@ class LogsController extends Controller
      */
     public function index()
     {
-        //
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
-    {
-        //
+        return Log::all();
     }
 
     /**
      * Display the specified resource.
      *
-     * @param  \App\Model\Auction\Log  $logs
+     * @param \App\Model\Auction\Log $logs
      * @return \Illuminate\Http\Response
      */
-    public function show(Log $logs)
+    public function show(Auction $auction)
     {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Model\Auction\Log  $logs
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(Log $logs)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Model\Auction\Log  $logs
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, Log $logs)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Model\Auction\Log  $logs
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy(Log $logs)
-    {
-        //
+        return $auction->logs;
     }
 }
