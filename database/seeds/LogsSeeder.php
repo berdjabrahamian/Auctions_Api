@@ -16,14 +16,17 @@ class LogsSeeder extends Seeder
             factory(\App\Model\Auction\Log::class)->create([
                 'activity' => 'Auction Created',
                 'auction_id' => $auction->id,
+                'customer_id' => null,
             ]);
             factory(\App\Model\Auction\Log::class)->create([
                 'activity' => 'Auction Started',
                 'auction_id' => $auction->id,
+                'customer_id' => null,
             ]);
             factory(\App\Model\Auction\Log::class)->create([
                 'activity' => 'Auction Ended',
                 'auction_id' => $auction->id,
+                'customer_id' => null,
             ]);
         }
     }

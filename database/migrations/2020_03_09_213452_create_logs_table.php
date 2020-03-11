@@ -19,7 +19,7 @@ class CreateLogsTable extends Migration
             $table->foreign('auction_id')->references('id')->on('auctions');
             $table->integer('store_id');
             $table->string('activity');
-            $table->integer('customer_id');
+            $table->integer('customer_id')->nullable();
             $table->timestamps();
         });
     }
