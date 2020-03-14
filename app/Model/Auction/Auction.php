@@ -37,6 +37,15 @@ class Auction extends Model
         return $this->hasMany(Log::class, 'auction_id', 'id');
     }
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @see Bid
+     */
+    public function bids()
+    {
+        return $this->hasMany(Bid::class, 'bid_id', 'id');
+    }
+
 
     /**
      * We transform the initial_price attribute, which is a dollar value into cents and give it its own attribute;

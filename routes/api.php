@@ -26,6 +26,7 @@ Route::prefix('v1')->group(function () {
             Route::resource('auctions', 'AuctionsController')->only(['index', 'show']);
             Route::GET('auctions/logs', 'LogsController@index')->name('auctions.logs.index');
             Route::GET('{auction}/logs', 'LogsController@show')->name('auctions.logs.show');
+            Route::get('auctions/{auction}/bids', 'BidHistoryController')->name('auction.bid_history');
 
 //            Route::GET('auctions/{auction}/bid_history', 'BidHistoryController')
 //                ->name('auctions.getBids');
