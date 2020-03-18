@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use App\Model\Store\Store;
 
@@ -115,8 +116,29 @@ class CreateStore extends Command
             }
         }
 
+        $store = new Store();
+
+        $store->name                      = $name;
+        $store->url                       = $url;
+        $store->code                      = Str::slug($name);
+        $store->contact_email             = $contactEmail;
+        $store->contact_number            = $contactNumber;
+        $store->public_key                = 'pk_'.$this->generateKeys();
+        $store->secret_key                = 'sk_'.$this->generateKeys();
+        $store->hammer_price              = $hammerPrice;
+        $store->hammer_type               = $hammerType;
+        $store->final_extension_threshold = $finalExtensionThreshold;
+        $store->final_extension_duration  = $finalExtensionDuration;
+
+        $store->save();
+
         return true;
     }
 
+
+    public function generateKeys()
+    {
+        return base64_encode(Encrypter::generateKey(config('app.cipher')));
+    }
 
 }
