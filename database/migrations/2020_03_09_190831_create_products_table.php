@@ -17,7 +17,7 @@ class CreateProductsTable extends Migration
             $table->id();
             $table->integer('store_id');
             $table->string('sku');
-            $table->string('platform_id');
+            $table->integer('platform_id');
             $table->string('name');
             $table->string('description');
             $table->string('image_url');

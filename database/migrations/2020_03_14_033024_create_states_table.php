@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateMaxBidsTable extends Migration
+class CreateStatesTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,15 +13,13 @@ class CreateMaxBidsTable extends Migration
      */
     public function up()
     {
-        Schema::create('max_bids', function (Blueprint $table) {
+        Schema::create('states', function (Blueprint $table) {
             $table->id();
-            $table->integer('store_id');
-            $table->foreign('store_id')->references('id')->on('stores');
             $table->integer('auction_id');
             $table->foreign('auction_id')->references('id')->on('auctions');
-            $table->integer('customer_id');
-            $table->bigInteger('amount');
-            $table->boolean('outbid');
+            $table->integer('leading_id')->nullable();
+            $table->foreign('leading_id')->references('id')->on('max_bids');
+            $table->bigInteger('current_price');
             $table->timestamps();
         });
     }
@@ -33,6 +31,6 @@ class CreateMaxBidsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('max_bids');
+        Schema::dropIfExists('states');
     }
 }
