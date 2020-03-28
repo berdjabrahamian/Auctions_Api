@@ -18,8 +18,8 @@ class CreateCustomersTable extends Migration
             $table->string('email');
             $table->string('first_name');
             $table->string('last_name');
-            $table->integer('platform_id');
-            $table->integer('store_id');
+            $table->integer('platform_id')->nullable();
+            $table->integer('store_id')->nullable();
             $table->foreign('store_id')->references('id')->on('stores');
             $table->timestamps();
         });
