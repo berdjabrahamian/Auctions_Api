@@ -12,6 +12,7 @@ use Illuminate\Validation\ValidationException;
 class AdminAuctionStore extends FormRequest
 {
 
+    protected $product;
 
     /**
      * Determine if the user is authorized to make this request.
@@ -53,50 +54,77 @@ class AdminAuctionStore extends FormRequest
     public function withValidator($validator)
     {
         $validator->after(function () {
-            $this->_alreadyRunningAuction();
+            $this->_productChecks();
+            $this->_auctionChecks();
         });
     }
 
-
-    /**
-     * Check if there are any running auctions that is connected to the product with the same product id
-     * This is a safegaurd from creating multiple auctions on the same product at the same time
-     *
-     * Since an auction item is supposed to be unique, then each product connected to it needs to be unique as well.
-     *
-     */
-    protected function _alreadyRunningAuction()
+    protected function _productChecks()
     {
-        $now = Carbon::now();
-
         $product = Product::where([
             ['platform_id', $this->query('product')['platform_id']],
             ['store_id', Store::getCurrentStore()->id],
         ])->first();
 
-        if (!$product) {
-            return false;
-        }
+        $this->setProduct($product);
 
-        $auction = Auction::where([
-            ['product_id', $product->id],
-            ['store_id', Store::getCurrentStore()->id],
-        ])->first();
+        return $this;
+
+    }
 
 
+    /**
+     * Run Checks against current store auctions as safegaurds
+     *
+     * Does product exists based on its product_id
+     * Does auction exist based on its connected product
+     * Is auction enabled
+     * Is auction running
+     *
+     *
+     *
+     * Since an auction item is supposed to be unique, then each product connected to it needs to be unique as well.
+     *
+     */
+    protected function _auctionChecks()
+    {
+        $now = Carbon::now();
 
-        if ($auction) {
-            if ($auction->end_date <= $now) {
-                $this->validator->errors()->add('Running Auction', "This product is already in a currently running auction - {$auction->id}");
+
+        if ($this->product) {
+            $auction = Auction::where([
+                ['product_id', $this->product->id],
+                ['store_id', Store::getCurrentStore()->id],
+            ])->first();
+
+            if (!$auction) {
+                return $this;
             }
+
+            if ($auction->status) {
+                $this->validator->errors()->add('Is Auction',
+                    "This product is already connected to an auction that is enabled - Auction Id {$auction->id}");
+                if ($auction->end_date >= $now) {
+                    $this->validator->errors()->add('Running Auction',
+                        "This product is connected to an auction that is currently running - Auction Id {$auction->id}");
+                }
+            }
+
         }
 
-        return false;
-
+        return $this;
     }
 
     public function prepareForValidation()
     {
         return $this;
+    }
+
+    /**
+     * @param  mixed  $product
+     */
+    public function setProduct($product): void
+    {
+        $this->product = $product;
     }
 }
