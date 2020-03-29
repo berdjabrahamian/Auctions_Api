@@ -2,7 +2,9 @@
 
 namespace App\Providers;
 
+use App\Events\CreatedAuctionEvent;
 use App\Events\UpdatingMaxBidEvent;
+use App\Listeners\CreatedAuction;
 use App\Listeners\UpdatingMaxBid;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
@@ -22,6 +24,9 @@ class EventServiceProvider extends ServiceProvider
         ],
         UpdatingMaxBidEvent::class => [
             UpdatingMaxBid::class,
+        ],
+        CreatedAuctionEvent::class => [
+            CreatedAuction::class,
         ],
     ];
 

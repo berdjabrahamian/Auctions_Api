@@ -2,6 +2,7 @@
 
 namespace App\Model\Auction;
 
+use App\Events\CreatedAuctionEvent;
 use App\Model\Product\Product;
 use App\Model\Auction\Log;
 use App\Model\Auction\Bid;
@@ -27,10 +28,14 @@ class Auction extends Model
     protected $hidden     = ['store_id', 'created_at', 'updated_at', 'initial_price', 'buyout_price'];
     protected $appends    = ['initial_price_cents', 'buyout_price_cents'];
 //    protected $with       = ['product', 'logs'];
-    protected $casts = [
+    protected $casts            = [
         'initial_price_cents' => 'int',
         'buyout_price_cents'  => 'int',
     ];
+    protected $dispatchesEvents = [
+        'created' => CreatedAuctionEvent::class,
+    ];
+
 
     /**
      * @return \Illuminate\Database\Eloquent\Relations\HasOne
@@ -57,6 +62,14 @@ class Auction extends Model
     public function bids()
     {
         return $this->hasMany(Bid::class, 'bid_id', 'id');
+    }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     */
+    public function state()
+    {
+        return $this->hasOne(State::class, 'auction_id', 'id');
     }
 
 
