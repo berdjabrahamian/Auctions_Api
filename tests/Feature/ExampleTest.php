@@ -18,4 +18,9 @@ class ExampleTest extends TestCase
 
         $response->assertStatus(200);
     }
+
+    public function testBelig(){
+        $response = $this->get('/');
+        $response->assertSuccessful();
+    }
 }

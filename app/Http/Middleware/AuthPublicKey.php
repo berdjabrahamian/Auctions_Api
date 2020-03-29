@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware;
 
+use App\Model\Store\Store;
 use Closure;
 
 class AuthPublicKey
@@ -9,8 +10,8 @@ class AuthPublicKey
     /**
      * Handle an incoming request.
      *
-     * @param \Illuminate\Http\Request $request
-     * @param \Closure $next
+     * @param  \Illuminate\Http\Request  $request
+     * @param  \Closure  $next
      * @return mixed
      */
     public function handle($request, Closure $next)
@@ -24,6 +25,9 @@ class AuthPublicKey
             ], 403);
 
         }
+
+        Store::setCurrentStore();
+
         return $next($request);
     }
 }

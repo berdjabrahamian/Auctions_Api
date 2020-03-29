@@ -3,35 +3,48 @@
 namespace App\Model\Auction;
 
 use App\Model\Product\Product;
+use App\Model\Auction\Log;
+use App\Model\Auction\Bid;
+use App\Model\Store\Store;
 use Illuminate\Database\Eloquent\Model;
 
 class Auction extends Model
 {
-    const ENABLED = 1;
-    const DISABLED = 0;
-
-    protected $table = 'auctions';
-    public $timestamps = true;
-    protected $fillable = ['name'];
-    protected $hidden = ['store_id', 'created_at', 'updated_at', 'initial_price', 'buyout_price'];
-    protected $appends = ['initial_price_cents', 'buyout_price_cents'];
-    protected $with = ['product', 'logs'];
-
-
+    protected $table      = 'auctions';
+    public    $timestamps = true;
+    protected $fillable   = [
+        'store_id',
+        'product_id',
+        'name',
+        'status',
+        'initial_price',
+        'min_bid',
+        'is_buyout',
+        'buyout_price',
+        'start_date',
+        'end_date',
+    ];
+    protected $hidden     = ['store_id', 'created_at', 'updated_at', 'initial_price', 'buyout_price'];
+    protected $appends    = ['initial_price_cents', 'buyout_price_cents'];
+//    protected $with       = ['product', 'logs'];
     protected $casts = [
         'initial_price_cents' => 'int',
-        'buyout_price_cents' => 'int'
+        'buyout_price_cents'  => 'int',
     ];
-
 
     /**
      * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     * @see Product
      */
     public function product()
     {
         return $this->hasOne(Product::class, 'id', 'product_id');
     }
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @see Log
+     */
     public function logs()
     {
         return $this->hasMany(Log::class, 'auction_id', 'id');
@@ -65,4 +78,15 @@ class Auction extends Model
         return $this->buyout_price * 100;
     }
 
+    /**
+     * We are creating a local query scope that we only load the models that belong to the store from the public-key within the middleware
+     * @param $query
+     * @return mixed
+     * @see Store::getCurrentStore()
+     */
+    public function scopeStore($query)
+    {
+        return $query->where('store_id', Store::getCurrentStore()->id);
+
+    }
 }

@@ -13,8 +13,8 @@ class StoreSeeder extends Seeder
     public function run()
     {
         factory(App\Model\Store\Store::class, 1)->create([
-            'public_key' => 'pk_'.$this->generateKeys(),
-            'secret_key' => 'sk_'.$this->generateKeys(),
+            'public_key' => 'pk_12345',
+            'secret_key' => 'sk_12345',
         ]);
     }
 

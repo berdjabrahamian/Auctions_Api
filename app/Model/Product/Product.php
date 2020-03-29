@@ -7,9 +7,9 @@ use Illuminate\Database\Eloquent\Model;
 
 class Product extends Model
 {
-    protected $table = 'products';
-    public $timestamps = true;
-    protected $fillable = ['name'];
+    protected $table      = 'products';
+    public    $timestamps = true;
+    protected $fillable   = ['store_id', 'sku', 'platform_id', 'name', 'description', 'image_url', 'product_url'];
 
     protected $hidden = ['id', 'store_id', 'created_at', 'updated_at'];
 
@@ -20,4 +20,6 @@ class Product extends Model
     {
         return $this->belongsTo(Auction::class, 'product_id', 'id');
     }
+
+
 }

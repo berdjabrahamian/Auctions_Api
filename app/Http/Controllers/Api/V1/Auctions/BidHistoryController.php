@@ -18,6 +18,6 @@ class BidHistoryController extends BaseController
      */
     public function __invoke(Auction $auction)
     {
-        return $auction;
+
     }
 }

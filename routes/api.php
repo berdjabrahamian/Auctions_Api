@@ -34,7 +34,7 @@ Route::prefix('v1')->group(function () {
         Route::namespace('Admin')->group(function () {
             Route::prefix('admin')->group(function () {
                 Route::namespace('Auctions')->group(function () {
-                    Route::post('auctions/{auction}/max-bids', 'MaxBidController')->name('auction.max.bid');
+                    Route::post('auctions/max-bids', 'MaxBidController')->name('auction.max.bid');
                     Route::resource('auctions', 'AuctionsController')->except(['index', 'show']);
                 });
                 Route::namespace('Products')->group(function () {
@@ -44,4 +44,5 @@ Route::prefix('v1')->group(function () {
         });
     });
 });
+
 

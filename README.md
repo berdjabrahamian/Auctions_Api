@@ -20,3 +20,12 @@ _coming soon_
 _coming soon_
 
 ---
+
+#### How does it work
+##### Create Auction
+1. Admin creates a product
+2. Admin turn that product into a auction
+
+##### Placing Bids
+1. customer places bid on auction
+

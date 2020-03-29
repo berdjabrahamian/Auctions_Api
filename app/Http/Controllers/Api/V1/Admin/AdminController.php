@@ -10,5 +10,8 @@ class AdminController extends BaseController
     public function __construct()
     {
         $this->middleware(AuthSecretKey::class);
+
+        parent::__construct();
+
     }
 }

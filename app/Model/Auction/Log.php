@@ -6,9 +6,9 @@ use Illuminate\Database\Eloquent\Model;
 
 class Log extends Model
 {
-    protected $table = 'logs';
-    public $timestamps = true;
-    protected $hidden = ['store_id'];
+    protected $table      = 'logs';
+    public    $timestamps = true;
+    protected $hidden     = ['store_id'];
 
     public function auction()
     {
