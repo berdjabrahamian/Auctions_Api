@@ -18,6 +18,7 @@ $factory->define(store::class, function (Faker $faker) {
         'hammer_type'               => 1,
         'final_extension_threshold' => '0',
         'final_extension_duration'  => '0',
+        'ending_soon_notification'  => 5,
     ];
 });
 
