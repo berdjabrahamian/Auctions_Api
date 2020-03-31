@@ -25,17 +25,14 @@ class Auction extends Model
         'start_date',
         'end_date',
     ];
+
     protected $hidden     = ['store_id', 'created_at', 'updated_at', 'initial_price', 'buyout_price'];
     protected $appends    = ['initial_price_cents', 'buyout_price_cents'];
-//    protected $with       = ['product', 'logs'];
-    protected $casts            = [
+    protected $with       = ['product', 'logs'];
+    protected $casts      = [
         'initial_price_cents' => 'int',
         'buyout_price_cents'  => 'int',
     ];
-    protected $dispatchesEvents = [
-        'created' => CreatedAuctionEvent::class,
-    ];
-
 
     /**
      * @return \Illuminate\Database\Eloquent\Relations\HasOne

@@ -24,7 +24,7 @@ class CreatedAuctionEvent
      */
     public function __construct(Auction $auction)
     {
-        $this->auction = $auction;
+        $this->auction = $auction->withoutRelations();
     }
 
     /**

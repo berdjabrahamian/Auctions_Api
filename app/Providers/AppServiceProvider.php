@@ -2,6 +2,8 @@
 
 namespace App\Providers;
 
+use App\Model\Auction\Auction;
+use App\Observers\AuctionObserver;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -23,6 +25,6 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        //
+        Auction::observe(AuctionObserver::class);
     }
 }
