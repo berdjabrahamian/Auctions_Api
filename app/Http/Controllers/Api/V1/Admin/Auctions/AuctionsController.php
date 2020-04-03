@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api\V1\Admin\Auctions;
 
 use App\Http\Controllers\Api\V1\Admin\AdminController;
 use App\Http\Requests\AdminAuctionStore;
+use App\Http\Requests\AdminAuctionUpdate;
 use App\Model\Product\Product;
 use Illuminate\Http\Request;
 use App\Model\Store\Store;
@@ -12,7 +13,10 @@ use App\Model\Auction\Auction;
 class AuctionsController extends AdminController
 {
     /**
-     * Store a newly created resource in storage.
+     * Grab an already imported product or create a new one if it doesnt exist
+     * Create a auction
+     * Connect the auction to the store it belongs to
+     * Associate the product to the auction
      *
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
@@ -21,6 +25,16 @@ class AuctionsController extends AdminController
     {
 
         $product = Product::updateOrCreate([
+        /**
+         * We find a product based on 3 product criterias
+         * Store_Id
+         * Platform_Id
+         * SKU
+         *
+         * This should technically always return a single product, if not AdminAuctionStore will catch it and error out before even getting here
+         *
+         */
+        $product = Product::firstOrCreate([
             ['store_id', Store::getCurrentStore()->id],
             ['platform_id', $request->input('product.platform_id')],
             ['sku', $request->input('product.sku')],
@@ -34,9 +48,8 @@ class AuctionsController extends AdminController
             'product_url' => $request->input('product.product_url'),
         ]);
 
-        $auction             = Auction::create([
-            'store_id'      => Store::getCurrentStore()->id,
-            'product_id'    => $product->id,
+
+        $auction = new Auction([
             'name'          => $request->input('auction.name'),
             'status'        => $request->input('auction.status'),
             'initial_price' => $request->input('auction.starting_price'),
@@ -47,8 +60,12 @@ class AuctionsController extends AdminController
             'end_date'      => $request->input('auction.end_date'),
         ]);
 
+        $auction->store()->associate(Store::getCurrentStore());
+        $auction->product()->associate($product);
+        $auction->save();
+
+
         return $auction;
-        return $request->all();
     }
 
     /**
@@ -70,9 +87,14 @@ class AuctionsController extends AdminController
      * @param  \App\Model\Auction\Auction  $auctions
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Auction $auctions)
+    public function update(AdminAuctionUpdate $request, Auction $auction)
     {
-        //
+
+        $auction->update([
+            'status' => $request->input('status'),
+        ]);
+
+        return $auction;
     }
 
     /**

@@ -5,6 +5,7 @@ namespace App\Http\Requests;
 use App\Model\Auction\Auction;
 use App\Model\Store\Store;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 
 class AdminMaxBidInvoke extends FormRequest
@@ -38,7 +39,7 @@ class AdminMaxBidInvoke extends FormRequest
 
         return [
             'auction_id'          => 'required|numeric',
-            'max_bid.amount'      => 'required|numeric',
+            'max_bid.amount'      => 'required|numeric|',
             'customer.id'         => 'required',
             'customer.first_name' => 'required|string',
             'customer.last_name'  => 'required|string',
@@ -61,5 +62,24 @@ class AdminMaxBidInvoke extends FormRequest
             ],
         ]);
     }
+
+
+    public function withValidator($validator)
+    {
+        $validator->after(function () {
+            $this->_maxBidChecks();
+        });
+    }
+
+
+    /**
+     * We check if the customer already placed a max bid on the account
+     * @return $this
+     */
+    private function _maxBidChecks()
+    {
+        return $this;
+    }
+
 
 }

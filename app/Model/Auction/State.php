@@ -8,12 +8,7 @@ class State extends Model
 {
     protected $table      = 'states';
     public    $timestamps = true;
-    protected $fillable   = [
-        'auction_id',
-        'leading_id',
-        'current_price',
-    ];
-
+    protected $guarded    = ['id'];
 
     public function auction()
     {

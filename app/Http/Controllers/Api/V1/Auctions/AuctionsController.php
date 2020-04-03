@@ -15,7 +15,7 @@ class AuctionsController extends BaseController
      */
     public function index()
     {
-        return Auction::store()->get([
+        return Auction::byStore()->get([
             'id',
             'product_id',
             'name',
@@ -42,6 +42,7 @@ class AuctionsController extends BaseController
             ['id', $id],
             ['store_id', Store::getCurrentStore()->id],
         ])->firstOrFail();
+
 
         return $auction;
     }

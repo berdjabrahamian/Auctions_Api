@@ -2,16 +2,26 @@
 
 namespace App\Model\Store;
 
+use App\Model\Auction\Auction;
 use App\Model\Customer\Customer;
 use Illuminate\Database\Eloquent\Model;
 
 class Store extends Model
 {
+
     protected        $table        = 'stores';
     public           $timestamps   = true;
+    protected        $attributes   = [
+        'ending_soon_notification' => 5,
+    ];
     protected static $currentStore = null;
     protected static $publicKey    = null;
     protected static $secretKey    = null;
+
+
+    public function auctions(){
+        return $this->hasMany(Auction::class, 'store_id', 'id');
+    }
 
 
     /**

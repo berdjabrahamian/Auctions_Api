@@ -9,6 +9,10 @@ use Carbon\Carbon;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\ValidationException;
 
+/**
+ * Class AdminAuctionStore
+ * @package App\Http\Requests
+ */
 class AdminAuctionStore extends FormRequest
 {
 
@@ -59,15 +63,42 @@ class AdminAuctionStore extends FormRequest
         });
     }
 
+    /**
+     * CHECKS
+     * Does product exists - if no product -> then no auction check -> then everything is new and needs to be created
+     * Multiple Products same ID -> platform_id should be unique to each product (primary key from the platform) -> and so there shouldnt be multiple products with the same primary key
+     * Sku match -> Sku from the request should match sku already in system
+     * @return $this
+     */
     protected function _productChecks()
     {
+        //Get products that belong to the store and have the same sku
         $product = Product::where([
             ['platform_id', $this->query('product')['platform_id']],
             ['store_id', Store::getCurrentStore()->id],
-        ])->first();
+        ])->get();
 
-        $this->setProduct($product);
 
+        if (!$product) {
+            $this->setProduct(null);
+            return $this;
+        }
+
+        if ($product->count() > 1) {
+            $this->validator->errors()->add('Multiple Products',
+                "There are multiple products that have the same platform_id");
+
+            return $this;
+        }
+
+        if ($product->first()->sku != $this->query('product')['sku']) {
+            $this->validator->errors()->add('Existing Product',
+                "A product with the ID of {$product->first()->platform_id} has a different sku that the one provided");
+
+            return $this;
+        }
+
+        $this->setProduct($product->first());
         return $this;
 
     }
@@ -80,7 +111,6 @@ class AdminAuctionStore extends FormRequest
      * Does auction exist based on its connected product
      * Is auction enabled
      * Is auction running
-     *
      *
      *
      * Since an auction item is supposed to be unique, then each product connected to it needs to be unique as well.

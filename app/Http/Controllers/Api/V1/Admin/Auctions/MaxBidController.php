@@ -37,19 +37,10 @@ class MaxBidController extends AdminController
             'auction_id'  => $request->input('auction_id'),
             'customer_id' => $customer->id,
             'amount'      => $request->input('max_bid.amount'),
+            'outbid'      => false,
         ]);
 
         GenerateBids::dispatchNow($customer, $maxBid);
-
-
-      //Create the max bid
-
-        //Check if outbid or not
-
-
-        //Update the auction state
-
-        //Add the necessary logs
 
 
         return $request->all();
