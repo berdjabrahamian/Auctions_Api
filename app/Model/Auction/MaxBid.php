@@ -2,7 +2,6 @@
 
 namespace App\Model\Auction;
 
-use App\Events\UpdatingMaxBidEvent;
 use App\Model\Customer\Customer;
 use Illuminate\Database\Eloquent\Model;
 
@@ -20,9 +19,6 @@ class MaxBid extends Model
         'outbid'       => 'bool',
     ];
 
-    protected $dispatchesEvents = [
-        'updating' => UpdatingMaxBidEvent::class,
-    ];
 
     /**
      * We transform the amount attribute, which is a dollar value into cents and give it its own attribute;
