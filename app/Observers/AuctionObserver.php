@@ -5,6 +5,7 @@ namespace App\Observers;
 use App\Events\CreatedAuctionEvent;
 use App\Jobs\GenerateAuctionLog;
 use App\Model\Auction\Auction;
+use App\Model\Auction\State;
 use App\Model\Store\Store;
 use Carbon\Carbon;
 use Illuminate\Support\Arr;
@@ -52,21 +53,30 @@ class AuctionObserver
 
     public function updated(Auction $auction)
     {
-        if ($auction->getChanges()) {
-            $updates = Arr::except($auction->getChanges(), 'updated_at');
-            foreach ($updates as $key => $value) {
-                GenerateAuctionLog::dispatch($auction, "Auction {$key} Updated");
-            }
+
+        if ($auction->getChanges('end_date')) {
+            GenerateAuctionLog::dispatch($auction, "Auction Extended");
         }
+
+        if ($auction->getChanges('start_date')) {
+            GenerateAuctionLog::dispatch($auction, "Auction Delayed");
+        }
+
+//        if ($auction->getChanges()) {
+//            $updates = Arr::except($auction->getChanges(), 'updated_at');
+//            foreach ($updates as $key => $value) {
+//                GenerateAuctionLog::dispatch($auction, "Auction {$key} Updated");
+//            }
+//        }
     }
 
     public function saving(Auction $auction)
     {
-
     }
 
     public function saved(Auction $auction)
     {
+
     }
 
     public function deleting(Auction $auction)

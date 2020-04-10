@@ -10,17 +10,10 @@ class Bid extends Model
 {
     protected $table      = 'bids';
     public    $timestamps = true;
-    protected $fillable = [];
-
+    protected $fillable   = [];
 
     public function auction()
     {
-        return $this->belongsTo(Auction::class, 'id', 'auction_id');
+        return $this->belongsTo(Auction::class, 'auction_id', 'id');
     }
-
-    public function store()
-    {
-        return $this->belongsTo(Store::class, 'id', 'store_id', Auction::class);
-    }
-
 }

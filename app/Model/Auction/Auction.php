@@ -15,13 +15,14 @@ use Illuminate\Database\Eloquent\Model;
 class Auction extends Model
 {
     protected $table      = 'auctions';
-    public    $timestamps = true;
+    public    $timestamps = TRUE;
     protected $guarded    = ['id', 'store_id', 'product_id'];
     protected $hidden     = ['store_id', 'created_at', 'updated_at', 'min_bid', 'initial_price', 'buyout_price'];
-    protected $appends    = ['min_bid_cents', 'initial_price_cents', 'buyout_price_cents'];
+    protected $appends    = ['current_price_cents', 'min_bid_cents', 'initial_price_cents', 'buyout_price_cents'];
     protected $with       = ['product', 'logs'];
     protected $casts      = [
-        'min_bid_cents'       => 'ind',
+        'current_price_cents' => 'int',
+        'min_bid_cents'       => 'int',
         'initial_price_cents' => 'int',
         'buyout_price_cents'  => 'int',
     ];
@@ -33,8 +34,8 @@ class Auction extends Model
     }
 
     /**
-     * @return \Illuminate\Database\Eloquent\Relations\HasOne
      * @see Product
+     * @return \Illuminate\Database\Eloquent\Relations\HasOne
      */
     public function product()
     {
@@ -42,8 +43,8 @@ class Auction extends Model
     }
 
     /**
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
      * @see Log
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
     public function logs()
     {
@@ -51,8 +52,8 @@ class Auction extends Model
     }
 
     /**
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
      * @see Bid
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
     public function bids()
     {
@@ -60,19 +61,19 @@ class Auction extends Model
     }
 
     /**
-     * @return \Illuminate\Database\Eloquent\Relations\HasOne
      * @see State
+     * @return \Illuminate\Database\Eloquent\Relations\HasOne
      */
     public function state()
     {
         return $this->hasOne(State::class, 'auction_id', 'id');
     }
 
-    public function setCurrentPriceAttribute($value)
-    {
-        $this->attributes['current_price'] = $value * 100;
-    }
 
+    public function getCurrentPriceCentsAttribute(): int
+    {
+        return $this->current_price * 100;
+    }
 
     public function getMinBidCentsAttribute(): int
     {
@@ -81,6 +82,7 @@ class Auction extends Model
 
     /**
      * We transform the initial_price attribute, which is a dollar value into cents and give it its own attribute;
+     *
      * @return int
      */
     public function getInitialPriceCentsAttribute(): int
@@ -90,6 +92,7 @@ class Auction extends Model
 
     /**
      * We transform the buyout_price attribute, which is a dollar value into cents and give it its own attribute;
+     *
      * @return int
      */
     public function getBuyoutPriceCentsAttribute(): int
@@ -98,10 +101,13 @@ class Auction extends Model
     }
 
     /**
-     * We are creating a local query scope that we only load the models that belong to the store from the public-key within the middleware
+     * We are creating a local query scope that we only load the models that belong to the store from the public-key
+     * within the middleware
+     *
      * @param $query
-     * @return mixed
+     *
      * @see Store::getCurrentStore()
+     * @return mixed
      */
     public function scopeByStore($query)
     {
@@ -111,48 +117,80 @@ class Auction extends Model
 
     /**
      * @param  MaxBid  $maxBid
-     * @param  State  $state
+     * @param  State   $state
+     *
      * @return mixed
      */
     public function newCurrentPrice(MaxBid $maxBid, State $state)
     {
+        $stateLeadingMaxBidAmount = $state->maxBid ? $state->maxBid->amount : 0;
+
         /**
          * CASE 1
+         * First auction bid
          */
         if (!$state->leading_id) {
-            return $this->current_price + ($this->min_bid_cents);
+            return $state->current_price + $this->min_bid;
         }
-
 
         /**
          * CASE 2
+         * Customer updating max bid
          */
+        if ($state->leading_id == $maxBid->id) {
+            return $state->current_price;
+        }
 
+        /**
+         * CASE 3
+         * Customers bid is less than the current winners max bid
+         */
+        if ($maxBid->amount < $stateLeadingMaxBidAmount) {
+            return $maxBid->amount + $this->min_bid;
+        }
 
+        /**
+         * CASE 4
+         * Customers bid is equal to the current winners max bid
+         */
+        if ($maxBid->amount == $stateLeadingMaxBidAmount) {
+            return $maxBid->amount;
+        }
+
+        /**
+         * CASE 5
+         * Customers bid is greater than the current winners max bid
+         */
+        if ($maxBid->amount > $stateLeadingMaxBidAmount) {
+            return $stateLeadingMaxBidAmount + $this->min_bid;
+        }
+
+        return $stateLeadingMaxBidAmount;
     }
 
 
-    public function calculateNewCurrentPrice($price)
-    {
-        $auctionMinBid = $this->min_bid;
-        $auctionPrice  = $this->current_price ? $this->current_price : $this->amount;
-    }
-
-
+    /**
+     * @param            $bidAmount
+     * @param  Customer  $customer
+     *
+     * @return \App\Model\Auction\Bid
+     */
     public function placeBid($bidAmount, Customer $customer)
     {
-
         $bid              = new Bid();
-        $bid->store_id    = Store::getCurrentStore()->id;
+        $bid->store_id    = $customer->store_id;
         $bid->auction_id  = $this->id;
         $bid->customer_id = $customer->id;
         $bid->amount      = $bidAmount;
 
         $bid->save();
 
+        $this->update([
+            'current_price' => $bidAmount,
+        ]);
+
         return $bid;
 
     }
-
 
 }

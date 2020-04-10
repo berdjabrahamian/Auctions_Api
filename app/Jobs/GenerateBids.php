@@ -22,7 +22,7 @@ class GenerateBids implements ShouldQueue
     protected $customer;
     protected $auction;
     protected $state;
-
+    public    $newAuctionCurrentPrice;
 
     /**
      * Create a new job instance.
@@ -33,8 +33,8 @@ class GenerateBids implements ShouldQueue
     {
         $this->customer = $customer;
         $this->maxBid   = $maxBid;
-        $this->auction  = $this->setAuction(Auction::find($this->maxBid->auction_id)->first());
-        $this->state    = $this->setState(State::find($this->auction->id));
+        $this->auction  = $maxBid->auction;
+        $this->state    = State::where('auction_id', $this->auction->id)->first();
     }
 
 
@@ -45,27 +45,16 @@ class GenerateBids implements ShouldQueue
      * Updating Outbids
      * Schedule Email
      *
-     *
      * HOW DO BIDS WORK
      * when a bid is placed if its higher than the current auction current_price
      * then we increase the auction current_price by the min_bid_cents
      * we mark the auction state the max_bid id so that its marked as leader
      *
-     *
-     *
      * CASE 1 - First Auction Bid
-     * Update AUCTION:current_price
-     * Update STATE:leading_id
-     * Update STATE:current_price
-     *
-     *
-     * CASE 2 - The bidder is jut updating there max bid
-     *
-     *
-     *
-     * CASE 3 - Same bid as current winner
-     * CASE 4 - Highest Bidder of all bidders
-     *
+     * CASE 2 - Customer is updating there max bid
+     * CASE 3 - There is an existing bid on the auction and this is less than
+     * CASE 4 - Same bid as current winner
+     * CASE 5 - Highest Bidder of all bidders
      *
      * @see Auction::newCurrentPrice()
      * @see Auction::placeBid()
@@ -73,50 +62,98 @@ class GenerateBids implements ShouldQueue
      */
     public function handle()
     {
-        $stateLeadingBidId = $this->state->leading_id;
-
-        $newAuctionCurrentPrice = $this->auction->newCurrentPrice($this->maxBid, $this->state);
+        $stateLeadingBidId            = $this->state->leading_id;
+        $this->newAuctionCurrentPrice = $this->auction->newCurrentPrice($this->maxBid, $this->state);
 
         /**
+         *
          * CASE 1
          * This is a the first max bid for the auction
          * There should not be any leading_id in the Auction State
          *
+         * Update AUCTION:current_price
+         * Update STATE:leading_id
+         * Update STATE:current_price
          */
         if (!$this->state->leading_id) {
-            $this->auction->placeBid($newAuctionCurrentPrice, $this->customer);
+            $this->auction->placeBid($this->newAuctionCurrentPrice, $this->customer);
             $this->state->update([
                 'leading_id'    => $this->maxBid->id,
-                'current_price' => $newAuctionCurrentPrice,
+                'current_price' => $this->newAuctionCurrentPrice,
             ]);
+
+            return $this;
         }
 
         /**
          * CASE 2
-         * The auction already has a bid and im just updating my max bid
+         * Customer is updating there max bid
+         * This shouldnt really touch the auction/state/bids
+         *
+         * Update MAXBID:amount
          */
 
+        if ($stateLeadingBidId === $this->maxBid->id) {
+            return $this;
+        }
+
+        /**
+         * CASE 3
+         * Customers is placing a bid, but there is already another bid by another customer
+         * There is already a max bid that is higher than this one
+         */
+        if ($this->maxBid->amount <= $this->state->maxBid->amount) {
+            $this->_runBidProcess(TRUE);
+
+            return $this;
+        }
+
+        /**
+         * CASE 4
+         * Customer is placing a bit, and its the highest bid of all bidders
+         */
+        if ($this->maxBid->amount > $this->state->maxBid->amount) {
+            $this->_runBidProcess(FALSE);
+
+            return $this;
+        }
+
+    }
 
 
+    private function _runBidProcess($outbid = FALSE)
+    {
+        if ($outbid) {
+            $this->auction->placeBid($this->maxBid->amount, $this->customer);
+            $this->auction->placeBid($this->newAuctionCurrentPrice, $this->state->customer);
 
-        dd('asdadasdas');
+            $this->state->maxBid->update([
+                'outbid' => TRUE,
+            ]);
+
+            $this->state->update([
+                'current_price' => $this->newAuctionCurrentPrice,
+            ]);
+
+        } else {
+            $this->auction->placeBid($this->state->maxBid->amount, $this->state->customer);
+            $this->auction->placeBid($this->newAuctionCurrentPrice, $this->customer);
+
+            $this->state->update([
+                'current_price' => $this->newAuctionCurrentPrice,
+                'leading_id'    => $this->maxBid->id,
+            ]);
+
+            $this->state->maxBid->update([
+                'outbid' => TRUE,
+            ]);
+
+        }
+
+        $this->maxBid->update([
+            'outbid' => $outbid,
+        ]);
 
         return $this;
-    }
-
-    /**
-     * @param  mixed  $state
-     */
-    public function setState($state): void
-    {
-        $this->state = $state;
-    }
-
-    /**
-     * @param  mixed  $auction
-     */
-    public function setAuction($auction): void
-    {
-        $this->auction = $auction;
     }
 }
