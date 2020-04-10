@@ -9,6 +9,7 @@ use App\Model\Product\Product;
 use Illuminate\Http\Request;
 use App\Model\Store\Store;
 use App\Model\Auction\Auction;
+use Illuminate\Support\Arr;
 
 class AuctionsController extends AdminController
 {
@@ -19,12 +20,14 @@ class AuctionsController extends AdminController
      * Associate the product to the auction
      *
      * @param  \Illuminate\Http\Request  $request
+     *
      * @return \Illuminate\Http\Response
      */
     public function store(AdminAuctionStore $request)
     {
 
-        $product = Product::updateOrCreate([
+//        $request = Arr::dot($request->validated());
+
         /**
          * We find a product based on 3 product criterias
          * Store_Id
@@ -72,6 +75,7 @@ class AuctionsController extends AdminController
      * Show the form for editing the specified resource.
      *
      * @param  \App\Model\Auction\Auction  $auctions
+     *
      * @return \Illuminate\Http\Response
      */
     public function edit(Auction $auctions)
@@ -83,16 +87,14 @@ class AuctionsController extends AdminController
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  \Illuminate\Http\Request    $request
      * @param  \App\Model\Auction\Auction  $auctions
+     *
      * @return \Illuminate\Http\Response
      */
     public function update(AdminAuctionUpdate $request, Auction $auction)
     {
-
-        $auction->update([
-            'status' => $request->input('status'),
-        ]);
+        $auction->update($request->toArray());
 
         return $auction;
     }
@@ -101,6 +103,7 @@ class AuctionsController extends AdminController
      * Remove the specified resource from storage.
      *
      * @param  \App\Model\Auction\Auction  $auctions
+     *
      * @return \Illuminate\Http\Response
      */
     public function destroy(Auction $auctions)

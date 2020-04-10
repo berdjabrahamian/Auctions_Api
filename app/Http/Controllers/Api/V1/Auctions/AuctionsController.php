@@ -15,18 +15,8 @@ class AuctionsController extends BaseController
      */
     public function index()
     {
-        return Auction::byStore()->get([
-            'id',
-            'product_id',
-            'name',
-            'status',
-            'min_bid',
-            'is_buyout',
-            'start_date',
-            'end_date',
-            'initial_price',
-            'buyout_price',
-        ]);
+        $auctions = Auction::byStore()->setEagerLoads([])->get();
+        return $auctions;
     }
 
 
@@ -34,6 +24,7 @@ class AuctionsController extends BaseController
      * Display the specified resource.
      *
      * @param  \App\Model\Auction\Auction  $auctions
+     *
      * @return \Illuminate\Http\Response
      */
     public function show($id)

@@ -49,16 +49,17 @@ class AuctionObserver
 
     public function updating(Auction $auction)
     {
+
+
     }
 
     public function updated(Auction $auction)
     {
-
-        if ($auction->getChanges('end_date')) {
+        if ($auction->wasChanged('end_date')) {
             GenerateAuctionLog::dispatch($auction, "Auction Extended");
         }
 
-        if ($auction->getChanges('start_date')) {
+        if ($auction->wasChanged('start_date')) {
             GenerateAuctionLog::dispatch($auction, "Auction Delayed");
         }
 

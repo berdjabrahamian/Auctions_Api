@@ -128,7 +128,7 @@ class GenerateBids implements ShouldQueue
             $this->auction->placeBid($this->newAuctionCurrentPrice, $this->state->customer);
 
             $this->state->maxBid->update([
-                'outbid' => TRUE,
+                'outbid' => FALSE,
             ]);
 
             $this->state->update([

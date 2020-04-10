@@ -32,8 +32,7 @@ class Store extends Model
         self::setPublicKey();
         self::setSecretKey();
 
-        $store = self::$secretKey ? Store::where('secret_key', self::$secretKey) : Store::where('public_key',
-            self::$publicKey);
+        $store = self::$secretKey ? Store::where('secret_key', self::$secretKey) : Store::where('public_key', self::$publicKey);
 
         $store = $store->firstOrFail(['id']);
 
