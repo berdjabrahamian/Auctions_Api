@@ -11,13 +11,13 @@ $factory->define(Auction::class, function (Faker $faker) {
         'product_id'    => $faker->randomElement([1, 2, 3, 4, 5, 6, 7, 8, 9, 0]),
         'store_id'      => 1,
         'name'          => $faker->text,
-        'status'        => $faker->boolean,
+        'status'        => TRUE,
         'initial_price' => 100,
         'min_bid'       => 1,
         'is_buyout'     => $faker->boolean,
         'buyout_price'  => 9999,
         'start_date'    => Carbon::now(),
-        'end_date'      => Carbon::now()->addMinute(),
+        'end_date'      => Carbon::now()->addMinute(60),
         'current_price' => 100,
     ];
 });
