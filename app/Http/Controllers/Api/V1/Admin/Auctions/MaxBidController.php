@@ -65,8 +65,7 @@ class MaxBidController extends AdminController
 
         GenerateBids::dispatchNow($customer, $maxBid);
 
-
-        return $maxBid->auction;
+        return $maxBid->unsetRelations();
     }
 
 }

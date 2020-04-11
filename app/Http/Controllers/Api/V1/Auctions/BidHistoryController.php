@@ -18,7 +18,7 @@ class BidHistoryController extends BaseController
      */
     public function __invoke($id)
     {
-        $bids = Bid::where('auction_id', $id)->get();
+        $bids = Bid::where('auction_id', $id)->orderBy('id', 'desc')->get();
         return $bids;
     }
 }

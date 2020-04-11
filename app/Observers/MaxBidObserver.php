@@ -2,6 +2,7 @@
 
 namespace App\Observers;
 
+use App\Events\MaxBidOutbidEvent;
 use App\Jobs\GenerateAuctionLog;
 use App\Model\Auction\MaxBid;
 
@@ -32,6 +33,11 @@ class MaxBidObserver
         if ($maxBid->getChanges('amount')) {
             GenerateAuctionLog::dispatch($maxBid->auction_id, 'Max Bid Updated',
                 ['customer_id' => $maxBid->customer_id, 'amount' => $maxBid->amount]);
+        }
+        if ($maxBid->wasChanged('outbid')) {
+            if ($maxBid->outbid) {
+                event(new MaxBidOutbidEvent($maxBid));
+            }
         }
     }
 
