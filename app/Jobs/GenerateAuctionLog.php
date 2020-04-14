@@ -18,7 +18,6 @@ class GenerateAuctionLog implements ShouldQueue
 
     public $tries = 3;
 
-
     public $auction;
     public $activity;
     public $opts;
@@ -28,7 +27,7 @@ class GenerateAuctionLog implements ShouldQueue
      *
      * @return void
      */
-    public function __construct($auction, string $activity, array $opts = null)
+    public function __construct($auction, string $activity, array $opts = NULL)
     {
         $this->auction  = $auction;
         $this->activity = $activity;
@@ -47,7 +46,7 @@ class GenerateAuctionLog implements ShouldQueue
             $this->auction = Auction::find($this->auction)->unsetRelations();
         }
 
-        if ($this->auction->status == false) {
+        if ($this->auction->status == FALSE) {
             return $this;
         }
 

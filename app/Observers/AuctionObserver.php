@@ -3,6 +3,7 @@
 namespace App\Observers;
 
 use App\Events\CreatedAuctionEvent;
+use App\Jobs\AuctionEndingSoonNotification;
 use App\Jobs\GenerateAuctionLog;
 use App\Model\Auction\Auction;
 use App\Model\Auction\State;
@@ -37,13 +38,16 @@ class AuctionObserver
         $startDate = Carbon::make($auction->start_date);
         GenerateAuctionLog::dispatch($auction, 'Auction Started')->delay($startDate);
 
+        //Generate Log - Auction Ended
+        //This is run when on the auction end date
+        $endDate = Carbon::make($auction->end_date);
+        GenerateAuctionLog::dispatch($auction, 'Auction Ended')->delay($endDate);
+
+
         //Send Notification - Ending Soon
         //Schedule out to send out an auction ending soon email
         //The time is based on Auction::end_date - Store::final_notification_threshold
-        $endDate             = Carbon::make($auction->end_date);
-        $endSoonNotification = Store::find($auction->store_id)->ending_soon_notification;
-        $dispatchTime        = $endDate->subMinutes($endSoonNotification);
-        GenerateAuctionLog::dispatch($auction, 'Auction Ended')->delay($dispatchTime);
+        AuctionEndingSoonNotification::dispatch($auction)->delay($auction->ending_ss);
 
     }
 

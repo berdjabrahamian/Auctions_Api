@@ -11,11 +11,14 @@ use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 
-class MaxBidOutbidEvent
+class MaxBidEvent
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
     public $maxBid;
+
+    const UPDATED = 'maxbid.updated';
+    const CREATED = 'maxbid.created';
 
     /**
      * Create a new event instance.

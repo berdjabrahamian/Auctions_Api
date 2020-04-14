@@ -79,7 +79,7 @@ class AdminAuctionStore extends FormRequest
         ])->get();
 
 
-        if (!$product) {
+        if (!$product->first()) {
             $this->setProduct(null);
             return $this;
         }

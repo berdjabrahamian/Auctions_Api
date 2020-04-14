@@ -42,7 +42,7 @@ Each method will have its own set of instructions on what needs to be done.
   - Updated
     - When the max bid is updated
   - Outbid
-    - When the customer is outbid
+    - When the customer is outbid (DONE)
 
 - Auction (todo)
   - Ending Soon
@@ -57,8 +57,9 @@ Each method will have its own set of instructions on what needs to be done.
 ##### Events
 - Auction created
   - Auction (without relations)
-
-
+  
+##### Console
+- Create Store
 Auction state is used to keep track of the state the auction is in, which we use to manage whether there is a winner or a looser
 
 

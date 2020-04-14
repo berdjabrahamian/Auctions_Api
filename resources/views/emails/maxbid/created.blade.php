@@ -2,6 +2,7 @@
 
 @include('emails.template.header')
 
+
 <!-- 1 Column Text + Button : BEGIN -->
 <tr>
     <td style="background-color: #ffffff;">
@@ -9,10 +10,9 @@
             <tr>
                 <td style="padding: 20px; font-family: sans-serif; font-size: 15px; line-height: 20px; color: #555555;">
                     <h1 style="margin: 0 0 10px; font-size: 20px; line-height: 30px; color: #333333; font-weight: normal; text-align:center; text-transform: uppercase;">
-                        You have been outbid</h1>
+                        MaxBid Created</h1>
                     <p style="margin: 10px 0; text-align:center; font-size:14px;">
-                        <strong>New High Bid: ${{$auction->current_price}}</strong> | Auction
-                        ends: {{$auction->end_date}}
+                        Auction ends: {{$auction->end_date}}
                     </p>
                 </td>
 
@@ -55,10 +55,10 @@
                             <tr>
                                 <td>
                                     <a href="{{$product->product_url}}">
-                                    <img src="https://via.placeholder.com/300" width="310" border="0"
-                                         alt="alt_text"
-                                         style="width: 100%; max-width: 310px; height: auto; background: #dddddd; font-family: sans-serif; font-size: 15px; line-height: 20px; color: #555555;"
-                                         class="center-on-narrow">
+                                        <img src="https://via.placeholder.com/300" width="310" border="0"
+                                             alt="alt_text"
+                                             style="width: 100%; max-width: 310px; height: auto; background: #dddddd; font-family: sans-serif; font-size: 15px; line-height: 20px; color: #555555;"
+                                             class="center-on-narrow">
                                     </a>
                                 </td>
                             </tr>
@@ -85,8 +85,7 @@
                                     <h3 style="margin:0 auto 10px;">Current Price: ${{$auction->current_price}}</h3>
                                     <h5 style="margin:0 auto 15px;">This auction ends on {{$auction->end_date}}</h5>
                                     <a class="button-a button-a-primary" href="{{$product->product_url}}"
-                                       style="font-family: sans-serif; font-size: 15px; line-height: 15px; text-align:center; text-decoration: none; padding: 13px 17px; display: block;">Place
-                                        Bid</a>
+                                       style="font-family: sans-serif; font-size: 15px; line-height: 15px; text-align:center; text-decoration: none; padding: 13px 17px; display: block;">Update Max Bid</a>
                                 </td>
                             </tr>
                         </table>
@@ -110,6 +109,7 @@
                 <td style="padding: 20px; font-family: sans-serif; font-size: 15px; line-height: 20px; color: #555555;">
                     <p>{{$product->description}}</p>
                 </td>
+
             </tr>
         </table>
     </td>

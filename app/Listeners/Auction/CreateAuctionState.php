@@ -1,14 +1,13 @@
 <?php
 
-namespace App\Listeners;
+namespace App\Listeners\Auction;
 
 use App\Events\CreatedAuctionEvent;
 use App\Model\Auction\State;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;
-use Illuminate\Support\Facades\Log;
 
-class CreatedAuction implements ShouldQueue
+class CreateAuctionState implements ShouldQueue
 {
     /**
      * Create the event listener.
@@ -17,13 +16,13 @@ class CreatedAuction implements ShouldQueue
      */
     public function __construct()
     {
+        //
     }
 
     /**
      * Handle the event.
      *
      * @param  object  $event
-     *
      * @return void
      */
     public function handle(CreatedAuctionEvent $event)

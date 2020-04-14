@@ -40,6 +40,15 @@
 
         <!-- Email Body : BEGIN -->
         <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="margin: auto;">
+            <!-- Clear Spacer : BEGIN -->
+            <tr>
+                <td aria-hidden="true" height="10" style="font-size: 0px; line-height: 0px; background: #ffffff">
+                    &nbsp;
+                </td>
+            </tr>
+            <!-- Clear Spacer : END -->
+
+
             <!-- Email Header : BEGIN -->
             <tr>
                 <td style="padding: 20px 0; text-align: center; background:#ffffff">
