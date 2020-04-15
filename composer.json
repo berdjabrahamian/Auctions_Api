@@ -14,6 +14,7 @@
         "guzzlehttp/guzzle": "^6.3",
         "itsgoingd/clockwork": "^4.0",
         "laravel/framework": "^7.0",
+        "laravel/horizon": "^4.3",
         "laravel/tinker": "^2.0",
         "predis/predis": "^1.1",
         "sentry/sentry-laravel": "1.7.0"
