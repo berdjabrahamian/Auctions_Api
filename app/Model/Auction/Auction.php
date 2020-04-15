@@ -10,21 +10,46 @@ use App\Model\Product\Product;
 use App\Model\Auction\Log;
 use App\Model\Auction\Bid;
 use App\Model\Store\Store;
+use App\Observers\AuctionObserver;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 
 class Auction extends Model
 {
     protected $table      = 'auctions';
     public    $timestamps = TRUE;
-    protected $guarded    = ['id', 'store_id', 'product_id'];
-    protected $hidden     = ['store_id', 'created_at', 'updated_at', 'min_bid', 'initial_price', 'buyout_price'];
-    protected $appends    = ['current_price_cents', 'min_bid_cents', 'initial_price_cents', 'buyout_price_cents'];
-    protected $with       = ['product', 'logs'];
+    protected $guarded    = [
+        'id',
+        'store_id',
+        'product_id',
+    ];
+    protected $hidden     = [
+        'store_id',
+        'created_at',
+        'updated_at',
+        'min_bid',
+        'initial_price',
+        'buyout_price',
+    ];
+    protected $appends    = [
+        'current_price_cents',
+        'min_bid_cents',
+        'initial_price_cents',
+        'buyout_price_cents',
+    ];
+    protected $with       = [
+        'product',
+        'logs',
+    ];
     protected $casts      = [
         'current_price_cents' => 'int',
         'min_bid_cents'       => 'int',
         'initial_price_cents' => 'int',
         'buyout_price_cents'  => 'int',
+    ];
+    protected $dates      = [
+        'start_date',
+        'end_date',
     ];
 
 
@@ -69,6 +94,10 @@ class Auction extends Model
         return $this->hasOne(State::class, 'auction_id', 'id');
     }
 
+    public function customers()
+    {
+        return $this->hasManyThrough(Customer::class, Bid::class, 'auction_id', 'id', 'id', 'customer_id');
+    }
 
     public function getCurrentPriceCentsAttribute(): int
     {
@@ -100,6 +129,16 @@ class Auction extends Model
         return $this->buyout_price * 100;
     }
 
+    public function getEndingSoonDate()
+    {
+        $endDate          = $this->end_date;
+        $notificationTime = $this->store->ending_soon_notification;
+
+        $endingSoonDate = $endDate->subHours($notificationTime);
+
+        return $endingSoonDate;
+    }
+
     /**
      * We are creating a local query scope that we only load the models that belong to the store from the public-key
      * within the middleware
@@ -119,7 +158,8 @@ class Auction extends Model
      * @param  MaxBid  $maxBid
      * @param  State   $state
      *
-     * @return mixed
+     * @see GenerateBids::handle() //This will have details description of what each case means
+     * @return int|mixed
      */
     public function newCurrentPrice(MaxBid $maxBid, State $state)
     {
@@ -190,6 +230,15 @@ class Auction extends Model
         ]);
 
         return $bid;
+
+    }
+
+    public function isLastMinuteBid(): bool
+    {
+        $storeThreshold = $this->store->final_extension_threshold;
+        $diffInMinutes = Carbon::now()->diffInMinutes($this->end_date);
+
+        return $diffInMinutes <= $storeThreshold;
 
     }
 

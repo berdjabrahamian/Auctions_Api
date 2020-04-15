@@ -71,18 +71,6 @@ class AuctionsController extends AdminController
         return $auction;
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Model\Auction\Auction  $auctions
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(Auction $auctions)
-    {
-        return 'Auctions Edit';
-    }
-
 
     /**
      * Update the specified resource in storage.

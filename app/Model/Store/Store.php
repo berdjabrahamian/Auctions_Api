@@ -10,19 +10,23 @@ class Store extends Model
 {
 
     protected        $table        = 'stores';
-    public           $timestamps   = true;
+    public           $timestamps   = TRUE;
+    protected        $hidden       = [
+        'public_key',
+        'secret_key',
+    ];
     protected        $attributes   = [
         'ending_soon_notification' => 5,
     ];
-    protected static $currentStore = null;
-    protected static $publicKey    = null;
-    protected static $secretKey    = null;
+    protected static $currentStore = NULL;
+    protected static $publicKey    = NULL;
+    protected static $secretKey    = NULL;
 
 
-    public function auctions(){
+    public function auctions()
+    {
         return $this->hasMany(Auction::class, 'store_id', 'id');
     }
-
 
     /**
      * @param  mixed  $currentStore
@@ -32,9 +36,10 @@ class Store extends Model
         self::setPublicKey();
         self::setSecretKey();
 
-        $store = self::$secretKey ? Store::where('secret_key', self::$secretKey) : Store::where('public_key', self::$publicKey);
+        $store = self::$secretKey ? Store::where('secret_key', self::$secretKey) : Store::where('public_key',
+            self::$publicKey);
 
-        $store = $store->firstOrFail(['id']);
+        $store = $store->firstOrFail();
 
         self::$currentStore = $store;
     }

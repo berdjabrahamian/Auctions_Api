@@ -8,7 +8,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
 
-class MaxBidCreated extends Mailable implements ShouldQueue
+class MaxBidUpdated extends Mailable implements ShouldQueue
 {
     use Queueable, SerializesModels;
 
@@ -41,7 +41,7 @@ class MaxBidCreated extends Mailable implements ShouldQueue
     {
         return $this->from($this->store->contact_email)
             ->to($this->customer->email)
-            ->subject('Max Bid Created')
-            ->view('emails.maxbid.created');
+            ->subject('Max Bid Updated')
+            ->view('emails.maxbid.updated');
     }
 }

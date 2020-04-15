@@ -30,10 +30,10 @@ class AdminMaxBidInvoke extends FormRequest
             ['store_id', Store::getCurrentStore()->id],
         ])->first();
 
-        if ($auction && $auction->status == true) {
-            return true;
+        if ($auction && $auction->status == TRUE) {
+            return TRUE;
         } else {
-            return false;
+            return FALSE;
         }
     }
 
@@ -76,9 +76,9 @@ class AdminMaxBidInvoke extends FormRequest
     public function withValidator($validator)
     {
         $validator->after(function () {
-//            $this->_customerChecks();
-//            $this->_auctionChecks();
-//            $this->_maxBidChecks();
+            $this->_customerChecks();
+            $this->_auctionChecks();
+            $this->_maxBidChecks();
         });
     }
 

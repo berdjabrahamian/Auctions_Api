@@ -2,33 +2,35 @@
 
 namespace App\Mail;
 
-use App\Model\Auction\MaxBid;
+use App\Model\Auction\Auction;
+use App\Model\Auction\Bid;
+use App\Model\Customer\Customer;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
 
-class MaxBidCreated extends Mailable implements ShouldQueue
+class EndingSoonNotification extends Mailable implements ShouldQueue
 {
     use Queueable, SerializesModels;
 
-    public $maxBid;
+    public $tries = 3;
+
+    public $customer;
     public $auction;
     public $product;
     public $store;
-    public $customer;
 
     /**
      * Create a new message instance.
      *
      * @return void
      */
-    public function __construct(MaxBid $maxBid)
+    public function __construct(Customer $customer, Auction $auction)
     {
-        $this->maxBid   = $maxBid;
-        $this->auction  = $maxBid->auction;
-        $this->store    = $maxBid->store;
-        $this->customer = $maxBid->customer;
+        $this->customer = $customer;
+        $this->auction  = $auction;
+        $this->store    = $this->auction->store;
         $this->product  = $this->auction->product;
     }
 
@@ -41,7 +43,7 @@ class MaxBidCreated extends Mailable implements ShouldQueue
     {
         return $this->from($this->store->contact_email)
             ->to($this->customer->email)
-            ->subject('Max Bid Created')
-            ->view('emails.maxbid.created');
+            ->subject('Auction Ending Soon')
+            ->view('emails.auction.ending_soon');
     }
 }

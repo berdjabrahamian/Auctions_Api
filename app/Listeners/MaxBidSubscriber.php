@@ -2,8 +2,12 @@
 
 namespace App\Listeners;
 
-use App\Events\MaxBidEvent;
-use App\Mail\MaxBidOutbid as MaxBidOutbidEmail;
+use App\Events\MaxBid\Created;
+use App\Events\MaxBid\Outbid;
+use App\Events\MaxBid\Updated;
+use App\Listeners\MaxBid\CreatedEmail;
+use App\Listeners\MaxBid\OutbidEmail;
+use App\Listeners\MaxBid\UpdatedEmail;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Support\Facades\Log;
@@ -21,28 +25,21 @@ class MaxBidSubscriber implements ShouldQueue
         //
     }
 
-    public function maxBidOutbid(MaxBidEvent $event)
-    {
-        Mail::send(new MaxBidOutbidEmail($event->maxBid));
-    }
-
-    public function maxBidCreated(MaxBidEvent $event)
-    {
-        Mail::send(new MaxBidCreatedEmail($event->maxBid));
-    }
-    
     public function subscribe($events)
     {
         $events->listen(
-            MaxBidEvent::UPDATED,
-            'App\Listeners\MaxBidSubscriber@maxBidOutbid'
+            Created::class,
+            CreatedEmail::class
         );
 
         $events->listen(
-            MaxBidEvent::CREATED,
-            'App\Listeners\MaxBidSubscriber@maxBidCreated'
+            Updated::class,
+            UpdatedEmail::class
         );
 
-
+        $events->listen(
+            Outbid::class,
+            OutbidEmail::class
+        );
     }
 }

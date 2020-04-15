@@ -35,25 +35,30 @@ class AuctionObserver
 
         //Generate Log - Auction Started
         //This is delayed to run on the auction start date
-        $startDate = Carbon::make($auction->start_date);
-        GenerateAuctionLog::dispatch($auction, 'Auction Started')->delay($startDate);
+        GenerateAuctionLog::dispatch($auction, 'Auction Started')->delay($auction->start_date);
 
+        //TODO: This needs to run in a event to check that the end date is NOW
         //Generate Log - Auction Ended
         //This is run when on the auction end date
-        $endDate = Carbon::make($auction->end_date);
-        GenerateAuctionLog::dispatch($auction, 'Auction Ended')->delay($endDate);
+        GenerateAuctionLog::dispatch($auction, 'Auction Ended')->delay($auction->end_date);
 
 
         //Send Notification - Ending Soon
         //Schedule out to send out an auction ending soon email
         //The time is based on Auction::end_date - Store::final_notification_threshold
-        AuctionEndingSoonNotification::dispatch($auction)->delay($auction->ending_ss);
+        AuctionEndingSoonNotification::dispatch($auction)->delay($auction->getEndingSoonDate());
 
     }
 
     public function updating(Auction $auction)
     {
+//        if ($auction->isDirty('current_price')) {
+        $checkGoingGoingGone = $auction->isLastMinuteBid();
+        if ($checkGoingGoingGone) {
+           $auction->end_date = $auction->end_date->addMinutes($auction->store->final_extension_duration);
+        }
 
+//        }
 
     }
 
@@ -66,7 +71,6 @@ class AuctionObserver
         if ($auction->wasChanged('start_date')) {
             GenerateAuctionLog::dispatch($auction, "Auction Delayed");
         }
-
 //        if ($auction->getChanges()) {
 //            $updates = Arr::except($auction->getChanges(), 'updated_at');
 //            foreach ($updates as $key => $value) {

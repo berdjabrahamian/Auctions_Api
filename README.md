@@ -36,7 +36,7 @@ Each method will have its own set of instructions on what needs to be done.
 
 
 ##### Email Notifications 
-- Max Bid (todo)
+- Max Bid
   - Created
     - When the max bid is created - customers first bid on an auction
   - Updated
@@ -55,6 +55,10 @@ Each method will have its own set of instructions on what needs to be done.
     - Send to all who lost
 
 ##### Events
+- MaxBid
+   - Created
+   - Updated
+   - Outbid
 - Auction created
   - Auction (without relations)
   
