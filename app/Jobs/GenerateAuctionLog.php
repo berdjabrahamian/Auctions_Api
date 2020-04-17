@@ -41,7 +41,6 @@ class GenerateAuctionLog implements ShouldQueue
      */
     public function handle()
     {
-
         if (!$this->auction instanceof Auction) {
             $this->auction = Auction::find($this->auction)->unsetRelations();
         }
@@ -67,6 +66,7 @@ class GenerateAuctionLog implements ShouldQueue
         return $this;
     }
 
+    // TODO: Handle Failed Job
     public function failed(Exception $exception)
     {
 

@@ -3,6 +3,7 @@
 namespace App\Observers;
 
 use App\Events\CreatedAuctionEvent;
+use App\Jobs\Auction\AuctionEndingSoonEmail;
 use App\Jobs\AuctionEndingSoonNotification;
 use App\Jobs\GenerateAuctionLog;
 use App\Model\Auction\Auction;
@@ -14,14 +15,9 @@ use Illuminate\Support\Facades\Log;
 
 class AuctionObserver
 {
-    public function retrieved(Auction $auction)
-    {
-    }
-
     public function creating(Auction $auction)
     {
         $auction->current_price = $auction->initial_price;
-        return $this;
     }
 
 
@@ -46,7 +42,7 @@ class AuctionObserver
         //Send Notification - Ending Soon
         //Schedule out to send out an auction ending soon email
         //The time is based on Auction::end_date - Store::final_notification_threshold
-        AuctionEndingSoonNotification::dispatch($auction)->delay($auction->getEndingSoonDate());
+        AuctionEndingSoonEmail::dispatch($auction)->delay($auction->getEndingSoonDate());
 
     }
 

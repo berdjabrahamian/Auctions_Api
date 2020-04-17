@@ -10,9 +10,9 @@ use App\Model\Product\Product;
 use App\Model\Auction\Log;
 use App\Model\Auction\Bid;
 use App\Model\Store\Store;
-use App\Observers\AuctionObserver;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Arr;
 
 class Auction extends Model
 {
@@ -159,14 +159,33 @@ class Auction extends Model
 
     }
 
+    /**
+     * @param  \Illuminate\Database\Eloquent\Builder  $query
+     *
+     * @return mixed
+     */
+    public function scopeWithAuctionIds($query, $auctionIds)
+    {
+        $withActionIds = $query->whereRaw("auctions.id in ({$auctionIds})");
+        return $withActionIds;
+    }
+
+    /**
+     * @param  \Illuminate\Database\Eloquent\Builder  $query
+     * @param                                         $customer_id
+     *
+     * @return mixed
+     */
     public function scopeWithCustomerMaxBid($query, $customer_id)
     {
         $customerMaxBids = $query->leftJoin('max_bids', function ($leftJoin) use ($customer_id) {
             $leftJoin->on('auctions.id', '=', 'max_bids.auction_id')
                 ->where('max_bids.customer_id', '=', $customer_id);
         });
+
         $customerMaxBids->select('auctions.*', 'max_bids.id AS max_bid_id', 'max_bids.amount AS max_bid_amount',
             'max_bids.outbid AS max_bid_outbid');
+
         return $customerMaxBids;
     }
 
@@ -240,8 +259,7 @@ class Auction extends Model
      *
      * @return bool
      */
-    public
-    function isLastMinuteBid(): bool
+    public function isLastMinuteBid(): bool
     {
         $storeThreshold = $this->store->final_extension_threshold;
         $diffInMinutes  = Carbon::now()->diffInMinutes($this->end_date);

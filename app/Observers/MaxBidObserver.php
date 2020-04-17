@@ -6,6 +6,9 @@ use App\Events\MaxBid\Created;
 use App\Events\MaxBid\Outbid;
 use App\Events\MaxBid\Updated;
 use App\Jobs\GenerateAuctionLog;
+use App\Jobs\MaxBid\MaxBidCreatedEmail;
+use App\Jobs\MaxBid\MaxBidOutbidEmail;
+use App\Jobs\MaxBid\MaxBidUpdatedEmail;
 use App\Model\Auction\MaxBid;
 
 class MaxBidObserver
@@ -23,8 +26,8 @@ class MaxBidObserver
         GenerateAuctionLog::dispatch($maxBid->auction_id, 'Max Bid Created',
             ['customer_id' => $maxBid->customer_id, 'amount' => $maxBid->amount]);
 
-        //This will dispatch a listener that will Send the MaxBid Created Email
-        event(new Created($maxBid));
+        //This will dispatch a job that will Send the MaxBid Created Email
+        MaxBidCreatedEmail::dispatchAfterResponse($maxBid);
     }
 
     /**
@@ -39,17 +42,14 @@ class MaxBidObserver
         if ($maxBid->wasChanged('amount')) {
             GenerateAuctionLog::dispatch($maxBid->auction_id, 'Max Bid Updated',
                 ['customer_id' => $maxBid->customer_id, 'amount' => $maxBid->amount]);
-        }
 
-        //This will dispatch a listener that will Send the MaxBid Updated Email
-        if ($maxBid->wasChanged('amount')) {
-            event(new Updated($maxBid));
+            MaxBidUpdatedEmail::dispatchAfterResponse($maxBid);
         }
 
         //This will dispatch a listener that will Send the MaxBid Outbid Email
         if ($maxBid->wasChanged('outbid')) {
             if ($maxBid->outbid) {
-                event(new Outbid($maxBid));
+                MaxBidOutbidEmail::dispatchAfterResponse($maxBid);
             }
         }
     }

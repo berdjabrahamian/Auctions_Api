@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Jobs;
+namespace App\Jobs\Auction;
 
 use App\Mail\EndingSoonNotification;
 use App\Model\Auction\Auction;
@@ -10,12 +10,11 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 
-class AuctionEndingSoonNotification implements ShouldQueue
+class AuctionEndingSoonEmail implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     public $tries = 3;
-
     public $auction;
     public $customers;
 
@@ -26,6 +25,7 @@ class AuctionEndingSoonNotification implements ShouldQueue
      */
     public function __construct(Auction $auction)
     {
+        $this->queue     = 'emails';
         $this->auction   = $auction;
         $this->customers = $auction->customers->unique();
     }
@@ -44,7 +44,5 @@ class AuctionEndingSoonNotification implements ShouldQueue
         foreach ($this->customers as $customer) {
             Mail::send(new EndingSoonNotification($customer, $this->auction));
         }
-
-
     }
 }

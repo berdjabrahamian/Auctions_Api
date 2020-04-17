@@ -3,29 +3,35 @@
 namespace App\Http\Controllers\Api\V1\Auctions;
 
 use App\Http\Controllers\Api\V1\BaseController;
+use App\Http\Requests\AuctionIndex;
 use App\Http\Resources\AuctionCollection;
 use App\Model\Auction\Auction;
 use App\Model\Store\Store;
-use Illuminate\Http\Request;
 
 class AuctionsController extends BaseController
 {
     /**
      * Display a listing of the resource.
      *
+     * @see Auction::scopeWithCustomerMaxBid()
+     * @see Auction::scopeByStore()
+     * @see Auction::scopeWithAuctionIds()
+     *
      * @return \Illuminate\Http\Response
      */
-    public function index(Request $request)
+    public function index(AuctionIndex $request)
     {
         $auctions = Auction::byStore()->setEagerLoads([]);
-//        if ($request->has('customer_id')){
-        $auctions->withCustomerMaxBid($request->get('customer_id'));
-//        }
-//        $auctions->join('max_bids', function ($join) use ($request) {
-//            $join->on('auctions.id', '=', 'max_bids.auction_id')
-//            ->where('max_bids.customer_id', '=', $request->input('customer_id'));
-//        });
-//        $auctions->where('auctions.store_id', '=', Store::getCurrentStore()->id);
+
+        //We get an array of auction_ids
+        if ($request->has('auction_ids')) {
+            $auctions->withAuctionIds($request->get('auction_ids'));
+        }
+
+        //We get a customer Id
+        if ($request->has('customer_id')) {
+            $auctions->withCustomerMaxBid($request->get('customer_id'));
+        }
 
         $auctions = $auctions->orderBy('auctions.id', 'asc')->get();
         return new AuctionCollection($auctions);
@@ -39,13 +45,19 @@ class AuctionsController extends BaseController
      *
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show($id, Request $request)
     {
-        $auction = Auction::where([
-            ['id', $id],
-            ['store_id', Store::getCurrentStore()->id],
-        ])->firstOrFail();
+        $auction = Auction::byStore()->where([
+            ['auctions.id', $id],
+        ]);
 
+        if ($request->has('customer_id')) {
+            $auction->withCustomerMaxBid($request->get('customer_id'));
+        }
+
+        dd($auction->dd());
+
+        $auction = $auction->firstOrFail();
 
         return $auction;
     }

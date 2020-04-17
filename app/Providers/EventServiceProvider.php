@@ -27,10 +27,6 @@ class EventServiceProvider extends ServiceProvider
         ],
     ];
 
-    protected $subscribe = [
-        MaxBidSubscriber::class,
-    ];
-
     /**
      * Register any events for your application.
      *
