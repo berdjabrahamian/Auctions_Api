@@ -11,6 +11,7 @@ use App\Model\Auction\MaxBid;
 use App\Model\Store\Store;
 use App\Model\Customer\Customer;
 use App\Observers\MaxBidObserver;
+use Illuminate\Support\Arr;
 
 
 class MaxBidController extends AdminController
@@ -25,21 +26,22 @@ class MaxBidController extends AdminController
     public function __invoke(AdminMaxBidInvoke $request)
     {
 
+        $validated = Arr::dot($request->validated());
         /**
          * Crate or update customer
          */
         $customer = Customer::updateOrCreate(
             [
-                ['platform_id', $request->input('customer.id')],
+                ['platform_id', $validated['customer.id']],
                 ['store_id', Store::getCurrentStore()->id],
             ],
             [
-                'first_name' => $request->input('customer.first_name'),
-                'last_name'  => $request->input('customer.last_name'),
-                'email'      => $request->input('customer.email'),
+                'first_name' => $validated['customer.first_name'],
+                'last_name'  => $validated['customer.last_name'],
+                'email'      => $validated['customer.email'],
             ]);
 
-        $customer->platform_id = $request->input('customer.id');
+        $customer->platform_id = $validated['customer.id'];
         $customer->store()->associate(Store::getCurrentStore());
         $customer->save();
 
@@ -53,13 +55,13 @@ class MaxBidController extends AdminController
          */
         $maxBid = MaxBid::updateOrCreate([
             ['store_id', Store::getCurrentStore()->id],
-            ['auction_id', $request->input('auction_id')],
+            ['auction_id', $validated['auction_id']],
             ['customer_id', $customer->id],
         ], [
             'store_id'    => Store::getCurrentStore()->id,
-            'auction_id'  => $request->input('auction_id'),
+            'auction_id'  => $validated['auction_id'],
             'customer_id' => $customer->id,
-            'amount'      => $request->input('max_bid.amount'),
+            'amount'      => $validated['max_bid.amount'],
             'outbid'      => FALSE,
         ]);
 

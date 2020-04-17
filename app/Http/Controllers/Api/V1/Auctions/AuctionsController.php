@@ -3,8 +3,10 @@
 namespace App\Http\Controllers\Api\V1\Auctions;
 
 use App\Http\Controllers\Api\V1\BaseController;
+use App\Http\Resources\AuctionCollection;
 use App\Model\Auction\Auction;
 use App\Model\Store\Store;
+use Illuminate\Http\Request;
 
 class AuctionsController extends BaseController
 {
@@ -13,10 +15,20 @@ class AuctionsController extends BaseController
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        $auctions = Auction::byStore()->setEagerLoads([])->get();
-        return $auctions;
+        $auctions = Auction::byStore()->setEagerLoads([]);
+//        if ($request->has('customer_id')){
+        $auctions->withCustomerMaxBid($request->get('customer_id'));
+//        }
+//        $auctions->join('max_bids', function ($join) use ($request) {
+//            $join->on('auctions.id', '=', 'max_bids.auction_id')
+//            ->where('max_bids.customer_id', '=', $request->input('customer_id'));
+//        });
+//        $auctions->where('auctions.store_id', '=', Store::getCurrentStore()->id);
+
+        $auctions = $auctions->orderBy('auctions.id', 'asc')->get();
+        return new AuctionCollection($auctions);
     }
 
 

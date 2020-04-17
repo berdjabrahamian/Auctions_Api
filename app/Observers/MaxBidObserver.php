@@ -36,7 +36,7 @@ class MaxBidObserver
      */
     public function updated(MaxBid $maxBid)
     {
-        if ($maxBid->getChanges('amount')) {
+        if ($maxBid->wasChanged('amount')) {
             GenerateAuctionLog::dispatch($maxBid->auction_id, 'Max Bid Updated',
                 ['customer_id' => $maxBid->customer_id, 'amount' => $maxBid->amount]);
         }

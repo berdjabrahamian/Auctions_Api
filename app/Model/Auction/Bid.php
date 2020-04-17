@@ -38,4 +38,17 @@ class Bid extends Model
     {
         return Carbon::make($this->created_at)->diffForHumans();
     }
+
+    public static function placeBid($bidAmount, Customer $customer, Auction $auction)
+    {
+        $bid              = new Bid();
+        $bid->store_id    = $customer->store_id;
+        $bid->auction_id  = $auction->id;
+        $bid->customer_id = $customer->id;
+        $bid->amount      = $bidAmount;
+
+        $bid->save();
+
+        return $bid;
+    }
 }

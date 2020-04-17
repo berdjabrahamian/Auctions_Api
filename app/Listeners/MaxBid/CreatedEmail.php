@@ -8,8 +8,12 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Support\Facades\Mail;
 
-class CreatedEmail
+class CreatedEmail implements ShouldQueue
 {
+    use InteractsWithQueue;
+
+    public $queue = 'listeners';
+
     /**
      * Create the event listener.
      *

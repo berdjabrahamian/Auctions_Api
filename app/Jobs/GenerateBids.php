@@ -3,6 +3,7 @@
 namespace App\Jobs;
 
 use App\Model\Auction\Auction;
+use App\Model\Auction\Bid;
 use App\Model\Auction\MaxBid;
 use App\Model\Auction\State;
 use App\Model\Customer\Customer;
@@ -16,8 +17,7 @@ class GenerateBids implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    public $tries = 3;
-
+    public    $tries = 3;
     protected $maxBid;
     protected $customer;
     protected $auction;
@@ -76,7 +76,12 @@ class GenerateBids implements ShouldQueue
          * Update STATE:current_price
          */
         if (!$this->state->leading_id) {
-            $this->auction->placeBid($this->newAuctionCurrentPrice, $this->customer);
+            Bid::placeBid($this->newAuctionCurrentPrice, $this->customer, $this->auction);
+
+            $this->auction->update([
+                'current_price' => $this->newAuctionCurrentPrice,
+            ]);
+
             $this->state->update([
                 'leading_id'    => $this->maxBid->id,
                 'current_price' => $this->newAuctionCurrentPrice,
@@ -120,12 +125,11 @@ class GenerateBids implements ShouldQueue
 
     }
 
-
     private function _runBidProcess($outbid = FALSE)
     {
         if ($outbid) {
-            $this->auction->placeBid($this->maxBid->amount, $this->customer);
-            $this->auction->placeBid($this->newAuctionCurrentPrice, $this->state->customer);
+            Bid::placeBid($this->maxBid->amount, $this->customer, $this->auction);
+            Bid::placeBid($this->newAuctionCurrentPrice, $this->state->customer, $this->auction);
 
             $this->state->maxBid->update([
                 'outbid' => FALSE,
@@ -136,8 +140,8 @@ class GenerateBids implements ShouldQueue
             ]);
 
         } else {
-            $this->auction->placeBid($this->state->maxBid->amount, $this->state->customer);
-            $this->auction->placeBid($this->newAuctionCurrentPrice, $this->customer);
+            Bid::placeBid($this->state->maxBid->amount, $this->state->customer, $this->auction);
+            Bid::placeBid($this->newAuctionCurrentPrice, $this->customer, $this->auction);
 
             $this->state->update([
                 'current_price' => $this->newAuctionCurrentPrice,
@@ -154,6 +158,15 @@ class GenerateBids implements ShouldQueue
             'outbid' => $outbid,
         ]);
 
+        $this->auction->update([
+            'current_price' => $this->newAuctionCurrentPrice,
+        ]);
+
         return $this;
+    }
+
+    public function failed(Exception $exception)
+    {
+
     }
 }

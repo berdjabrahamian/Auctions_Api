@@ -52,13 +52,11 @@ class AuctionObserver
 
     public function updating(Auction $auction)
     {
-//        if ($auction->isDirty('current_price')) {
-        $checkGoingGoingGone = $auction->isLastMinuteBid();
-        if ($checkGoingGoingGone) {
-           $auction->end_date = $auction->end_date->addMinutes($auction->store->final_extension_duration);
+        if ($auction->isDirty('current_price')) {
+            if ($auction->isLastMinuteBid()) {
+                $auction->end_date = $auction->end_date->addMinutes($auction->store->final_extension_duration);
+            }
         }
-
-//        }
 
     }
 
@@ -71,36 +69,5 @@ class AuctionObserver
         if ($auction->wasChanged('start_date')) {
             GenerateAuctionLog::dispatch($auction, "Auction Delayed");
         }
-//        if ($auction->getChanges()) {
-//            $updates = Arr::except($auction->getChanges(), 'updated_at');
-//            foreach ($updates as $key => $value) {
-//                GenerateAuctionLog::dispatch($auction, "Auction {$key} Updated");
-//            }
-//        }
-    }
-
-    public function saving(Auction $auction)
-    {
-    }
-
-    public function saved(Auction $auction)
-    {
-
-    }
-
-    public function deleting(Auction $auction)
-    {
-    }
-
-    public function deleted(Auction $auction)
-    {
-    }
-
-    public function restoring(Auction $auction)
-    {
-    }
-
-    public function restored(Auction $auction)
-    {
     }
 }

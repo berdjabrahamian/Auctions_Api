@@ -178,10 +178,10 @@ return [
         'local' => [
             'supervisor-1' => [
                 'connection' => 'redis',
-                'queue' => ['default'],
+                'queue' => ['default', 'listeners'],
                 'balance' => 'simple',
                 'processes' => 3,
-                'tries' => 1,
+                'tries' => 3,
             ],
         ],
     ],

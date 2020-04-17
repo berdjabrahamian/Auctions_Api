@@ -9,6 +9,10 @@ use Illuminate\Queue\InteractsWithQueue;
 
 class CreateAuctionState implements ShouldQueue
 {
+    use InteractsWithQueue;
+
+    public $queue = 'listeners';
+
     /**
      * Create the event listener.
      *
@@ -23,6 +27,7 @@ class CreateAuctionState implements ShouldQueue
      * Handle the event.
      *
      * @param  object  $event
+     *
      * @return void
      */
     public function handle(CreatedAuctionEvent $event)

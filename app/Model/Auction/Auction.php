@@ -129,6 +129,11 @@ class Auction extends Model
         return $this->buyout_price * 100;
     }
 
+    public function getHasEndedAttribute(): bool
+    {
+        return Carbon::now() <= $this->end_date;
+    }
+
     public function getEndingSoonDate()
     {
         $endDate          = $this->end_date;
@@ -150,8 +155,19 @@ class Auction extends Model
      */
     public function scopeByStore($query)
     {
-        return $query->where('store_id', Store::getCurrentStore()->id);
+        return $query->where('auctions.store_id', Store::getCurrentStore()->id);
 
+    }
+
+    public function scopeWithCustomerMaxBid($query, $customer_id)
+    {
+        $customerMaxBids = $query->leftJoin('max_bids', function ($leftJoin) use ($customer_id) {
+            $leftJoin->on('auctions.id', '=', 'max_bids.auction_id')
+                ->where('max_bids.customer_id', '=', $customer_id);
+        });
+        $customerMaxBids->select('auctions.*', 'max_bids.id AS max_bid_id', 'max_bids.amount AS max_bid_amount',
+            'max_bids.outbid AS max_bid_outbid');
+        return $customerMaxBids;
     }
 
     /**
@@ -208,35 +224,27 @@ class Auction extends Model
         return $stateLeadingMaxBidAmount;
     }
 
-
-    /**
-     * @param            $bidAmount
-     * @param  Customer  $customer
-     *
-     * @return \App\Model\Auction\Bid
-     */
-    public function placeBid($bidAmount, Customer $customer)
+    public static function updateState(State $state)
     {
-        $bid              = new Bid();
-        $bid->store_id    = $customer->store_id;
-        $bid->auction_id  = $this->id;
-        $bid->customer_id = $customer->id;
-        $bid->amount      = $bidAmount;
+        $auction = $state->auction;
 
-        $bid->save();
-
-        $this->update([
-            'current_price' => $bidAmount,
+        $auction->update([
+            'current_price'  => $state->current_price,
+            'leading_bid_id' => $state->leading_id,
         ]);
-
-        return $bid;
 
     }
 
-    public function isLastMinuteBid(): bool
+    /**
+     * This checks to see if the auction is bid within
+     *
+     * @return bool
+     */
+    public
+    function isLastMinuteBid(): bool
     {
         $storeThreshold = $this->store->final_extension_threshold;
-        $diffInMinutes = Carbon::now()->diffInMinutes($this->end_date);
+        $diffInMinutes  = Carbon::now()->diffInMinutes($this->end_date);
 
         return $diffInMinutes <= $storeThreshold;
 

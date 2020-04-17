@@ -15,6 +15,10 @@ use Illuminate\Support\Facades\Mail;
 
 class MaxBidSubscriber implements ShouldQueue
 {
+    use InteractsWithQueue;
+
+    public $queue = 'listeners';
+
     /**
      * Create the event listener.
      *
