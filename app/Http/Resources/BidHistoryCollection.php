@@ -4,8 +4,11 @@ namespace App\Http\Resources;
 
 use Illuminate\Http\Resources\Json\ResourceCollection;
 
-class AuctionCollection extends ResourceCollection
+class BidHistoryCollection extends ResourceCollection
 {
+
+    public $collects = BidHistoryResource::class;
+
     /**
      * Transform the resource collection into an array.
      *
@@ -13,13 +16,8 @@ class AuctionCollection extends ResourceCollection
      *
      * @return array
      */
-
-    public $collection = Auction::class;
-
     public function toArray($request)
     {
-        return [
-            'data' => $this->collection,
-        ];
+        return parent::toArray($request);
     }
 }
