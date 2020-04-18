@@ -13,13 +13,6 @@ class Bid extends Model
     protected $table      = 'bids';
     public    $timestamps = TRUE;
     protected $fillable   = [];
-    protected $hidden     = [
-        'updated_at',
-        'created_at',
-        'store_id',
-        'customer_id',
-    ];
-    protected $with       = ['customer'];
     protected $appends    = [
         'bid_placed',
     ];

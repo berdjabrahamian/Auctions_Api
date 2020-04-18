@@ -23,6 +23,6 @@ class State extends Model
 
     public function customer()
     {
-        return $this->hasOneThrough(Customer::class, MaxBid::class,'id', 'id', 'leading_id', 'customer_id');
+        return $this->hasOneThrough(Customer::class, MaxBid::class, 'id', 'id', 'leading_id', 'customer_id');
     }
 }

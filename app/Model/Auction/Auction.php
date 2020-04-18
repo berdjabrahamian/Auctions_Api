@@ -18,6 +18,7 @@ class Auction extends Model
 {
     protected $table      = 'auctions';
     public    $timestamps = TRUE;
+    protected $perPage    = 100;
     protected $guarded    = [
         'id',
         'store_id',
@@ -32,26 +33,29 @@ class Auction extends Model
         'buyout_price',
     ];
     protected $appends    = [
-        'current_price_cents',
-        'min_bid_cents',
-        'initial_price_cents',
-        'buyout_price_cents',
-    ];
-    protected $with       = [
-        'product',
-        'logs',
+//        'current_price',
+//        'initial_price',
+//        'hammer_price_cents',
+//        'min_bid_cents',
+//        'buyout_price_cents',
     ];
     protected $casts      = [
-        'current_price_cents' => 'int',
-        'min_bid_cents'       => 'int',
-        'initial_price_cents' => 'int',
-        'buyout_price_cents'  => 'int',
+        'current_price' => 'int',
+        'initial_price' => 'int',
+        //        'min_bid_cents'      => 'int',
+        //        'buyout_price_cents' => 'int',
+        //        'hammer_price'       => 'int',
+        //        'hammer_price_cents' => 'int',
     ];
     protected $dates      = [
         'start_date',
         'end_date',
     ];
 
+
+    //////////////////////
+    /// RELATIONSHIPS ///
+    ////////////////////
 
     public function store()
     {
@@ -99,39 +103,73 @@ class Auction extends Model
         return $this->hasManyThrough(Customer::class, Bid::class, 'auction_id', 'id', 'id', 'customer_id');
     }
 
-    public function getCurrentPriceCentsAttribute(): int
+
+    ///////////////////////
+    ///// Attributes /////
+    /////////////////////
+
+    public function setInitialPriceAttribute($value)
     {
-        return $this->current_price * 100;
+        $this->attributes['initial_price'] = $value * 100;
     }
 
-    public function getMinBidCentsAttribute(): int
+    public function getInitialPriceAttribute(): int
+    {
+        return $this->initial_price / 100;
+    }
+
+    public function setCurrentPriceAttribute($value)
+    {
+        $this->attributes['current_price'] = $value * 100;
+    }
+
+    public function getCurrentPriceAttribute(): int
+    {
+        return $this->current_price / 100;
+    }
+
+    public function setHammerPriceAttribute()
+    {
+        $this->attributes['hammer_price'] = $value * 100;
+    }
+
+    public function getHammerPriceAttribute(): int
+    {
+        return $this->hammer_price / 100;
+    }
+
+    public function setMinBidAttribute($value)
+    {
+        $this->attributes['min_bid'] = $value * 100;
+    }
+
+    public function getMinBidAttribute(): int
     {
         return $this->min_bid * 100;
     }
 
-    /**
-     * We transform the initial_price attribute, which is a dollar value into cents and give it its own attribute;
-     *
-     * @return int
-     */
-    public function getInitialPriceCentsAttribute(): int
+    public function setBuyoutPriceAttribute($value)
     {
-        return $this->initial_price * 100;
+        $this->attributes['buyout_price'] = $value * 100;
     }
 
-    /**
-     * We transform the buyout_price attribute, which is a dollar value into cents and give it its own attribute;
-     *
-     * @return int
-     */
-    public function getBuyoutPriceCentsAttribute(): int
+    public function getBuyoutPriceAttribute(): int
     {
-        return $this->buyout_price * 100;
+        return $this->buyout_price / 100;
+    }
+
+
+
+
+
+    public function getBidsCountAttribute(): int
+    {
+        return $this->bids->count();
     }
 
     public function getHasEndedAttribute(): bool
     {
-        return Carbon::now() <= $this->end_date;
+        return $this->end_date < Carbon::now();
     }
 
     public function getEndingSoonDate()
@@ -156,7 +194,6 @@ class Auction extends Model
     public function scopeByStore($query)
     {
         return $query->where('auctions.store_id', Store::getCurrentStore()->id);
-
     }
 
     /**
@@ -168,6 +205,18 @@ class Auction extends Model
     {
         $withActionIds = $query->whereRaw("auctions.id in ({$auctionIds})");
         return $withActionIds;
+    }
+
+    /**
+     * @param  \Illuminate\Database\Eloquent\Builder  $query
+     * @param                                         $productIds
+     *
+     * @return mixed
+     */
+    public function scopeWithProductIds($query, $productIds)
+    {
+        $withProductIds = $query->whereRaw("auctions.product_id in ({$productIds})");
+        return $withProductIds;
     }
 
     /**
@@ -248,8 +297,8 @@ class Auction extends Model
         $auction = $state->auction;
 
         $auction->update([
-            'current_price'  => $state->current_price,
-            'leading_bid_id' => $state->leading_id,
+            'current_price'      => $state->current_price,
+            'leading_max_bid_id' => $state->leading_id,
         ]);
 
     }
@@ -266,6 +315,24 @@ class Auction extends Model
 
         return $diffInMinutes <= $storeThreshold;
 
+    }
+
+    public function getHammerPrice()
+    {
+        return $this->current_price;
+    }
+
+    public function getHammerPriceWithPremium()
+    {
+        $storeHammerPrice = $this->store->hammer_price;
+        $storeHammerType  = $this->store->hammer_type;
+
+
+        if ($storeHammerType == 1) {
+            return $this->getHammerPrice() + $storeHammerPrice;
+        } else {
+            return ($this->getHammerPrice() * $storeHammerPrice / 100) + $this->getHammerPrice();
+        }
     }
 
 }
