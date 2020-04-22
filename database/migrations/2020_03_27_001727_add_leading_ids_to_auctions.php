@@ -14,7 +14,6 @@ class AddLeadingIdsToAuctions extends Migration
     public function up()
     {
         Schema::table('auctions', function (Blueprint $table) {
-            $table->bigInteger('leading_bid_id')->nullable();
             $table->bigInteger('leading_max_bid_id')->nullable();
         });
     }
@@ -27,7 +26,6 @@ class AddLeadingIdsToAuctions extends Migration
     public function down()
     {
         Schema::table('auctions', function (Blueprint $table) {
-            $table->dropColumn('leading_bid_id');
             $table->dropColumn('leading_max_bid_id');
         });
     }

@@ -8,6 +8,7 @@ use App\Http\Resources\AuctionResource;
 use App\Http\Resources\AuctionsCollection;
 use App\Model\Auction\Auction;
 use App\Model\Store\Store;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 
 class AuctionsController extends BaseController
@@ -43,13 +44,7 @@ class AuctionsController extends BaseController
             $auctions->withCustomerMaxBid($request->get('customer_id'));
         }
 
-        if (!$request->hasAny(['auction_ids', 'product_ids'])) {
-            $auctions = $auctions->paginate();
-        } else {
-            $auctions = $auctions->get();
-        }
-
-        return new AuctionsCollection($auctions->load(['product', 'bids']));
+        return new AuctionsCollection($auctions->get()->load(['bids', 'store', 'maxBid']));
     }
 
 
@@ -62,7 +57,6 @@ class AuctionsController extends BaseController
      */
     public function show($id, Request $request)
     {
-
         $auction = Auction::byStore()->where([
             ['auctions.id', $id],
         ])->with('product');
@@ -73,6 +67,6 @@ class AuctionsController extends BaseController
 
         $auction = $auction->firstOrFail();
 
-        return new AuctionResource($auction);
+        return new AuctionResource($auction->load(['product', 'bids', 'store', 'maxBid']));
     }
 }

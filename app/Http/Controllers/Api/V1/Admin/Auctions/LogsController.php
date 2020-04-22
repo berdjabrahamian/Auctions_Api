@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\V1\Admin\Auctions;
 
 use App\Http\Controllers\Api\V1\Admin\AdminController;
+use App\Http\Resources\AdminLogsCollection;
 use App\Model\Auction\Log;
 use App\Model\Auction\Auction;
 use Illuminate\Http\Request;
@@ -16,7 +17,7 @@ class LogsController extends AdminController
      */
     public function index()
     {
-        return Log::all();
+        return new AdminLogsCollection(Log::all()->load('customer'));
     }
 
     /**

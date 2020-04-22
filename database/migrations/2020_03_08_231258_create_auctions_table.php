@@ -18,7 +18,7 @@ class CreateAuctionsTable extends Migration
             $table->integer('product_id')->nullable();
             $table->integer('store_id');
             $table->string('name');
-            $table->boolean('status');
+            $table->string('status');
             $table->integer('initial_price')->comment('Initial Starting Price');
             $table->integer('min_bid')->comment('Minimum Bid on Auction');
             $table->boolean('is_buyout');

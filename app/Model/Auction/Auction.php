@@ -7,47 +7,43 @@ use App\Jobs\GenerateAuctionLog;
 use App\Jobs\GenerateBids;
 use App\Model\Customer\Customer;
 use App\Model\Product\Product;
-use App\Model\Auction\Log;
-use App\Model\Auction\Bid;
+use App\Model\Auction\Log as Log;
+use App\Model\Auction\Bid as Bid;
 use App\Model\Store\Store;
+use App\Traits\Enums;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Arr;
 
 class Auction extends Model
 {
-    protected $table      = 'auctions';
-    public    $timestamps = TRUE;
-    protected $perPage    = 100;
-    protected $guarded    = [
+    use Enums;
+
+    protected $enumStatuses = [
+        'enabled'  => 'Enabled',
+        'disabled' => 'Disabled',
+    ];
+    protected $table        = 'auctions';
+    public    $timestamps   = TRUE;
+    protected $perPage      = 100;
+    protected $guarded      = [
         'id',
         'store_id',
         'product_id',
     ];
-    protected $hidden     = [
+    protected $hidden       = [
         'store_id',
         'created_at',
         'updated_at',
-        'min_bid',
+    ];
+    protected $appends      = [
         'initial_price',
-        'buyout_price',
     ];
-    protected $appends    = [
-//        'current_price',
-//        'initial_price',
-//        'hammer_price_cents',
-//        'min_bid_cents',
-//        'buyout_price_cents',
-    ];
-    protected $casts      = [
-        'current_price' => 'int',
+    protected $casts        = [
         'initial_price' => 'int',
-        //        'min_bid_cents'      => 'int',
-        //        'buyout_price_cents' => 'int',
-        //        'hammer_price'       => 'int',
-        //        'hammer_price_cents' => 'int',
+        'is_buyout'     => 'bool',
     ];
-    protected $dates      = [
+    protected $dates        = [
         'start_date',
         'end_date',
     ];
@@ -90,12 +86,26 @@ class Auction extends Model
     }
 
     /**
+     * @see MaxBid
+     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     */
+    public function maxBid()
+    {
+        return $this->hasOne(MaxBid::class, 'id', 'leading_max_bid_id');
+    }
+
+    /**
      * @see State
      * @return \Illuminate\Database\Eloquent\Relations\HasOne
      */
     public function state()
     {
         return $this->hasOne(State::class, 'auction_id', 'id');
+    }
+
+    public function leader()
+    {
+        return $this->hasOneThrough(MaxBid::class, State::class, 'auction_id', 'id', 'id', 'leading_id');
     }
 
     public function customers()
@@ -113,9 +123,9 @@ class Auction extends Model
         $this->attributes['initial_price'] = $value * 100;
     }
 
-    public function getInitialPriceAttribute(): int
+    public function getInitialPriceAttribute($value): int
     {
-        return $this->initial_price / 100;
+        return $value / 100;
     }
 
     public function setCurrentPriceAttribute($value)
@@ -123,19 +133,24 @@ class Auction extends Model
         $this->attributes['current_price'] = $value * 100;
     }
 
-    public function getCurrentPriceAttribute(): int
+    public function getCurrentPriceAttribute($value): int
     {
-        return $this->current_price / 100;
+        return $value / 100;
     }
 
-    public function setHammerPriceAttribute()
+    public function setHammerPriceAttribute($value)
     {
         $this->attributes['hammer_price'] = $value * 100;
     }
 
-    public function getHammerPriceAttribute(): int
+    public function getHammerPriceAttribute($value): int
     {
-        return $this->hammer_price / 100;
+        return $value / 100;
+    }
+
+    public function getHammerPriceWithPremiumAttribute(): int
+    {
+        return $this->store->buyersPremiumPrice($this->current_price);
     }
 
     public function setMinBidAttribute($value)
@@ -143,9 +158,9 @@ class Auction extends Model
         $this->attributes['min_bid'] = $value * 100;
     }
 
-    public function getMinBidAttribute(): int
+    public function getMinBidAttribute($value): int
     {
-        return $this->min_bid * 100;
+        return $value / 100;
     }
 
     public function setBuyoutPriceAttribute($value)
@@ -153,18 +168,14 @@ class Auction extends Model
         $this->attributes['buyout_price'] = $value * 100;
     }
 
-    public function getBuyoutPriceAttribute(): int
+    public function getBuyoutPriceAttribute($value): int
     {
-        return $this->buyout_price / 100;
+        return $value / 100;
     }
 
-
-
-
-
-    public function getBidsCountAttribute(): int
+    public function getBidsCountAttribute($value): int
     {
-        return $this->bids->count();
+        return $value;
     }
 
     public function getHasEndedAttribute(): bool
@@ -180,6 +191,15 @@ class Auction extends Model
         $endingSoonDate = $endDate->subHours($notificationTime);
 
         return $endingSoonDate;
+    }
+
+    public function getAuctionEndStateAttribute(): string
+    {
+        if ($this->leading_max_bid_id) {
+            return 'won';
+        } else {
+            return 'passed';
+        }
     }
 
     /**
@@ -232,8 +252,8 @@ class Auction extends Model
                 ->where('max_bids.customer_id', '=', $customer_id);
         });
 
-        $customerMaxBids->select('auctions.*', 'max_bids.id AS max_bid_id', 'max_bids.amount AS max_bid_amount',
-            'max_bids.outbid AS max_bid_outbid');
+        $customerMaxBids->select('auctions.*', 'max_bids.amount AS current_user_amount',
+            'max_bids.outbid AS current_user_outbid');
 
         return $customerMaxBids;
     }
@@ -299,8 +319,14 @@ class Auction extends Model
         $auction->update([
             'current_price'      => $state->current_price,
             'leading_max_bid_id' => $state->leading_id,
+            'bids_count'         => $auction->updateBidsCount(),
         ]);
+    }
 
+
+    public function updateBidsCount(): int
+    {
+        return $this->bids->count();
     }
 
     /**
@@ -316,23 +342,4 @@ class Auction extends Model
         return $diffInMinutes <= $storeThreshold;
 
     }
-
-    public function getHammerPrice()
-    {
-        return $this->current_price;
-    }
-
-    public function getHammerPriceWithPremium()
-    {
-        $storeHammerPrice = $this->store->hammer_price;
-        $storeHammerType  = $this->store->hammer_type;
-
-
-        if ($storeHammerType == 1) {
-            return $this->getHammerPrice() + $storeHammerPrice;
-        } else {
-            return ($this->getHammerPrice() * $storeHammerPrice / 100) + $this->getHammerPrice();
-        }
-    }
-
 }

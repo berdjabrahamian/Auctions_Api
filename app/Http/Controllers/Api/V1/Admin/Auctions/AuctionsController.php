@@ -3,8 +3,11 @@
 namespace App\Http\Controllers\Api\V1\Admin\Auctions;
 
 use App\Http\Controllers\Api\V1\Admin\AdminController;
+use App\Http\Requests\AdminAuctionIndex;
 use App\Http\Requests\AdminAuctionStore;
 use App\Http\Requests\AdminAuctionUpdate;
+use App\Http\Resources\AdminAuctionCollection;
+use App\Http\Resources\AdminAuctionResource;
 use App\Model\Product\Product;
 use Illuminate\Http\Request;
 use App\Model\Store\Store;
@@ -13,6 +16,14 @@ use Illuminate\Support\Arr;
 
 class AuctionsController extends AdminController
 {
+    public function index(AdminAuctionIndex $request)
+    {
+        $auctions = Auction::byStore()->orderBy('auctions.id', 'asc')->get();
+
+        return new AdminAuctionCollection($auctions->load('bids'));
+    }
+
+
     /**
      * Grab an already imported product or create a new one if it doesnt exist
      * Create a auction
@@ -25,8 +36,7 @@ class AuctionsController extends AdminController
      */
     public function store(AdminAuctionStore $request)
     {
-
-//        $request = Arr::dot($request->validated());
+        $validated = Arr::dot($request->validated());
 
         /**
          * We find a product based on 3 product criterias
@@ -39,28 +49,28 @@ class AuctionsController extends AdminController
          */
         $product = Product::firstOrCreate([
             ['store_id', Store::getCurrentStore()->id],
-            ['platform_id', $request->input('product.platform_id')],
-            ['sku', $request->input('product.sku')],
+            ['platform_id', $validated['product.platform_id']],
+            ['sku', $validated['product.sku']],
         ], [
             'store_id'    => Store::getCurrentStore()->id,
-            'platform_id' => $request->input('product.platform_id'),
-            'sku'         => $request->input('product.sku'),
-            'name'        => $request->input('product.name'),
-            'description' => $request->input('product.description'),
-            'image_url'   => $request->input('product.image_url'),
-            'product_url' => $request->input('product.product_url'),
+            'platform_id' => $validated['product.platform_id'],
+            'sku'         => $validated['product.sku'],
+            'name'        => $validated['product.name'],
+            'description' => $validated['product.description'],
+            'image_url'   => $validated['product.image_url'],
+            'product_url' => $validated['product.product_url'],
         ]);
 
 
         $auction = new Auction([
-            'name'          => $request->input('auction.name'),
-            'status'        => $request->input('auction.status'),
-            'initial_price' => $request->input('auction.starting_price'),
-            'min_bid'       => $request->input('auction.min_bid'),
-            'is_buyout'     => $request->input('auction.is_buyout'),
-            'buyout_price'  => $request->input('auction.buyout_price'),
-            'start_date'    => $request->input('auction.start_date'),
-            'end_date'      => $request->input('auction.end_date'),
+            'name'          => $validated['auction.name'],
+            'status'        => $validated['auction.status'],
+            'initial_price' => $validated['auction.starting_price'],
+            'min_bid'       => $validated['auction.min_bid'],
+            'is_buyout'     => $validated['auction.is_buyout'],
+            'buyout_price'  => $validated['auction.buyout_price'],
+            'start_date'    => $validated['auction.start_date'],
+            'end_date'      => $validated['auction.end_date'],
         ]);
 
         $auction->store()->associate(Store::getCurrentStore());
@@ -68,7 +78,13 @@ class AuctionsController extends AdminController
         $auction->save();
 
 
-        return $auction;
+        return new AdminAuctionResource($auction);
+    }
+
+
+    public function show(Auction $auction)
+    {
+        return new AdminAuctionResource($auction->load(['logs']));
     }
 
 

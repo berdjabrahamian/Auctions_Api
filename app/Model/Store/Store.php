@@ -28,6 +28,18 @@ class Store extends Model
         return $this->hasMany(Auction::class, 'store_id', 'id');
     }
 
+    public function buyersPremiumPrice($amount)
+    {
+        $storeHammerPrice = $this->hammer_price;
+        $storeHammerType  = $this->hammer_type;
+
+        if ($storeHammerType == 0) {
+            return ($amount * ($storeHammerPrice / 100)) + $amount;
+        } else {
+            return $amount + $storeHammerPrice;
+        }
+    }
+
     /**
      * @param  mixed  $currentStore
      */

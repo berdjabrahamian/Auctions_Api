@@ -25,7 +25,6 @@ class MaxBidOutbidEmail implements ShouldQueue
      */
     public function __construct(MaxBid $maxBid)
     {
-        $this->queue  = 'emails';
         $this->maxBid = $maxBid;
     }
 

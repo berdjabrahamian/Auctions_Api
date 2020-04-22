@@ -25,4 +25,15 @@ class State extends Model
     {
         return $this->hasOneThrough(Customer::class, MaxBid::class, 'id', 'id', 'leading_id', 'customer_id');
     }
+
+    public function setCurrentPriceAttribute($value)
+    {
+        $this->attributes['current_price'] = $value * 100;
+
+    }
+
+    public function getCurrentPriceAttribute($value): int
+    {
+        return $value / 100;
+    }
 }

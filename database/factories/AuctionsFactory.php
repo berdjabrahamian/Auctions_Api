@@ -6,7 +6,7 @@ use App\Model\Auction\Auction;
 use Carbon\Carbon;
 use Faker\Generator as Faker;
 
-Auction::flushEventListeners();
+//Auction::flushEventListeners();
 
 $factory->define(Auction::class, function (Faker $faker) {
 
@@ -15,13 +15,12 @@ $factory->define(Auction::class, function (Faker $faker) {
         'product_id'    => $faker->randomElement([1, 2, 3, 4, 5, 6, 7, 8, 9, 0]),
         'store_id'      => 1,
         'name'          => $faker->text,
-        'status'        => TRUE,
+        'status'        => 'enabled',
         'initial_price' => $price,
         'min_bid'       => 1,
         'is_buyout'     => $faker->boolean,
         'buyout_price'  => 9999,
         'start_date'    => Carbon::now(),
-        'end_date'      => Carbon::now()->addMinutes(330),
-        'current_price' => $price,
+        'end_date'      => Carbon::now()->addMinutes(10),
     ];
 });

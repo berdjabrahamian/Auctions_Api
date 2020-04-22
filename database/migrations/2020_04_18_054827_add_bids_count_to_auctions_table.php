@@ -14,7 +14,7 @@ class AddBidsCountToAuctionsTable extends Migration
     public function up()
     {
         Schema::table('auctions', function (Blueprint $table) {
-            $table->integer('bids_count')->nullable()->comment('The number of bids placed on an auction');
+            $table->integer('bids_count')->nullable()->default(0)->comment('The number of bids placed on an auction');
         });
     }
 

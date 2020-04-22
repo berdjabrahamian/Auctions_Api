@@ -45,7 +45,7 @@ class GenerateAuctionLog implements ShouldQueue
             $this->auction = Auction::find($this->auction)->unsetRelations();
         }
 
-        if ($this->auction->status == FALSE) {
+        if ($this->auction->status == 'Disabled') {
             return $this;
         }
 

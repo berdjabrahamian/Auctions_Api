@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class AuctionIndex extends FormRequest
+class AdminAuctionIndex extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -24,9 +24,7 @@ class AuctionIndex extends FormRequest
     public function rules()
     {
         return [
-            'customer_id' => 'sometimes|integer',
-            'auction_ids' => 'sometimes|exclude_if:product_ids,true',
-            'product_ids' => 'sometimes|exclude_if:auction_ids,true',
+            //
         ];
     }
 }

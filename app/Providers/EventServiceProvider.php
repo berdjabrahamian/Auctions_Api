@@ -2,10 +2,8 @@
 
 namespace App\Providers;
 
-use App\Events\CreatedAuctionEvent;
-use App\Listeners\Auction\CreateAuctionState;
-use App\Listeners\CreatedAuction;
-use App\Listeners\MaxBidSubscriber;
+use App\Events\Auction\AuctionCreated;
+use App\Listeners\Auction\NewAuctionState;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
@@ -19,11 +17,11 @@ class EventServiceProvider extends ServiceProvider
      * @var array
      */
     protected $listen = [
-        Registered::class          => [
+        Registered::class     => [
             SendEmailVerificationNotification::class,
         ],
-        CreatedAuctionEvent::class => [
-            CreateAuctionState::class,
+        AuctionCreated::class => [
+            NewAuctionState::class,
         ],
     ];
 

@@ -2,12 +2,12 @@
 
 namespace App\Listeners\Auction;
 
-use App\Events\CreatedAuctionEvent;
+use App\Events\Auction\AuctionCreated as AuctionCreatedEvent;
 use App\Model\Auction\State;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;
 
-class CreateAuctionState implements ShouldQueue
+class NewAuctionState implements ShouldQueue
 {
     use InteractsWithQueue;
 
@@ -30,7 +30,7 @@ class CreateAuctionState implements ShouldQueue
      *
      * @return void
      */
-    public function handle(CreatedAuctionEvent $event)
+    public function handle(AuctionCreatedEvent $event)
     {
         $auction = $event->auction;
 
@@ -41,5 +41,6 @@ class CreateAuctionState implements ShouldQueue
         $state->save();
 
         return $this;
+
     }
 }

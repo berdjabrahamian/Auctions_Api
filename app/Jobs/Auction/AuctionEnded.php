@@ -2,24 +2,20 @@
 
 namespace App\Jobs\Auction;
 
-use App\Mail\EndingSoonNotification;
 use App\Model\Auction\Auction;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Mail;
 
-class AuctionEndingSoonEmail implements ShouldQueue
+class AuctionEnded implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    public $tries                   = 3;
-    public $deleteWhenMissingModels = TRUE;
+    public $tries = 3;
     public $auction;
-    public $customers;
+    public $state;
 
     /**
      * Create a new job instance.
@@ -28,8 +24,8 @@ class AuctionEndingSoonEmail implements ShouldQueue
      */
     public function __construct(Auction $auction)
     {
-        $this->auction   = $auction->fresh();
-        $this->customers = $this->auction->customers->unique();
+        $this->auction = $auction;
+        $this->state   = $auction->state;
     }
 
     /**
@@ -39,14 +35,26 @@ class AuctionEndingSoonEmail implements ShouldQueue
      */
     public function handle()
     {
-
-        if ($this->auction->status == FALSE) {
+        if ($this->auction->status == 'Disabled') {
             return $this;
         }
 
-
-        foreach ($this->customers as $customer) {
-            Mail::send(new EndingSoonNotification($customer, $this->auction));
+        if (!$this->has_ended) {
+            return $this;
         }
+
+        if ($this->auction->hammer_price) {
+            return $this;
+        }
+
+        $this->auction->update([
+            'hammer_price' => $this->auction->current_price,
+        ]);
+
+        if ($this->auction->leading_max_bid_id) {
+            AuctionEndedEmail::dispatch($this->auction);
+        }
+
+        GenerateAuctionLog::dispatch($this->auction, 'Auction Ended');
     }
 }

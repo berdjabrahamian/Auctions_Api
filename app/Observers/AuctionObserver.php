@@ -2,15 +2,19 @@
 
 namespace App\Observers;
 
+use App\Events\Auction\AuctionCreated;
 use App\Events\CreatedAuctionEvent;
+use App\Jobs\Auction\AuctionEnded;
 use App\Jobs\Auction\AuctionEndingSoonEmail;
 use App\Jobs\AuctionEndingSoonNotification;
 use App\Jobs\GenerateAuctionLog;
+use App\Listeners\NewAuctionState;
 use App\Model\Auction\Auction;
 use App\Model\Auction\State;
 use App\Model\Store\Store;
 use Carbon\Carbon;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Log;
 
 class AuctionObserver
@@ -20,11 +24,10 @@ class AuctionObserver
         $auction->current_price = $auction->initial_price;
     }
 
-
     public function created(Auction $auction)
     {
         //Init auction state
-        event(new CreatedAuctionEvent($auction));
+        AuctionCreated::dispatch($auction);
 
         //Generate Log - Auction Created
         GenerateAuctionLog::dispatch($auction, 'Auction Created');
@@ -33,16 +36,13 @@ class AuctionObserver
         //This is delayed to run on the auction start date
         GenerateAuctionLog::dispatch($auction, 'Auction Started')->delay($auction->start_date);
 
-        //TODO: This needs to run in a event to check that the end date is NOW
-        //Generate Log - Auction Ended
-        //This is run when on the auction end date
-        GenerateAuctionLog::dispatch($auction, 'Auction Ended')->delay($auction->end_date);
 
+        //Auction End
+        AuctionEnded::dispatch($auction)->delay($auction->end_date);
 
         //Send Notification - Ending Soon
-        //Schedule out to send out an auction ending soon email
-        //The time is based on Auction::end_date - Store::final_notification_threshold
-        AuctionEndingSoonEmail::dispatch($auction)->delay($auction->getEndingSoonDate());
+//      AuctionEndingSoonEmail::dispatch($auction)->delay($auction->getEndingSoonDate());
+        AuctionEndingSoonEmail::dispatch($auction)->delay(Carbon::now()->addMinutes(5));
 
     }
 
@@ -60,6 +60,7 @@ class AuctionObserver
     {
         if ($auction->wasChanged('end_date')) {
             GenerateAuctionLog::dispatch($auction, "Auction Extended");
+            AuctionEnded::dispatch($auction)->delay($auction->end_date);
         }
 
         if ($auction->wasChanged('start_date')) {

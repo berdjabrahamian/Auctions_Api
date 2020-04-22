@@ -34,10 +34,14 @@ Route::prefix('v1')->group(function () {
                     Route::post('auctions/max-bids', 'MaxBidController')->name('auction.max.bid');
                     Route::get('auctions/logs', 'LogsController@index')->name('auctions.logs.index');
                     Route::get('auctions/{auction}/logs', 'LogsController@show')->name('auctions.logs.show');
-                    Route::resource('auctions', 'AuctionsController')->except(['index', 'show']);
+                    Route::resource('auctions', 'AuctionsController')->only([
+                        'index', 'store', 'show', 'update', 'destroy',
+                    ]);
                 });
                 Route::namespace('Products')->group(function () {
-                    Route::resource('products', 'ProductsController');
+                    Route::resource('products', 'ProductsController')->only([
+                        'index', 'store', 'show', 'update', 'destroy',
+                    ]);
                 });
             });
         });

@@ -1,24 +1,22 @@
 <?php
 
-namespace App\Mail;
+namespace App\Mail\Auction;
 
 use App\Model\Auction\Auction;
-use App\Model\Auction\Bid;
 use App\Model\Customer\Customer;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
 
-class EndingSoonNotification extends Mailable implements ShouldQueue
+class AuctionGotAwayNotification extends Mailable implements ShouldQueue
 {
     use Queueable, SerializesModels;
 
-    public $tries = 3;
     public $customer;
     public $auction;
-    public $product;
     public $store;
+    public $product;
 
     /**
      * Create a new message instance.
@@ -42,7 +40,7 @@ class EndingSoonNotification extends Mailable implements ShouldQueue
     {
         return $this->from($this->store->contact_email)
             ->to($this->customer->email)
-            ->subject('Auction Ending Soon')
-            ->view('emails.auction.ending_soon');
+            ->subject('Auction Got Away')
+            ->view('emails.auction.got_away');
     }
 }

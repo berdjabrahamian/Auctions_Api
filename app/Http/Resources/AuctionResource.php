@@ -17,21 +17,22 @@ class AuctionResource extends JsonResource
     public function toArray($request)
     {
         return [
-            'id'                         => $this->id,
-            'name'                       => $this->name,
-            'status'                     => $this->status,
-            'is_buyout'                  => $this->is_buyout,
-            'start_date'                 => $this->start_date,
-            'end_date'                   => $this->end_date,
-            'has_ended'                  => $this->has_ended,
-            'initial_price_cents'        => $this->initial_price_cents,
-            'current_price_cents'        => $this->current_price_cents,
-            'hammer_price_cents'         => $this->when($this->has_ended, $this->hammer_price_cents),
-            'hammer_price_premium_cents' => $this->when($this->has_ended, $this->hammer_price_premium_cents),
-            'winning_bid_id'             => NULL,
-            'bids_count'                 => $this->whenLoaded('bids',$this->bids_count),
-            'current_user_bid'           => $this->_currentUser($request),
-            'product'                    => new ProductResource($this->whenLoaded('product')),
+            'id'                   => $this->id,
+            'name'                 => $this->name,
+            'status'               => $this->status,
+            'is_buyout'            => $this->is_buyout,
+            'start_date'           => $this->start_date,
+            'end_date'             => $this->end_date,
+            'has_ended'            => $this->has_ended,
+            'initial_price'        => $this->initial_price,
+            'current_price'        => $this->current_price,
+            'bids_count'           => $this->bids_count,
+            'auction_end_state'    => $this->when($this->has_ended, $this->auction_end_state),
+            'hammer_price'         => $this->when($this->has_ended, $this->hammer_price),
+            'hammer_price_premium' => $this->when($this->has_ended, $this->hammer_price_with_premium),
+//            'winner_id'            => $this->whenLoaded('maxBid', $this->maxBid),
+            'current_user_bid'     => $this->_currentUser($request),
+            'product'              => new ProductResource($this->whenLoaded('product')),
         ];
     }
 
@@ -42,10 +43,10 @@ class AuctionResource extends JsonResource
      */
     private function _currentUser($request): array
     {
-        if ($this->max_bid_amount) {
+        if ($request->has('customer_id') && $this->current_user_amount) {
             return [
-                'max_bid_amount' => $this->max_bid_amount,
-                'outbid'         => $this->max_bid_outbid,
+                'amount' => $this->current_user_amount,
+                'outbid' => $this->current_user_outbid,
             ];
         } else {
             return [];

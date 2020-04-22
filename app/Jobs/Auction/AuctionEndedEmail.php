@@ -2,22 +2,21 @@
 
 namespace App\Jobs\Auction;
 
-use App\Mail\EndingSoonNotification;
+use App\Mail\Auction\AuctionGotAwayNotification;
+use App\Mail\Auction\AuctionWonNotification;
 use App\Model\Auction\Auction;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 
-class AuctionEndingSoonEmail implements ShouldQueue
+class AuctionEndedEmail implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    public $tries                   = 3;
-    public $deleteWhenMissingModels = TRUE;
+    public $tries = 3;
     public $auction;
     public $customers;
 
@@ -28,8 +27,8 @@ class AuctionEndingSoonEmail implements ShouldQueue
      */
     public function __construct(Auction $auction)
     {
-        $this->auction   = $auction->fresh();
-        $this->customers = $this->auction->customers->unique();
+        $this->auction   = $auction;
+        $this->customers = $auction->customers->unique('id');
     }
 
     /**
@@ -39,14 +38,14 @@ class AuctionEndingSoonEmail implements ShouldQueue
      */
     public function handle()
     {
-
-        if ($this->auction->status == FALSE) {
-            return $this;
-        }
+        $winner       = $this->auction->state->customer;
+        $participants = $this->customers->except($winner->id);
 
 
-        foreach ($this->customers as $customer) {
-            Mail::send(new EndingSoonNotification($customer, $this->auction));
+        Mail::send(new AuctionWonNotification($winner, $this->auction));
+
+        foreach ($participants as $participant) {
+            Mail::send(new AuctionGotAwayNotification($participant, $this->auction));
         }
     }
 }

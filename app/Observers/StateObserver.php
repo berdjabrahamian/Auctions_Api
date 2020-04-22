@@ -28,8 +28,9 @@ class StateObserver
      */
     public function updated(State $state)
     {
-        if ($state->wasChanged('amount'))
-        Auction::updateState($state);
+        if ($state->wasChanged('current_price')) {
+            Auction::updateState($state);
+        }
     }
 
     /**

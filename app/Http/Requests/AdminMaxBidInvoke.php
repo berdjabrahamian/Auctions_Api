@@ -107,14 +107,18 @@ class AdminMaxBidInvoke extends FormRequest
             'id'       => $this->input('auction_id'),
         ])->first();
 
-        if ($auction->end_date <= now()) {
+        if ($auction->has_ended) {
             $this->validator->errors()->add('Auction Ended',
                 "Auction has ended and not accepting any more bids");
+
+            return $this;
         };
 
         if ($this->maxBidRequestAmount <= $auction->current_price) {
             $this->validator->errors()->add('Max Bid Amount',
                 "Max Bid amount cant be less than or equal to the current auction price");
+
+            return $this;
         }
 
         return $this;
