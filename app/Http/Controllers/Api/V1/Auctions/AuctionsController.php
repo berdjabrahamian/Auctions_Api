@@ -44,7 +44,7 @@ class AuctionsController extends BaseController
             $auctions->withCustomerMaxBid($request->get('customer_id'));
         }
 
-        return new AuctionsCollection($auctions->get()->load(['bids', 'store', 'maxBid']));
+        return new AuctionsCollection($auctions->get()->load(['bids', 'store']));
     }
 
 

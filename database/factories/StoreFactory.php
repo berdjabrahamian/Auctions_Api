@@ -16,8 +16,8 @@ $factory->define(store::class, function (Faker $faker) {
         'secret_key'                => '',
         'hammer_price'              => 100,
         'hammer_type'               => 1,
-        'final_extension_threshold' => '0',
-        'final_extension_duration'  => '0',
+        'final_extension_threshold' => '1',
+        'final_extension_duration'  => '2',
         'ending_soon_notification'  => 5,
     ];
 });

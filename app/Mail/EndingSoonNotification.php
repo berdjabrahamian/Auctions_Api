@@ -3,7 +3,6 @@
 namespace App\Mail;
 
 use App\Model\Auction\Auction;
-use App\Model\Auction\Bid;
 use App\Model\Customer\Customer;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -27,6 +26,7 @@ class EndingSoonNotification extends Mailable implements ShouldQueue
      */
     public function __construct(Customer $customer, Auction $auction)
     {
+        $this->queue    = 'emails';
         $this->customer = $customer;
         $this->auction  = $auction;
         $this->store    = $this->auction->store;

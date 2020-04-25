@@ -78,10 +78,6 @@ class GenerateBids implements ShouldQueue
         if (!$this->state->leading_id) {
             Bid::placeBid($this->newAuctionCurrentPrice, $this->customer, $this->auction);
 
-            $this->auction->update([
-                'current_price' => $this->newAuctionCurrentPrice,
-            ]);
-
             $this->state->update([
                 'leading_id'    => $this->maxBid->id,
                 'current_price' => $this->newAuctionCurrentPrice,
@@ -158,14 +154,10 @@ class GenerateBids implements ShouldQueue
             'outbid' => $outbid,
         ]);
 
-        $this->auction->update([
-            'current_price' => $this->newAuctionCurrentPrice,
-        ]);
-
         return $this;
     }
 
-    public function failed(Exception $exception)
+    public function failed($exception)
     {
 
     }

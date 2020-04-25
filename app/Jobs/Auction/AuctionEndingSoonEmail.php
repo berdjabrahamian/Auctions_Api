@@ -4,6 +4,7 @@ namespace App\Jobs\Auction;
 
 use App\Mail\EndingSoonNotification;
 use App\Model\Auction\Auction;
+use Exception;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -16,20 +17,18 @@ class AuctionEndingSoonEmail implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    public $tries                   = 3;
-    public $deleteWhenMissingModels = TRUE;
+    public $tries = 3;
     public $auction;
-    public $customers;
 
     /**
      * Create a new job instance.
      *
-     * @return void
+     * @param  Auction  $auction
      */
     public function __construct(Auction $auction)
     {
-        $this->auction   = $auction->fresh();
-        $this->customers = $this->auction->customers->unique();
+        $this->auction = $auction;
+
     }
 
     /**
@@ -39,14 +38,25 @@ class AuctionEndingSoonEmail implements ShouldQueue
      */
     public function handle()
     {
-
-        if ($this->auction->status == FALSE) {
+        if ($this->auction->status == 'disabled') {
             return $this;
         }
 
+        if ($this->auction->customers) {
+            $customers = $this->auction->customers->unique('id');
 
-        foreach ($this->customers as $customer) {
-            Mail::send(new EndingSoonNotification($customer, $this->auction));
+            foreach ($customers as $customer) {
+                Mail::send(new EndingSoonNotification($customer, $this->auction));
+            }
         }
+
+        return $this;
+    }
+
+    /**
+     * @param  Exception  $exception
+     */
+    public function failed(Exception $exception)
+    {
     }
 }

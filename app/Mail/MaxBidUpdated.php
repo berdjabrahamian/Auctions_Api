@@ -25,6 +25,7 @@ class MaxBidUpdated extends Mailable implements ShouldQueue
      */
     public function __construct(MaxBid $maxBid)
     {
+        $this->queue    = 'emails';
         $this->maxBid   = $maxBid;
         $this->auction  = $maxBid->auction;
         $this->store    = $maxBid->store;

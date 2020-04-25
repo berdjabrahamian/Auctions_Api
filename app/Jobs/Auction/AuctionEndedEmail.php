@@ -10,6 +10,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 
 class AuctionEndedEmail implements ShouldQueue
@@ -28,7 +29,7 @@ class AuctionEndedEmail implements ShouldQueue
     public function __construct(Auction $auction)
     {
         $this->auction   = $auction;
-        $this->customers = $auction->customers->unique('id');
+        $this->customers = $this->auction->customers->unique('id');
     }
 
     /**
@@ -38,14 +39,31 @@ class AuctionEndedEmail implements ShouldQueue
      */
     public function handle()
     {
-        $winner       = $this->auction->state->customer;
-        $participants = $this->customers->except($winner->id);
-
-
-        Mail::send(new AuctionWonNotification($winner, $this->auction));
-
-        foreach ($participants as $participant) {
-            Mail::send(new AuctionGotAwayNotification($participant, $this->auction));
+        if ($this->auction->status == 'Disabled') {
+            return $this;
         }
+
+        if (!$this->auction->hasEnded()) {
+            return $this;
+        }
+
+        if ($this->auction->hasWinner()) {
+            $winner       = $this->auction->state->customer;
+            $participants = $this->customers->except($winner->id);
+
+            Mail::send(new AuctionWonNotification($winner, $this->auction));
+
+            foreach ($participants as $participant) {
+                Mail::send(new AuctionGotAwayNotification($participant, $this->auction));
+            }
+        }
+
+        return $this;
+    }
+
+    // TODO: Handle Failed Job
+    public function failed($exception)
+    {
+
     }
 }

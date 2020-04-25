@@ -58,7 +58,7 @@ class AuctionObserver
 
     public function updated(Auction $auction)
     {
-        if ($auction->wasChanged('end_date')) {
+        if ($auction->isDirty('end_date')) {
             GenerateAuctionLog::dispatch($auction, "Auction Extended");
             AuctionEnded::dispatch($auction)->delay($auction->end_date);
         }

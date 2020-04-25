@@ -2,6 +2,8 @@
 
 namespace App\Mail\Auction;
 
+use App\Model\Auction\Auction;
+use App\Model\Customer\Customer;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
@@ -23,6 +25,7 @@ class AuctionWonNotification extends Mailable implements ShouldQueue
      */
     public function __construct(Customer $winner, Auction $auction)
     {
+        $this->queue   = 'emails';
         $this->winner  = $winner;
         $this->auction = $auction;
         $this->store   = $this->auction->store;

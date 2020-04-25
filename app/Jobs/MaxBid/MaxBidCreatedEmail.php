@@ -39,7 +39,7 @@ class MaxBidCreatedEmail implements ShouldQueue
     }
 
     // TODO: Handle Failed Job
-    public function failed(Exception $exception)
+    public function failed($exception)
     {
 
     }
