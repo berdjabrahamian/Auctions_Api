@@ -24,7 +24,11 @@ class AdminCustomerStore extends FormRequest
     public function rules()
     {
         return [
-            //
+            'email'       => 'required|email|unique:customers,email',
+            'first_name'  => 'required|string',
+            'last_name'   => 'required|string',
+            'platform_id' => 'required|integer',
+            'approved'    => 'required|boolean',
         ];
     }
 }

@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Controllers\Api\V1\Admin\Auctions;
+namespace App\Http\Controllers\Api\V1\Auctions;
 
 use App\Events\GenerateBidsEvent;
-use App\Http\Controllers\Api\V1\Admin\AdminController;
-use App\Http\Requests\AdminMaxBidInvoke;
+use App\Http\Controllers\Api\V1\BaseController;
+use App\Http\Requests\MaxBidInvoke;
 use App\Jobs\GenerateBids;
 use App\Model\Auction\Auction;
 use App\Model\Auction\MaxBid;
@@ -14,37 +14,22 @@ use App\Observers\MaxBidObserver;
 use Illuminate\Support\Arr;
 
 
-class MaxBidController extends AdminController
+class MaxBidController extends BaseController
 {
     /**
      * Handle the incoming request.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  MaxBidInvoke  $request
      *
      * @return \Illuminate\Http\Response
      */
-    public function __invoke(AdminMaxBidInvoke $request)
+    public function __invoke(MaxBidInvoke $request)
     {
-
         $validated = Arr::dot($request->validated());
         /**
          * Crate or update customer
          */
-        $customer = Customer::updateOrCreate(
-            [
-                ['platform_id', $validated['customer.id']],
-                ['store_id', Store::getCurrentStore()->id],
-            ],
-            [
-                'first_name' => $validated['customer.first_name'],
-                'last_name'  => $validated['customer.last_name'],
-                'email'      => $validated['customer.email'],
-            ]);
-
-        $customer->platform_id = $validated['customer.id'];
-        $customer->store()->associate(Store::getCurrentStore());
-        $customer->save();
-
+        $customer = $request->getCustomer();
 
         /**
          * Create or update customers max bid

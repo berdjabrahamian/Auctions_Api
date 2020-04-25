@@ -1,10 +1,5 @@
 <?php
 
-/**
- * @see \App\Http\Requests\MaxBidInvoke
- * @deprecated moved to MaxBidInvoke Request as this is handled on the frontend and not admin side
- */
-
 namespace App\Http\Requests;
 
 use App\Model\Auction\Auction;
@@ -13,8 +8,7 @@ use App\Model\Customer\Customer;
 use App\Model\Store\Store;
 use Illuminate\Foundation\Http\FormRequest;
 
-
-class AdminMaxBidInvoke extends FormRequest
+class MaxBidInvoke extends FormRequest
 {
 
     protected $customer;
@@ -29,10 +23,12 @@ class AdminMaxBidInvoke extends FormRequest
      */
     public function authorize()
     {
-        $auction = Auction::without(['product', 'logs'])->where([
+        $auction = Auction::where([
             ['id', $this->input('auction_id')],
             ['store_id', Store::getCurrentStore()->id],
         ])->first();
+
+        $this->setAuction($auction);
 
         if ($auction && $auction->status == TRUE) {
             return TRUE;
@@ -49,27 +45,23 @@ class AdminMaxBidInvoke extends FormRequest
     public function rules()
     {
         return [
-            'auction_id'          => 'required|numeric|exists:auctions,id',
-            'max_bid.amount'      => 'required|numeric',
-            'customer.id'         => 'required',
-            'customer.first_name' => 'required|string',
-            'customer.last_name'  => 'required|string',
-            'customer.email'      => 'required|email',
+            'auction_id'     => 'required|numeric|exists:auctions,id',
+            'max_bid.amount' => 'required|numeric',
+            'customer.id'    => 'required',
+            'customer.email' => 'required|email',
         ];
     }
 
     public function prepareForValidation()
     {
         $this->merge([
-            'auction_id' => (int) $this->auction_id,
+            'auction_id' => (int) $this->input('auction_id'),
             'max_bid'    => [
                 'amount' => (int) $this->input('max_bid.amount'),
             ],
             'customer'   => [
-                'id'         => $this->input('customer.id'),
-                'first_name' => (string) $this->input('customer.first_name'),
-                'last_name'  => (string) $this->input('customer.last_name'),
-                'email'      => (string) $this->input('customer.email'),
+                'id'    => (int) $this->input('customer.id'),
+                'email' => (string) $this->input('customer.email'),
             ],
         ]);
 
@@ -93,10 +85,24 @@ class AdminMaxBidInvoke extends FormRequest
     private function _customerChecks()
     {
         $customer = Customer::where([
-            'platform_id' => $this->query('customer')['id'],
+            'platform_id' => $this->input('customer.id'),
             'store_id'    => Store::getCurrentStore()->id,
-            'email'       => $this->query('customer')['email'],
+            'email'       => $this->input('customer.email'),
         ])->first();
+
+        if (!$customer) {
+            $this->validator->errors()->add('Customer Not Found',
+                "Customer account doesnt exist in system, please create the customer");
+
+            return $this;
+        }
+
+        if (!$customer->approved) {
+            $this->validator->errors()->add('Customer Not Approved',
+                "Customer account hasnt been approved for bidding");
+
+            return $this;
+        }
 
         $this->setCustomer($customer);
 
@@ -106,10 +112,7 @@ class AdminMaxBidInvoke extends FormRequest
 
     private function _auctionChecks()
     {
-        $auction = Auction::where([
-            'store_id' => Store::getCurrentStore()->id,
-            'id'       => $this->input('auction_id'),
-        ])->first();
+        $auction = $this->getAuction();
 
         if ($auction->has_ended) {
             $this->validator->errors()->add('Auction Ended',
@@ -135,7 +138,9 @@ class AdminMaxBidInvoke extends FormRequest
      */
     private function _maxBidChecks()
     {
-        if ($this->customer) {
+        $customer = $this->getCustomer();
+
+        if ($customer) {
             $maxBid = MaxBid::where([
                 'store_id'    => Store::getCurrentStore()->id,
                 'auction_id'  => $this->input('auction_id'),
@@ -187,6 +192,30 @@ class AdminMaxBidInvoke extends FormRequest
     public function setAuction($auction): void
     {
         $this->auction = $auction;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getCustomer()
+    {
+        return $this->customer;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getMaxBid()
+    {
+        return $this->maxBid;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getAuction()
+    {
+        return $this->auction;
     }
 
 

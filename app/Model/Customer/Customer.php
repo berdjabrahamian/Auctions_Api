@@ -18,7 +18,9 @@ class Customer extends Model
         'full_name',
     ];
     protected $casts     = [
-        'full_name' => 'string',
+        'full_name'   => 'string',
+        'approved'    => 'bool',
+        'platform_id' => 'int',
     ];
 
     public function store()

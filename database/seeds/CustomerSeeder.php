@@ -11,6 +11,14 @@ class CustomerSeeder extends Seeder
      */
     public function run()
     {
-        factory(\App\Model\Customer\Customer::class, 1)->create();
+        factory(\App\Model\Customer\Customer::class, 1)->create([
+            'email'       => 'test@example.com',
+            'first_name'  => 'test',
+            'last_name'   => 'example',
+            'platform_id' => 1,
+        ]);
+
+
+        factory(\App\Model\Customer\Customer::class, 3)->create();
     }
 }
