@@ -26,7 +26,7 @@ Route::prefix('v1')->group(function () {
             Route::resource('auctions', 'AuctionsController')->only(['index', 'show']);
         });
 
-        Route::namespace('Admin')->group(function () {
+        Route::namespace('Admin')->name('admin.')->group(function () {
             Route::prefix('admin')->group(function () {
                 Route::namespace('Auctions')->group(function () {
                     Route::get('auctions/logs', 'LogsController@index')->name('auctions.logs.index');
@@ -39,6 +39,8 @@ Route::prefix('v1')->group(function () {
                     Route::resource('products', 'ProductsController')->only([
                         'index', 'store', 'show', 'update', 'destroy',
                     ]);
+
+                    Route::post('products/{product_id}/duplicate', 'DuplicateController')->name('product.duplicate');
                 });
                 Route::namespace('Customers')->group(function () {
                     Route::resource('customers', 'CustomersController')->only([

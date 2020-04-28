@@ -3,7 +3,10 @@
 namespace App\Http\Controllers\Api\V1\Admin\Products;
 
 use App\Http\Controllers\Api\V1\Admin\AdminController;
+use App\Http\Requests\AdminProductStore;
+use App\Http\Resources\AdminProductsResource;
 use App\Model\Product\Product;
+use App\Model\Store\Store;
 use Illuminate\Http\Request;
 
 class ProductsController extends AdminController
@@ -26,9 +29,24 @@ class ProductsController extends AdminController
      *
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(AdminProductStore $request)
     {
-        //
+        $validated = $request->validated();
+
+        $product = new Product();
+
+        $product->name        = $validated['name'];
+        $product->sku         = $validated['sku'];
+        $product->platform_id = $validated['platform_id'];
+        $product->description = $validated['description'];
+        $product->image_url   = $validated['image_url'];
+        $product->product_url = $validated['product_url'];
+
+        $product->store()->associate(Store::getCurrentStore());
+        $product->save();
+
+        return new AdminProductsResource($product);
+
     }
 
     /**
@@ -38,9 +56,15 @@ class ProductsController extends AdminController
      *
      * @return \Illuminate\Http\Response
      */
-    public function show(Product $product)
+    public function show($id)
     {
-        return $product;
+
+        $product = Product::where([
+            ['products.id', $id],
+            ['products.store_id', Store::getCurrentStore()->id]
+        ])->first();
+
+        return new AdminProductsResource($product);
     }
 
     /**
