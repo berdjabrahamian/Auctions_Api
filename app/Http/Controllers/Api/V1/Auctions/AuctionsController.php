@@ -20,14 +20,14 @@ class AuctionsController extends BaseController
      * @see Auction::scopeByStore()
      * @see Auction::scopeWithAuctionIds()
      * @see Auction::scopeWithAuctionIds()
+     * @see Auction::scopeWithLeadingBidder()
      *
      * @return \Illuminate\Http\Response
      */
     public function index(AuctionIndex $request)
     {
-        $auctions = Auction::byStore();
-        $auctions = $auctions->orderBy('auctions.id', 'asc');
-
+        $auctions = Auction::orderBy('auctions.id', 'asc');
+        $auctions->withLeadingBidder();
 
         //We get an array of auction_ids
         if ($request->has('auction_ids')) {
@@ -57,16 +57,17 @@ class AuctionsController extends BaseController
      */
     public function show($id, Request $request)
     {
-        $auction = Auction::byStore()->where([
+        $auction = Auction::where([
             ['auctions.id', $id],
-        ])->with('product');
+        ]);
 
         if ($request->has('customer_id')) {
             $auction->withCustomerMaxBid($request->get('customer_id'));
         }
 
+        $auction->withLeadingBidder();
         $auction = $auction->firstOrFail();
 
-        return new AuctionResource($auction->load(['product', 'bids', 'store', 'maxBid']));
+        return new AuctionResource($auction->load(['product']));
     }
 }

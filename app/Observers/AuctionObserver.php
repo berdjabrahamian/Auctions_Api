@@ -3,8 +3,10 @@
 namespace App\Observers;
 
 use App\Events\Auction\AuctionCreated;
+use App\Events\Auction\AuctionExtended as AuctionExtendedAlias;
 use App\Events\CreatedAuctionEvent;
 use App\Jobs\Auction\AuctionEnded;
+use App\Jobs\Auction\AuctionEndedEmail;
 use App\Jobs\Auction\AuctionEndingSoonEmail;
 use App\Jobs\AuctionEndingSoonNotification;
 use App\Jobs\GenerateAuctionLog;
@@ -19,6 +21,13 @@ use Illuminate\Support\Facades\Log;
 
 class AuctionObserver
 {
+
+    public function retrieved(Auction $auction)
+    {
+//        AuctionEndingSoonEmail::dispatchNow($auction);
+
+    }
+
     public function creating(Auction $auction)
     {
         $auction->current_price = $auction->initial_price;
@@ -36,13 +45,11 @@ class AuctionObserver
         //This is delayed to run on the auction start date
         GenerateAuctionLog::dispatch($auction, 'Auction Started')->delay($auction->start_date);
 
-
         //Auction End
         AuctionEnded::dispatch($auction)->delay($auction->end_date);
 
         //Send Notification - Ending Soon
-//      AuctionEndingSoonEmail::dispatch($auction)->delay($auction->getEndingSoonDate());
-        AuctionEndingSoonEmail::dispatch($auction)->delay(Carbon::now()->addMinutes(5));
+        AuctionEndingSoonEmail::dispatch($auction)->delay(Store::endingSoonThreshold($auction));
 
     }
 

@@ -10,10 +10,13 @@ use App\Model\Product\Product as Product;
 use App\Model\Auction\Log as Log;
 use App\Model\Auction\Bid as Bid;
 use App\Model\Store\Store;
+use App\Scope\StoreScope;
 use App\Traits\Enums;
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\DB;
 
 class Auction extends Model
 {
@@ -43,11 +46,19 @@ class Auction extends Model
     protected $casts        = [
         'initial_price' => 'int',
         'is_buyout'     => 'bool',
+        'bids_count'    => 'int',
     ];
     protected $dates        = [
         'start_date',
         'end_date',
     ];
+
+
+    protected static function booted()
+    {
+        static::addGlobalScope(new StoreScope);
+
+    }
 
     public function newEloquentBuilder($query)
     {
@@ -109,6 +120,10 @@ class Auction extends Model
         return $this->hasOne(State::class, 'auction_id', 'id');
     }
 
+    /**
+     * @see Customer
+     * @return \Illuminate\Database\Eloquent\Relations\HasManyThrough
+     */
     public function customers()
     {
         return $this->hasManyThrough(Customer::class, Bid::class, 'auction_id', 'id', 'id', 'customer_id');
@@ -248,16 +263,40 @@ class Auction extends Model
      */
     public function scopeWithCustomerMaxBid($query, $customer_id)
     {
+        $customerMaxBids = $query->addSelect([
+            'max_bids.amount AS current_user_amount', 'max_bids.outbid AS current_user_outbid',
+        ]);
         $customerMaxBids = $query->leftJoin('max_bids', function ($leftJoin) use ($customer_id) {
             $leftJoin->on('auctions.id', '=', 'max_bids.auction_id')
                 ->where('max_bids.customer_id', '=', $customer_id);
         });
 
-        $customerMaxBids->select('auctions.*', 'max_bids.amount AS current_user_amount',
-            'max_bids.outbid AS current_user_outbid');
-
         return $customerMaxBids;
     }
+
+
+    public function scopeWithLeadingBidder(Builder $query)
+    {
+        /**
+         * select "states"."leading_id",
+         * "mxbids"."customer_id"
+         * from "auctions"
+         * left join "states" on "auctions"."leading_max_bid_id" = "states"."id"
+         * left join "max_bids" as "mxbids" on "states"."leading_id" = "mxbids"."id"
+         * left join "customers" on "customers"."id" = "mxbids"."customer_id"
+         *
+         */
+
+        $query->addSelect(
+            [
+                'states.leading_id',
+                'mxbids.customer_id as winning_customer_id',
+            ]);
+        $query->leftJoin('states', 'auctions.leading_max_bid_id', 'states.id');
+        $query->leftJoin('max_bids as mxbids', 'states.leading_id', 'mxbids.id');
+        $query->leftJoin('customers', 'customers.id', 'mxbids.customer_id');
+    }
+
 
     /**
      * @param  MaxBid  $maxBid
@@ -337,7 +376,7 @@ class Auction extends Model
 
     public function hasWinner(): bool
     {
-        return $this->leading_max_bid_id;
+        return $this->leading_max_bid_id ? TRUE : FALSE;
     }
 
     public function updateBidsCount(): int
@@ -346,7 +385,7 @@ class Auction extends Model
     }
 
     /**
-     * This checks to see if the auction is bid within
+     * This checks to see if the auction is bid within a specific time, to trigger the going going gone
      *
      * @return bool
      */

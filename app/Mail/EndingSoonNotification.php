@@ -24,7 +24,7 @@ class EndingSoonNotification extends Mailable implements ShouldQueue
      *
      * @return void
      */
-    public function __construct(Customer $customer, Auction $auction)
+    public function __construct($customer, Auction $auction)
     {
         $this->queue    = 'emails';
         $this->customer = $customer;
@@ -41,7 +41,7 @@ class EndingSoonNotification extends Mailable implements ShouldQueue
     public function build()
     {
         return $this->from($this->store->contact_email)
-            ->to($this->customer->email)
+            ->to($this->customer['email'])
             ->subject('Auction Ending Soon')
             ->view('emails.auction.ending_soon');
     }

@@ -12,6 +12,8 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
+use function Sentry\captureException as sentryException;
+use function Sentry\captureMessage;
 
 class AuctionEndingSoonEmail implements ShouldQueue
 {
@@ -19,6 +21,7 @@ class AuctionEndingSoonEmail implements ShouldQueue
 
     public $tries = 3;
     public $auction;
+    public $customers;
 
     /**
      * Create a new job instance.
@@ -27,8 +30,8 @@ class AuctionEndingSoonEmail implements ShouldQueue
      */
     public function __construct(Auction $auction)
     {
-        $this->auction = $auction;
-
+        $this->auction   = $auction->load('customers');
+        $this->customers = $auction->customers->unique('id');
     }
 
     /**
@@ -42,10 +45,9 @@ class AuctionEndingSoonEmail implements ShouldQueue
             return $this;
         }
 
-        if ($this->auction->customers) {
-            $customers = $this->auction->customers->unique('id');
 
-            foreach ($customers as $customer) {
+        if ($this->customers) {
+            foreach ($this->customers as $customer) {
                 Mail::send(new EndingSoonNotification($customer, $this->auction));
             }
         }
@@ -56,7 +58,9 @@ class AuctionEndingSoonEmail implements ShouldQueue
     /**
      * @param  Exception  $exception
      */
-    public function failed(Exception $exception)
+    public function failed($exception)
     {
+        captureMessage('Auction Ending Soon Email Failed');
+        sentryException($exception);
     }
 }

@@ -40,6 +40,17 @@ class Store extends Model
         }
     }
 
+    public static function endingSoonThreshold(Auction $auction)
+    {
+        $store = $auction->store;
+        $endDate = $auction->end_date;
+        $time = $store->ending_soon_notification;
+
+        $endTime = $endDate->subHours($time);
+
+        return $endTime;
+    }
+
     /**
      * @param  mixed  $currentStore
      */
