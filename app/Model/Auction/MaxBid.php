@@ -34,7 +34,7 @@ class MaxBid extends Model
 
     public function auction()
     {
-        return $this->belongsTo(Auction::class, 'auction_id', 'id')->without(['logs', 'product']);
+        return $this->belongsTo(Auction::class, 'auction_id', 'id')->withoutGlobalScope('StoreScope');
     }
 
     public function customer()
@@ -46,7 +46,6 @@ class MaxBid extends Model
     {
         return $this->belongsTo(Store::class, 'store_id', 'id');
     }
-
 
     /**
      * We transform the amount attribute, which is a dollar value into cents and give it its own attribute;

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api\V1\Admin\Products;
 
 use App\Http\Controllers\Api\V1\Admin\AdminController;
 use App\Http\Requests\AdminProductStore;
+use App\Http\Resources\AdminProductCollection;
 use App\Http\Resources\AdminProductsResource;
 use App\Model\Product\Product;
 use App\Model\Store\Store;
@@ -18,7 +19,7 @@ class ProductsController extends AdminController
      */
     public function index()
     {
-        return Product::all();
+        return new AdminProductCollection(Product::all());
     }
 
 
@@ -61,7 +62,7 @@ class ProductsController extends AdminController
 
         $product = Product::where([
             ['products.id', $id],
-            ['products.store_id', Store::getCurrentStore()->id]
+            ['products.store_id', Store::getCurrentStore()->id],
         ])->first();
 
         return new AdminProductsResource($product);

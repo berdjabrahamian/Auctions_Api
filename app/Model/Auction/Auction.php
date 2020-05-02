@@ -266,6 +266,7 @@ class Auction extends Model
         $customerMaxBids = $query->addSelect([
             'max_bids.amount AS current_user_amount', 'max_bids.outbid AS current_user_outbid',
         ]);
+
         $customerMaxBids = $query->leftJoin('max_bids', function ($leftJoin) use ($customer_id) {
             $leftJoin->on('auctions.id', '=', 'max_bids.auction_id')
                 ->where('max_bids.customer_id', '=', $customer_id);
@@ -279,22 +280,22 @@ class Auction extends Model
     {
         /**
          * select "states"."leading_id",
-         * "mxbids"."customer_id"
+         * "leaderMaxBids"."customer_id"
          * from "auctions"
          * left join "states" on "auctions"."leading_max_bid_id" = "states"."id"
-         * left join "max_bids" as "mxbids" on "states"."leading_id" = "mxbids"."id"
-         * left join "customers" on "customers"."id" = "mxbids"."customer_id"
+         * left join "max_bids" as "leaderMaxBids" on "states"."leading_id" = "leaderMaxBids"."id"
+         * left join "customers" on "customers"."id" = "leaderMaxBids"."customer_id"
          *
          */
 
         $query->addSelect(
             [
                 'states.leading_id',
-                'mxbids.customer_id as winning_customer_id',
+                'leaderMaxBids.customer_id as winning_customer_id',
             ]);
         $query->leftJoin('states', 'auctions.leading_max_bid_id', 'states.id');
-        $query->leftJoin('max_bids as mxbids', 'states.leading_id', 'mxbids.id');
-        $query->leftJoin('customers', 'customers.id', 'mxbids.customer_id');
+        $query->leftJoin('max_bids as leaderMaxBids', 'states.leading_id', 'leaderMaxBids.id');
+        $query->leftJoin('customers', 'customers.id', 'leaderMaxBids.customer_id');
     }
 
 

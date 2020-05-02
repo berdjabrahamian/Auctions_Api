@@ -53,40 +53,4 @@ class MaxBidObserver
             }
         }
     }
-
-    /**
-     * Handle the max bid "deleted" event.
-     *
-     * @param  \App\Model\Auction\MaxBid  $maxBid
-     *
-     * @return void
-     */
-    public function deleted(MaxBid $maxBid)
-    {
-        //
-    }
-
-    /**
-     * Handle the max bid "restored" event.
-     *
-     * @param  \App\Model\Auction\MaxBid  $maxBid
-     *
-     * @return void
-     */
-    public function restored(MaxBid $maxBid)
-    {
-        //
-    }
-
-    /**
-     * Handle the max bid "force deleted" event.
-     *
-     * @param  \App\Model\Auction\MaxBid  $maxBid
-     *
-     * @return void
-     */
-    public function forceDeleted(MaxBid $maxBid)
-    {
-        //
-    }
 }

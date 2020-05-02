@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api\V1\Auctions;
 use App\Events\GenerateBidsEvent;
 use App\Http\Controllers\Api\V1\BaseController;
 use App\Http\Requests\MaxBidInvoke;
+use App\Http\Resources\MaxBidsResource;
 use App\Jobs\GenerateBids;
 use App\Model\Auction\Auction;
 use App\Model\Auction\MaxBid;
@@ -52,7 +53,7 @@ class MaxBidController extends BaseController
 
         GenerateBids::dispatchNow($customer, $maxBid);
 
-        return $maxBid->unsetRelations();
+        return new MaxBidsResource($maxBid->load('auction'));
     }
 
 }

@@ -16,7 +16,7 @@ class StoreScope implements Scope
      */
     public function apply(Builder $builder, Model $model)
     {
-        $builder->addSelect('auctions.* as auctions')->where("{$model->getTable()}.store_id", '=',
+        $builder->addSelect("{$model->getTable()}.*")->where("{$model->getTable()}.store_id", '=',
             Store::getCurrentStore()->id);
     }
 }

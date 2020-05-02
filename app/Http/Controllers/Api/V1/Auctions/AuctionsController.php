@@ -68,6 +68,6 @@ class AuctionsController extends BaseController
         $auction->withLeadingBidder();
         $auction = $auction->firstOrFail();
 
-        return new AuctionResource($auction->load(['product']));
+        return new AuctionResource($auction->load(['product', 'bids']));
     }
 }
