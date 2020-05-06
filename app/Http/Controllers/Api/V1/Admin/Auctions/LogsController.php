@@ -17,13 +17,16 @@ class LogsController extends AdminController
      */
     public function index()
     {
-        return new AdminLogsCollection(Log::all()->load('customer'));
+        $logs = Log::with(['customer', 'auction']);
+
+        return new AdminLogsCollection($logs->get());
     }
 
     /**
      * Display the specified resource.
      *
-     * @param \App\Model\Auction\Log $logs
+     * @param  \App\Model\Auction\Log  $logs
+     *
      * @return \Illuminate\Http\Response
      */
     public function show(Auction $auction)

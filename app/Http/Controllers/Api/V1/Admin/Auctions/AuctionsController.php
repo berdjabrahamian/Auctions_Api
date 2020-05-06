@@ -39,28 +39,9 @@ class AuctionsController extends AdminController
         $validated = Arr::dot($request->validated());
 
         /**
-         * We find a product based on 3 product criterias
-         * Store_Id
-         * Platform_Id
-         * SKU
-         *
          * This should technically always return a single product, if not AdminAuctionStore will catch it and error out before even getting here
-         *
          */
-        $product = Product::firstOrCreate([
-            ['store_id', Store::getCurrentStore()->id],
-            ['platform_id', $validated['product.platform_id']],
-            ['sku', $validated['product.sku']],
-        ], [
-            'store_id'    => Store::getCurrentStore()->id,
-            'platform_id' => $validated['product.platform_id'],
-            'sku'         => $validated['product.sku'],
-            'name'        => $validated['product.name'],
-            'description' => $validated['product.description'],
-            'image_url'   => $validated['product.image_url'],
-            'product_url' => $validated['product.product_url'],
-        ]);
-
+        $product = $request->getProduct();
 
         $auction = new Auction([
             'name'          => $validated['auction.name'],
@@ -76,7 +57,6 @@ class AuctionsController extends AdminController
         $auction->store()->associate(Store::getCurrentStore());
         $auction->product()->associate($product);
         $auction->save();
-
 
         return new AdminAuctionResource($auction);
     }

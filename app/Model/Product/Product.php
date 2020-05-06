@@ -4,6 +4,7 @@ namespace App\Model\Product;
 
 use App\Model\Auction\Auction;
 use App\Model\Store\Store;
+use App\Scope\StoreScope;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
 
@@ -11,14 +12,18 @@ class Product extends Model
 {
     protected $table      = 'products';
     public    $timestamps = TRUE;
-    protected $fillable   = [];
-    protected $hidden     = ['id', 'store_id', 'created_at', 'updated_at'];
+    protected $perPage    = 100;
     protected $appends    = [
         'short_description',
     ];
     protected $casts      = [
         'short_description' => 'string',
     ];
+
+    protected static function booted()
+    {
+        static::addGlobalScope(new StoreScope);
+    }
 
     /**
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
@@ -36,6 +41,19 @@ class Product extends Model
     public function getShortDescriptionAttribute()
     {
         return Str::limit($this->description, 75);
+    }
+
+    /**
+     * @param  \Illuminate\Database\Eloquent\Builder  $query
+     * @param                                         $productIds
+     *
+     * @return mixed
+     */
+    public function scopeWithProductIds($query, $productIds)
+    {
+        $withProductIds = $query->whereRaw("products.id in ({$productIds})");
+
+        return $withProductIds;
     }
 
 }

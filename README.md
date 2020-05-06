@@ -24,15 +24,34 @@ Each method will have its own set of instructions on what needs to be done.
 ---
 
 #### How does it work
+
+##### Create Product
+1 - Admin creates a product -> the product must exist before it can be attached to the auction.
+
 ##### Create Auction
-1. Admin creates a product - or it will be created during the auction creation process
-2. Admin turn that product into a auction
+1. Admin creates an auction by attaching to it a product that isnt assigned to an auction already.
+
+##### Start Bidding
+1 - Customer places a max bid on the auctions
+  - Customer needs to exist into the system before a max bid can be created
+    - Customer doesnt Exist
+      - Admin needs to import customers or create them manually one by one
+    - Customer Exists
+      - If the customer doesnt have the correct permission, then there bids wont go through, and the admin needs to set the proper permission to allow bids to be placed
+ 
+2 - Bid get placed on auction
+  - Based on the auction state, when a bid is placed the customer is either notified that they are the highest bidder or they are outbid
+ 
+3 - Based on its status, either the auction ends with a winner (since a bid is placed) or passed (no one placed a bid on the auctions)
+
+4 - Notifications are send out
+  - Auction ending soon - to customer who have placed a bid on the auctions
+  - Auction won - to the highest bidding customer
+  - Auction Lost - to the customers who bid but were outbid
+
+---
 
 
-##### Placing Bids
-1. Customer places bid on auction
-2. And based on the state will determined if its accepted or been outbid
-3. If the bid is placed withing the ending threshold (going-going-gone), we will extend the auction end time
 
 
 ##### Email Notifications 
@@ -44,7 +63,7 @@ Each method will have its own set of instructions on what needs to be done.
   - Outbid
     - When the customer is outbid (DONE)
 
-- Auction (todo)
+- Auction
   - Ending Soon
     - Send all who have bid its ending soon
   - Extended

@@ -24,8 +24,6 @@ class AuctionObserver
 
     public function retrieved(Auction $auction)
     {
-//        AuctionEndingSoonEmail::dispatchNow($auction);
-
     }
 
     public function creating(Auction $auction)

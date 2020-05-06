@@ -3,7 +3,9 @@
 namespace App\Http\Controllers\Api\V1\Admin\Products;
 
 use App\Http\Controllers\Api\V1\Admin\AdminController;
+use App\Http\Requests\AdminProductIndex;
 use App\Http\Requests\AdminProductStore;
+use App\Http\Requests\AdminProductUpdate;
 use App\Http\Resources\AdminProductCollection;
 use App\Http\Resources\AdminProductsResource;
 use App\Model\Product\Product;
@@ -17,9 +19,15 @@ class ProductsController extends AdminController
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(AdminProductIndex $request)
     {
-        return new AdminProductCollection(Product::all());
+        $products = Product::query();
+
+        if ($request->has('product_ids')) {
+            $products->withProductIds($request->get('product_ids'));
+        }
+
+        return new AdminProductCollection($products->paginate());
     }
 
 
@@ -59,11 +67,10 @@ class ProductsController extends AdminController
      */
     public function show($id)
     {
-
         $product = Product::where([
             ['products.id', $id],
             ['products.store_id', Store::getCurrentStore()->id],
-        ])->first();
+        ])->firstOrFail();
 
         return new AdminProductsResource($product);
     }
@@ -76,9 +83,23 @@ class ProductsController extends AdminController
      *
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(AdminProductUpdate $request, $id)
     {
-        //
+        $validated = $request->validated();
+
+        $product = Product::where([
+            'id'       => $id,
+            'store_id' => Store::getCurrentStore()->id,
+        ])->first();
+
+        $product->name        = $validated['name'];
+        $product->description = $validated['description'];
+        $product->image_url   = $validated['image_url'];
+        $product->product_url = $validated['product_url'];
+
+        $product->save();
+
+        return $product;
     }
 
     /**
@@ -90,6 +111,6 @@ class ProductsController extends AdminController
      */
     public function destroy($id)
     {
-        //
+        return response()->json('Error', 422);
     }
 }

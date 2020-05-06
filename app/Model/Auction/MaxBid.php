@@ -17,12 +17,6 @@ class MaxBid extends Model
         'amount',
         'outbid',
     ];
-    protected $hidden     = [
-        'store_id',
-        'amount',
-        'created_at',
-        'updated_at',
-    ];
     protected $appends    = [
         'amount_cents',
     ];

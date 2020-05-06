@@ -34,11 +34,6 @@ class Auction extends Model
         'store_id',
         'product_id',
     ];
-    protected $hidden       = [
-        'store_id',
-        'created_at',
-        'updated_at',
-    ];
     protected $appends      = [
         'initial_price',
         'has_ended',

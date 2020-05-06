@@ -2,9 +2,11 @@
 
 namespace App\Http\Requests;
 
+use App\Model\Product\Product;
+use App\Model\Store\Store;
 use Illuminate\Foundation\Http\FormRequest;
 
-class AdminAuctionUpdate extends FormRequest
+class AdminProductUpdate extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -13,17 +15,15 @@ class AdminAuctionUpdate extends FormRequest
      */
     public function authorize()
     {
-
-
-        $auction = Auction::without(['product', 'logs'])->where([
-            ['id', $this->input('auction_id')],
+        $product = Product::where([
+            ['id', $this->product],
             ['store_id', Store::getCurrentStore()->id],
         ])->first();
 
-        if ($auction && $auction->status == TRUE) {
-            return TRUE;
-        } else {
+        if (!$product) {
             return FALSE;
+        } else {
+            return TRUE;
         }
     }
 
@@ -35,10 +35,10 @@ class AdminAuctionUpdate extends FormRequest
     public function rules()
     {
         return [
-            'name'       => 'sometimes',
-            'status'     => 'sometimes',
-            'end_date'   => 'sometimes',
-            'start_date' => 'sometimes',
+            'name'        => 'present|string',
+            'description' => 'present|string',
+            'image_url'   => 'present|url',
+            'product_url' => 'present|url',
         ];
     }
 }

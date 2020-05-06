@@ -11,6 +11,7 @@ use Illuminate\Validation\ValidationException;
 
 /**
  * Class AdminAuctionStore
+ *
  * @package App\Http\Requests
  */
 class AdminAuctionStore extends FormRequest
@@ -25,7 +26,7 @@ class AdminAuctionStore extends FormRequest
      */
     public function authorize()
     {
-        return true;
+        return TRUE;
     }
 
     /**
@@ -35,8 +36,6 @@ class AdminAuctionStore extends FormRequest
      */
     public function rules()
     {
-
-
         return [
             'auction.name'           => 'required',
             'auction.status'         => 'required',
@@ -66,8 +65,10 @@ class AdminAuctionStore extends FormRequest
     /**
      * CHECKS
      * Does product exists - if no product -> then no auction check -> then everything is new and needs to be created
-     * Multiple Products same ID -> platform_id should be unique to each product (primary key from the platform) -> and so there shouldnt be multiple products with the same primary key
-     * Sku match -> Sku from the request should match sku already in system
+     * Multiple Products same ID -> platform_id should be unique to each product (primary key from the platform) -> and
+     * so there shouldnt be multiple products with the same primary key Sku match -> Sku from the request should match
+     * sku already in system
+     *
      * @return $this
      */
     protected function _productChecks()
@@ -75,20 +76,22 @@ class AdminAuctionStore extends FormRequest
         //Get products that belong to the store and have the same sku
         $product = Product::where([
             ['platform_id', $this->query('product')['platform_id']],
-            ['store_id', Store::getCurrentStore()->id],
+            ['store_id', Store::getCurrentStore()->id]
         ])->get();
 
 
-        if (!$product->first()) {
-            $this->setProduct(null);
-            return $this;
-        }
-
-        if ($product->count() > 1) {
-            $this->validator->errors()->add('Multiple Products',
-                "There are multiple products that have the same platform_id");
+        if (!$product->count()) {
+            $this->validator->errors()->add('Product Not Found',
+                "Product doesnt exist in system, please create a product before assigning it to an auction");
 
             return $this;
+        } else {
+            if ($product->count() > 1) {
+                $this->validator->errors()->add('Multiple Products',
+                    "There are multiple products that have the same platform_id");
+
+                return $this;
+            }
         }
 
         if ($product->first()->sku != $this->query('product')['sku']) {
@@ -119,7 +122,6 @@ class AdminAuctionStore extends FormRequest
     protected function _auctionChecks()
     {
         $now = Carbon::now();
-
 
         if ($this->product) {
             $auction = Auction::where([
@@ -156,5 +158,13 @@ class AdminAuctionStore extends FormRequest
     public function setProduct($product): void
     {
         $this->product = $product;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getProduct()
+    {
+        return $this->product;
     }
 }

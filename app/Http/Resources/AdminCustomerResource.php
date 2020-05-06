@@ -19,6 +19,7 @@ class AdminCustomerResource extends JsonResource
             'id'          => $this->id,
             'first_name'  => $this->first_name,
             'last_name'   => $this->last_name,
+            'email'       => $this->email,
             'platform_id' => $this->platform_id,
             'approved'    => $this->approved,
         ];
