@@ -40,7 +40,7 @@ Route::prefix('v1')->group(function () {
                         'index', 'store', 'show', 'update', 'destroy',
                     ]);
 
-                    Route::post('products/{product_id}/duplicate', 'DuplicateController')->name('product.duplicate');
+                    Route::post('products/{product}/duplicate', 'DuplicateController')->name('product.duplicate');
                 });
                 Route::namespace('Customers')->group(function () {
                     Route::resource('customers', 'CustomersController')->only([

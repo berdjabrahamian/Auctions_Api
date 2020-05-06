@@ -42,9 +42,9 @@ class Store extends Model
 
     public static function endingSoonThreshold(Auction $auction)
     {
-        $store = $auction->store;
+        $store   = $auction->store;
         $endDate = $auction->end_date;
-        $time = $store->ending_soon_notification;
+        $time    = $store->ending_soon_notification;
 
         $endTime = $endDate->subHours($time);
 

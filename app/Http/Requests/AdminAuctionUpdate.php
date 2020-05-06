@@ -13,8 +13,6 @@ class AdminAuctionUpdate extends FormRequest
      */
     public function authorize()
     {
-
-
         $auction = Auction::without(['product', 'logs'])->where([
             ['id', $this->input('auction_id')],
             ['store_id', Store::getCurrentStore()->id],

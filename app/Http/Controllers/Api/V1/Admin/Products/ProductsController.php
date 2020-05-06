@@ -17,14 +17,15 @@ class ProductsController extends AdminController
     /**
      * Display a listing of the resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return AdminProductCollection
      */
     public function index(AdminProductIndex $request)
     {
-        $products = Product::query();
+        $validated = $request->validated();
+        $products  = Product::query();
 
-        if ($request->has('product_ids')) {
-            $products->withProductIds($request->get('product_ids'));
+        if (isset($validated['product_ids'])) {
+            $products->withProductIds($validated['product_ids']);
         }
 
         return new AdminProductCollection($products->paginate());
@@ -32,11 +33,11 @@ class ProductsController extends AdminController
 
 
     /**
-     * Store a newly created resource in storage.
+     * Create a new Product
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  AdminProductStore  $request
      *
-     * @return \Illuminate\Http\Response
+     * @return AdminProductsResource
      */
     public function store(AdminProductStore $request)
     {
@@ -59,8 +60,6 @@ class ProductsController extends AdminController
     }
 
     /**
-     * Display the specified resource.
-     *
      * @param  int  $id
      *
      * @return \Illuminate\Http\Response
@@ -68,8 +67,8 @@ class ProductsController extends AdminController
     public function show($id)
     {
         $product = Product::where([
-            ['products.id', $id],
-            ['products.store_id', Store::getCurrentStore()->id],
+            ['id', $id],
+            ['store_id', Store::getCurrentStore()->id],
         ])->firstOrFail();
 
         return new AdminProductsResource($product);

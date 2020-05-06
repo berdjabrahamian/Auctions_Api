@@ -18,16 +18,6 @@ class AdminProductDuplicate extends FormRequest
      */
     public function authorize()
     {
-        $product = Product::where([
-            ['id', $this->id],
-            ['store_id', Store::getCurrentStore()->id],
-        ])->first();
-
-        if ($product) {
-            $this->setProduct($product);
-            return TRUE;
-        }
-
         return FALSE;
     }
 
@@ -39,7 +29,7 @@ class AdminProductDuplicate extends FormRequest
     public function rules()
     {
         return [
-            'sku'         => 'required|unique:products,sku',
+            'sku'         => 'required',
             'name'        => 'required',
             'description' => 'required',
             'image_url'   => 'required|url',

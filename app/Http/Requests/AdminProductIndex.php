@@ -24,8 +24,7 @@ class AdminProductIndex extends FormRequest
     public function rules()
     {
         return [
-            'product_ids'          => 'sometimes',
-            'platform_product_ids' => 'sometimes',
+            'product_ids' => 'sometimes',
         ];
     }
 }
