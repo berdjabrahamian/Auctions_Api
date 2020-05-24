@@ -22,7 +22,8 @@ class ProductsController extends AdminController
     public function index(AdminProductIndex $request)
     {
         $validated = $request->validated();
-        $products  = Product::query();
+
+        $products = Store::getCurrentStore()->products();
 
         if (isset($validated['product_ids'])) {
             $products->withProductIds($validated['product_ids']);
@@ -66,10 +67,7 @@ class ProductsController extends AdminController
      */
     public function show($id)
     {
-        $product = Product::where([
-            ['id', $id],
-            ['store_id', Store::getCurrentStore()->id],
-        ])->firstOrFail();
+        $product = Store::getCurrentStore()->products()->find($id);
 
         return new AdminProductsResource($product);
     }
@@ -86,10 +84,9 @@ class ProductsController extends AdminController
     {
         $validated = $request->validated();
 
-        $product = Product::where([
-            'id'       => $id,
-            'store_id' => Store::getCurrentStore()->id,
-        ])->first();
+        $product = Store::getCurrentStore()->products()->where([
+            'id' => $id,
+        ])->firstOrFail();
 
         $product->name        = $validated['name'];
         $product->description = $validated['description'];

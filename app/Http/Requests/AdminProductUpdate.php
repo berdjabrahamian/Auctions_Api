@@ -15,10 +15,9 @@ class AdminProductUpdate extends FormRequest
      */
     public function authorize()
     {
-        $product = Product::where([
+        $product = Store::getCurrentStore()->products()->where([
             ['id', $this->product],
-            ['store_id', Store::getCurrentStore()->id],
-        ])->first();
+        ])->firstOrFail();
 
         if (!$product) {
             return FALSE;

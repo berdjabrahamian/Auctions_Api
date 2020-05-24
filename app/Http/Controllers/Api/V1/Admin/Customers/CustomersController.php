@@ -14,11 +14,15 @@ class CustomersController extends AdminController
     /**
      * Display a listing of the resource.
      *
+     * TODO: finish this
+     *
      * @return \Illuminate\Http\Response
      */
     public function index()
     {
+        $customers = Store::getCurrentStore()->customers();
 
+        return $customers->paginate();
     }
 
     /**
@@ -54,7 +58,7 @@ class CustomersController extends AdminController
      */
     public function show($id)
     {
-        //
+        return Store::getCurrentStore()->customers()->find($id);
     }
 
     /**

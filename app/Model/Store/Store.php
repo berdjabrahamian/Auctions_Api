@@ -4,6 +4,7 @@ namespace App\Model\Store;
 
 use App\Model\Auction\Auction;
 use App\Model\Customer\Customer;
+use App\Model\Product\Product;
 use Illuminate\Database\Eloquent\Model;
 
 class Store extends Model
@@ -26,6 +27,16 @@ class Store extends Model
     public function auctions()
     {
         return $this->hasMany(Auction::class, 'store_id', 'id');
+    }
+
+    public function products()
+    {
+        return $this->hasMany(Product::class, 'store_id', 'id');
+    }
+
+    public function customers()
+    {
+        return $this->hasMany(Customer::class, 'store_id', 'id');
     }
 
     public function buyersPremiumPrice($amount)

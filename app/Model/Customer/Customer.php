@@ -2,6 +2,8 @@
 
 namespace App\Model\Customer;
 
+use App\Model\Auction\Auction;
+use App\Model\Auction\MaxBid;
 use App\Model\Store\Store;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Arr;
@@ -13,6 +15,7 @@ class Customer extends Model
 {
     protected $hideArray = ['email', 'first_name', 'last_name', 'full_name'];
     protected $table     = 'customers';
+    protected $perPage   = 100;
     protected $fillable  = ['email', 'first_name', 'last_name'];
     protected $appends   = [
         'full_name',
@@ -26,6 +29,12 @@ class Customer extends Model
     public function store()
     {
         return $this->belongsTo(Store::class, 'store_id', 'id');
+    }
+
+    public function auctionsBidOn()
+    {
+
+        return $this->hasManyThrough(Auction::class, MaxBid::class, 'customer_id', 'id', 'id', 'auction_id')->orderBy('id', 'desc');
     }
 
     public function getFullNameAttribute()

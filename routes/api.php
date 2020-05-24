@@ -26,6 +26,10 @@ Route::prefix('v1')->group(function () {
             Route::resource('auctions', 'AuctionsController')->only(['index', 'show']);
         });
 
+        Route::namespace('Customers')->group(function () {
+            Route::get('customers/{customer}/auctions', 'AuctionsController')->name('customer.auctions');
+        });
+
         Route::namespace('Admin')->name('admin.')->group(function () {
             Route::prefix('admin')->group(function () {
                 Route::namespace('Auctions')->group(function () {

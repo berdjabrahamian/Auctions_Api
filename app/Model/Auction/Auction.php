@@ -76,7 +76,7 @@ class Auction extends Model
      */
     public function product()
     {
-        return $this->belongsTo(Product::class, 'product_id', 'id');
+        return $this->belongsTo(Product::class, 'product_id', 'id')->withoutGlobalScopes();
     }
 
     /**
@@ -85,7 +85,7 @@ class Auction extends Model
      */
     public function logs()
     {
-        return $this->hasMany(Log::class, 'auction_id', 'id');
+        return $this->hasMany(Log::class, 'auction_id', 'id')->withoutGlobalScopes();
     }
 
     /**
