@@ -3,11 +3,13 @@
 namespace App\Observers;
 
 use App\Events\Auction\AuctionCreated;
+use App\Events\Auction\AuctionExtended;
 use App\Events\Auction\AuctionExtended as AuctionExtendedAlias;
 use App\Events\CreatedAuctionEvent;
 use App\Jobs\Auction\AuctionEnded;
 use App\Jobs\Auction\AuctionEndedEmail;
 use App\Jobs\Auction\AuctionEndingSoonEmail;
+use App\Jobs\Auction\AuctionExtendedEmail;
 use App\Jobs\AuctionEndingSoonNotification;
 use App\Jobs\GenerateAuctionLog;
 use App\Listeners\NewAuctionState;
@@ -66,6 +68,7 @@ class AuctionObserver
         if ($auction->isDirty('end_date')) {
             GenerateAuctionLog::dispatch($auction, "Auction Extended");
             AuctionEnded::dispatch($auction)->delay($auction->end_date);
+            AuctionExtendedEmail::dispatchAfterResponse($auction);
         }
 
         if ($auction->wasChanged('start_date')) {
