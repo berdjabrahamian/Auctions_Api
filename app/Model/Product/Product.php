@@ -20,11 +20,6 @@ class Product extends Model
         'short_description' => 'string',
     ];
 
-    protected static function booted()
-    {
-        static::addGlobalScope(new StoreScope);
-    }
-
     /**
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
