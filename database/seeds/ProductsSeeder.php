@@ -11,6 +11,8 @@ class ProductsSeeder extends Seeder
      */
     public function run()
     {
-        factory(\App\Model\Product\Product::class, 1)->create();
+        foreach (range(1, 10) as $index) {
+            factory(\App\Model\Product\Product::class, 100)->create();
+        }
     }
 }
