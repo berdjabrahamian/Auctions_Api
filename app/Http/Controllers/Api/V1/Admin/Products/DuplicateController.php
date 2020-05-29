@@ -19,18 +19,14 @@ class DuplicateController extends AdminController
     /**
      * Handle the incoming request.
      *
+     * TODO: Finish product duplicate api
+     *
      * @param  AdminProductDuplicate  $request
      *
      * @return void
      */
     public function __invoke(AdminProductDuplicate $request)
     {
-        $validated = $request->validated();
-
-        $product = $request->getProduct()->replicate($validated);
-
-        $product->save();
-        dd($product);
 
     }
 

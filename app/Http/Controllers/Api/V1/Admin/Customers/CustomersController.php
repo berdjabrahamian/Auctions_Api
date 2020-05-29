@@ -14,8 +14,6 @@ class CustomersController extends AdminController
     /**
      * Display a listing of the resource.
      *
-     * TODO: finish this
-     *
      * @return \Illuminate\Http\Response
      */
     public function index()
@@ -62,6 +60,7 @@ class CustomersController extends AdminController
     }
 
     /**
+     * TODO Finish This
      * Show the form for editing the specified resource.
      *
      * @param  int  $id
@@ -74,6 +73,7 @@ class CustomersController extends AdminController
     }
 
     /**
+     * TODO Finish This
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
@@ -87,6 +87,7 @@ class CustomersController extends AdminController
     }
 
     /**
+     * TODO Finish This
      * Remove the specified resource from storage.
      *
      * @param  int  $id

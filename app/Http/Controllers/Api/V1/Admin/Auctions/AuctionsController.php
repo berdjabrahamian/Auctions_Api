@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api\V1\Admin\Auctions;
 
 use App\Http\Controllers\Api\V1\Admin\AdminController;
 use App\Http\Requests\AdminAuctionIndex;
+use App\Http\Requests\AdminAuctionShow;
 use App\Http\Requests\AdminAuctionStore;
 use App\Http\Requests\AdminAuctionUpdate;
 use App\Http\Resources\AdminAuctionCollection;
@@ -18,9 +19,9 @@ class AuctionsController extends AdminController
 {
     public function index(AdminAuctionIndex $request)
     {
-        $auctions = Auction::byStore()->orderBy('auctions.id', 'asc')->get();
+        $auctions = Store::getCurrentStore()->auctions()->with('bids');
 
-        return new AdminAuctionCollection($auctions->load('bids'));
+        return new AdminAuctionCollection($auctions->paginate());
     }
 
 
@@ -62,9 +63,9 @@ class AuctionsController extends AdminController
     }
 
 
-    public function show(Auction $auction)
+    public function show($id)
     {
-        return new AdminAuctionResource($auction->load(['logs']));
+        return new AdminAuctionResource(Store::getCurrentStore()->auctions()->find($id)->load(['logs']));
     }
 
 

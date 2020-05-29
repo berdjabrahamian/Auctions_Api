@@ -65,16 +65,8 @@ class Store extends Model
     /**
      * @param  mixed  $currentStore
      */
-    public static function setCurrentStore($id = NULL): void
+    public static function setCurrentStore(): void
     {
-
-        if ($id) {
-            $store = Store::where('id', $id)->firstOrFail();
-
-            self::$currentStore = $store;
-
-            return;
-        }
 
         self::setPublicKey();
         self::setSecretKey();
