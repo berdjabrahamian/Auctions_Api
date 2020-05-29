@@ -1,0 +1,23 @@
+openapi: '3.0.0'
+info:
+  version: 0.5.0
+  title: Auctions API
+  description: 'Auctions Api written in PHP'
+  contact:
+    name: Berdj Abrahamian
+    url: https://berdj.dev
+    email: berdj.abrahamian@gmail.com
+servers:
+  - url: https://auctions.api/
+    description: url
+  -
+paths:
+  /api/v1/auctions:
+        get:
+          tags:
+            - auctions
+          summary: 'Get All Auctions for Store'
+          description: ''
+          responses:
+            '200':
+              description: OK
