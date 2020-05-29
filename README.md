@@ -26,7 +26,9 @@ Each method will have its own set of instructions on what needs to be done.
 #### How does it work
 
 ##### Create Product
-1 - Admin creates a product -> the product must exist before it can be attached to the auction.
+
+-  Admin creates a product
+-  Admin creates an auction by connecting it to a product
 
 ##### Create Auction
 1. Admin creates an auction by attaching to it a product that isnt assigned to an auction already.
