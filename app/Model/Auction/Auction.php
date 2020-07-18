@@ -42,6 +42,8 @@ class Auction extends Model
         'initial_price' => 'int',
         'is_buyout'     => 'bool',
         'bids_count'    => 'int',
+        'has_started'   => 'bool',
+        'has_ended'     => 'bool',
     ];
     protected $dates        = [
         'start_date',
@@ -192,6 +194,11 @@ class Auction extends Model
     public function getHasEndedAttribute(): bool
     {
         return $this->hasEnded();
+    }
+
+    public function getHasStartedAttribute(): bool
+    {
+        return $this->hasStarted();
     }
 
     public function getEndingSoonDate()
@@ -368,6 +375,11 @@ class Auction extends Model
     public function hasEnded(): bool
     {
         return $this->end_date < Carbon::now();
+    }
+
+    public function hasStarted(): bool
+    {
+        return $this->start_date < Carbon::now();
     }
 
     public function hasWinner(): bool
