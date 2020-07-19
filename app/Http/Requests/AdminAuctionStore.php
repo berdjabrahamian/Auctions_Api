@@ -7,7 +7,6 @@ use App\Model\Product\Product;
 use App\Model\Store\Store;
 use Carbon\Carbon;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\ValidationException;
 
 /**
  * Class AdminAuctionStore
@@ -76,22 +75,21 @@ class AdminAuctionStore extends FormRequest
         //Get products that belong to the store and have the same sku
         $product = Product::where([
             ['platform_id', $this->query('product')['platform_id']],
-            ['store_id', Store::getCurrentStore()->id]
+            ['store_id', Store::getCurrentStore()->id],
         ])->get();
 
 
         if (!$product->count()) {
             $this->validator->errors()->add('Product Not Found',
                 "Product doesnt exist in system, please create a product before assigning it to an auction");
+            return $this;
+        }
+
+        if ($product->count() >= 1) {
+            $this->validator->errors()->add('Multiple Products',
+                "There are multiple products that have the same platform_id");
 
             return $this;
-        } else {
-            if ($product->count() > 1) {
-                $this->validator->errors()->add('Multiple Products',
-                    "There are multiple products that have the same platform_id");
-
-                return $this;
-            }
         }
 
         if ($product->first()->sku != $this->query('product')['sku']) {
@@ -102,6 +100,7 @@ class AdminAuctionStore extends FormRequest
         }
 
         $this->setProduct($product->first());
+
         return $this;
 
     }
@@ -121,9 +120,9 @@ class AdminAuctionStore extends FormRequest
      */
     protected function _auctionChecks()
     {
-        $now = Carbon::now();
-
         if ($this->product) {
+            $now = Carbon::now();
+
             $auction = Auction::where([
                 ['product_id', $this->product->id],
                 ['store_id', Store::getCurrentStore()->id],

@@ -25,6 +25,8 @@ class AdminAuctionResource extends JsonResource
             'buyout_price'  => $this->buyout_price,
             'start_date'    => $this->start_date,
             'end_date'      => $this->end_date,
+            'has_started'   => $this->has_started,
+            'has_ended'     => $this->has_ended,
             'created_at'    => $this->created_at,
             'updated_at'    => $this->updated_at,
             'logs'          => $this->whenLoaded('logs'),

@@ -42,7 +42,7 @@ class AuctionExtendedEmail implements ShouldQueue
 
         if ($this->customers) {
             foreach ($this->customers as $customer) {
-                Mail::send(new AuctionExtendedNotification($customer, $this->auction))
+                Mail::send(new AuctionExtendedNotification($customer, $this->auction));
             }
         }
 

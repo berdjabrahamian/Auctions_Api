@@ -22,18 +22,7 @@ class AdminLogsCollection extends ResourceCollection
     public function toArray($request)
     {
         return parent::toArray($request);
-//        return $this->_paginate($request);
     }
 
-    protected function _paginate($request)
-    {
-        $currentPage  = LengthAwarePaginator::resolveCurrentPage();
-        $perPage      = $request->get('per_page', 100);
-        $path         = $request->fullUrl();
-        $currentItems = array_slice($this->collection->toArray(), $perPage * ($currentPage - 1), $perPage);
-        $pagination   = new LengthAwarePaginator($currentItems, $this->count(), $perPage, $currentPage,
-            ['path' => $path]);
 
-        return $pagination;
-    }
 }

@@ -3,6 +3,7 @@
 namespace App\Model\Store;
 
 use App\Model\Auction\Auction;
+use App\Model\Auction\Log;
 use App\Model\Customer\Customer;
 use App\Model\Product\Product;
 use Illuminate\Database\Eloquent\Model;
@@ -38,6 +39,11 @@ class Store extends Model
     {
         return $this->hasMany(Customer::class, 'store_id', 'id');
     }
+
+    public function logs() {
+        return $this->hasMany(Log::class, 'store_id', 'id');
+    }
+
 
     public function buyersPremiumPrice($amount)
     {

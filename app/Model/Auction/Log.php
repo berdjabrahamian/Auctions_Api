@@ -4,7 +4,7 @@ namespace App\Model\Auction;
 
 use App\Model\Customer\Customer;
 use App\Model\Store\Store;
-use App\Scope\StoreScope;
+use App\Model\Auction\Auction;
 use Illuminate\Database\Eloquent\Model;
 
 class Log extends Model
@@ -13,12 +13,6 @@ class Log extends Model
     public    $timestamps = TRUE;
     protected $hidden     = ['store_id'];
     protected $perPage    = 100;
-
-
-    protected static function booted()
-    {
-        static::addGlobalScope(new StoreScope);
-    }
 
     public function auction()
     {

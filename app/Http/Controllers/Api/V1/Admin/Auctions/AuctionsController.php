@@ -19,7 +19,7 @@ class AuctionsController extends AdminController
 {
     public function index(AdminAuctionIndex $request)
     {
-        $auctions = Store::getCurrentStore()->auctions()->with('bids');
+        $auctions = Store::getCurrentStore()->auctions()->with('bids')->orderBy('id', 'desc');
 
         return new AdminAuctionCollection($auctions->paginate());
     }
@@ -31,9 +31,9 @@ class AuctionsController extends AdminController
      * Connect the auction to the store it belongs to
      * Associate the product to the auction
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  AdminAuctionStore  $request
      *
-     * @return \Illuminate\Http\Response
+     * @return AdminAuctionResource
      */
     public function store(AdminAuctionStore $request)
     {
@@ -72,16 +72,19 @@ class AuctionsController extends AdminController
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request    $request
-     * @param  \App\Model\Auction\Auction  $auctions
+     * @param  AdminAuctionUpdate  $request
+     * @param  Auction             $auction
      *
-     * @return \Illuminate\Http\Response
+     * @return Auction
+     *
      */
     public function update(AdminAuctionUpdate $request, Auction $auction)
     {
-        $auction->update($request->toArray());
+        $validated = Arr::dot($request->validated());
 
-        return $auction;
+        $auction->update($validated);
+
+        return new AdminAuctionResource($auction);
     }
 
     /**
@@ -90,6 +93,8 @@ class AuctionsController extends AdminController
      * @param  \App\Model\Auction\Auction  $auctions
      *
      * @return \Illuminate\Http\Response
+     *
+     * TODO: Finished Admin Auction Delete - not sure if im going to allow this
      */
     public function destroy(Auction $auctions)
     {

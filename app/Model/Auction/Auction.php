@@ -81,7 +81,7 @@ class Auction extends Model
      */
     public function logs()
     {
-        return $this->hasMany(Log::class, 'auction_id', 'id')->withoutGlobalScopes();
+        return $this->hasMany(Log::class, 'auction_id', 'id');
     }
 
     /**

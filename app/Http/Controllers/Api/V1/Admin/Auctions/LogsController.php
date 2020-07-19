@@ -4,9 +4,9 @@ namespace App\Http\Controllers\Api\V1\Admin\Auctions;
 
 use App\Http\Controllers\Api\V1\Admin\AdminController;
 use App\Http\Resources\AdminLogsCollection;
-use App\Model\Auction\Log;
 use App\Model\Auction\Auction;
 use Illuminate\Http\Request;
+use App\Model\Store\Store;
 
 class LogsController extends AdminController
 {
@@ -17,9 +17,9 @@ class LogsController extends AdminController
      */
     public function index()
     {
-        $logs = Log::with(['customer', 'auction']);
+        $logs = Store::getCurrentStore()->logs();
 
-        return new AdminLogsCollection($logs->get());
+        return new AdminLogsCollection($logs->paginate());
     }
 
     /**
@@ -28,9 +28,11 @@ class LogsController extends AdminController
      * @param  \App\Model\Auction\Log  $logs
      *
      * @return \Illuminate\Http\Response
+     *
+     * TODO: Finish this
      */
     public function show(Auction $auction)
     {
-        return $auction->logs;
+        return $auction->load(['logs']);
     }
 }
