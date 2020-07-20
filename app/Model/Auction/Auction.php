@@ -180,6 +180,7 @@ class Auction extends Model
         return $value / 100;
     }
 
+
     public function getBidsCountAttribute($value): int
     {
         return $value;
@@ -245,7 +246,7 @@ class Auction extends Model
      *
      * @return mixed
      */
-    public function scopeWithProductIds($query, $productIds)
+    public function scopeWithProductIds(Builder $query, $productIds)
     {
         $withProductIds = $query->whereRaw("auctions.product_id in ({$productIds})");
         return $withProductIds;
@@ -272,6 +273,9 @@ class Auction extends Model
     }
 
 
+    /**
+     * @param  Builder  $query
+     */
     public function scopeWithLeadingBidder(Builder $query)
     {
         /**
@@ -286,12 +290,15 @@ class Auction extends Model
 
         $query->addSelect(
             [
+                'auctions.*',
                 'states.leading_id',
                 'leaderMaxBids.customer_id as winning_customer_id',
             ]);
         $query->leftJoin('states', 'auctions.leading_max_bid_id', 'states.id');
         $query->leftJoin('max_bids as leaderMaxBids', 'states.leading_id', 'leaderMaxBids.id');
         $query->leftJoin('customers', 'customers.id', 'leaderMaxBids.customer_id');
+
+        return $query;
     }
 
 

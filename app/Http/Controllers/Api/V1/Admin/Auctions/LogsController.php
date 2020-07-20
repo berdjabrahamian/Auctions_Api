@@ -3,10 +3,15 @@
 namespace App\Http\Controllers\Api\V1\Admin\Auctions;
 
 use App\Http\Controllers\Api\V1\Admin\AdminController;
+use App\Http\Resources\AdminAuctionResource;
 use App\Http\Resources\AdminLogsCollection;
+use App\Http\Resources\AdminLogsResource;
+use App\Http\Resources\AdminLogsShowResource;
 use App\Model\Auction\Auction;
 use Illuminate\Http\Request;
 use App\Model\Store\Store;
+use Illuminate\Support\Collection;
+use MongoDB\Driver\Query;
 
 class LogsController extends AdminController
 {
@@ -29,10 +34,17 @@ class LogsController extends AdminController
      *
      * @return \Illuminate\Http\Response
      *
+     *
      * TODO: Finish this
      */
-    public function show(Auction $auction)
+    public function show($auction)
     {
-        return $auction->load(['logs']);
+
+        $logs = Store::getCurrentStore()->auctions()->where(['auctions.id' => $auction])->first()->load(['logs.customer']);
+
+        return new AdminLogsShowResource($logs);
+
+//        return Store::getCurrentStore()->logs()->where(['logs.auction_id' => $auction])->with(['customer', 'auction'])->get();
+
     }
 }

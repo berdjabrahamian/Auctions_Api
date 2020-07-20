@@ -30,7 +30,7 @@ class MaxBidInvoke extends FormRequest
 
         $this->setAuction($auction);
 
-        if ($auction && $auction->status == TRUE) {
+        if ($auction && $auction->status == 'Enabled') {
             return TRUE;
         } else {
             return FALSE;
@@ -113,6 +113,13 @@ class MaxBidInvoke extends FormRequest
     private function _auctionChecks()
     {
         $auction = $this->getAuction();
+
+        if (!$auction->has_started) {
+            $this->validator->errors()->add('Auction Hasnt Started',
+                "Auction hasn't started yet, cant place bid.");
+
+            return $this;
+        }
 
         if ($auction->has_ended) {
             $this->validator->errors()->add('Auction Ended',

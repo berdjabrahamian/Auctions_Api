@@ -10,7 +10,6 @@ use App\Http\Resources\AdminProductCollection;
 use App\Http\Resources\AdminProductsResource;
 use App\Model\Product\Product;
 use App\Model\Store\Store;
-use Illuminate\Http\Request;
 
 class ProductsController extends AdminController
 {

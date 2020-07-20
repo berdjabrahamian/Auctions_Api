@@ -19,11 +19,11 @@ class AuctionsCollection extends ResourceCollection
      */
     public function toArray($request)
     {
-        if ($request->hasAny(['auction_ids', 'product_ids'])) {
+//        if ($request->hasAny(['auction_ids', 'product_ids'])) {
             return parent::toArray($request);
-        } else {
-            return $this->_paginate($request);
-        }
+//        } else {
+//            return $this->_paginate($request);
+//        }
     }
 
     /**

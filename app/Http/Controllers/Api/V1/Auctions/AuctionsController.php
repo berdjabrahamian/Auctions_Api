@@ -26,8 +26,10 @@ class AuctionsController extends BaseController
      */
     public function index(AuctionIndex $request)
     {
-        $auctions = Auction::orderBy('auctions.id', 'asc');
+        $auctions = Store::getCurrentStore()->auctions()->orderBy('auctions.id', 'asc');
+
         $auctions->withLeadingBidder();
+
 
         //We get an array of auction_ids
         if ($request->has('auction_ids')) {
@@ -44,7 +46,7 @@ class AuctionsController extends BaseController
             $auctions->withCustomerMaxBid($request->get('customer_id'));
         }
 
-        return new AuctionsCollection($auctions->get()->load(['bids', 'store']));
+        return new AuctionsCollection($auctions->with(['bids', 'store'])->paginate());
     }
 
 
@@ -57,7 +59,7 @@ class AuctionsController extends BaseController
      */
     public function show($id, Request $request)
     {
-        $auction = Auction::where([
+        $auction = Store::getCurrentStore()->auctions()->where([
             ['auctions.id', $id],
         ]);
 

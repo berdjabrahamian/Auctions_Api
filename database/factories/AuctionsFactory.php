@@ -20,7 +20,8 @@ $factory->define(Auction::class, function (Faker $faker) {
         'min_bid'       => 1,
         'is_buyout'     => $faker->boolean,
         'buyout_price'  => 9999,
-        'start_date'    => Carbon::now()->addMinutes(10),
-        'end_date'      => Carbon::now()->addMinutes(120),
+        'bids_count'    => 0,
+        'start_date'    => Carbon::now()->addMinutes(5),
+        'end_date'      => Carbon::now()->addMinutes(15),
     ];
 });
