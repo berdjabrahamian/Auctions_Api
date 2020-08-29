@@ -26,7 +26,7 @@ class CustomersAuctionDetailsResource extends JsonResource
             'initial_price'        => $this->initial_price,
             'current_price'        => $this->current_price,
             'bids_count'           => $this->bids_count,
-            'auction_end_state'    => $this->when($this->has_ended, $this->auction_end_state, NULL),
+            'auction_end_state'    => $this->auction_end_state,
             'hammer_price'         => $this->when($this->has_ended, $this->hammer_price, NULL),
             'hammer_price_premium' => $this->when($this->has_ended, $this->hammer_price_with_premium, NULL),
             'winner_id'            => $this->when($this->winning_customer_id, $this->winning_customer_id, NULL),

@@ -27,7 +27,7 @@ class AuctionResource extends JsonResource
             'initial_price'        => $this->initial_price,
             'current_price'        => $this->current_price,
             'bids_count'           => $this->bids_count,
-            'auction_end_state'    => $this->when($this->has_ended, $this->auction_end_state, null),
+            'auction_end_state'    => $this->auction_end_state,
             'hammer_price'         => $this->when($this->has_ended, $this->hammer_price, null),
             'hammer_price_premium' => $this->when($this->has_ended, $this->hammer_price_with_premium, null),
             'winner_id'            => $this->when($this->winning_customer_id, $this->winning_customer_id, null),
@@ -47,6 +47,9 @@ class AuctionResource extends JsonResource
             return [
                 'amount' => $this->current_user_amount,
                 'outbid' => $this->current_user_outbid,
+                $this->mergeWhen($this->winning_customer_id == $request->get('customer_id'), [
+                    'is_winner' => true,
+                ]),
             ];
         } else {
             return [];
