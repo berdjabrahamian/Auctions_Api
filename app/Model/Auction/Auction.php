@@ -208,10 +208,18 @@ class Auction extends Model
 
     public function getAuctionEndStateAttribute(): string
     {
-        if ($this->leading_max_bid_id) {
-            return 'won';
+        if (!$this->hasStarted()) {
+            return 'Not Started';
+        }
+
+        if ($this->hasEnded()) {
+            if ($this->leading_max_bid_id) {
+                return 'Won';
+            } else {
+                return 'Passed';
+            }
         } else {
-            return 'passed';
+            return 'Running';
         }
     }
 
@@ -261,7 +269,9 @@ class Auction extends Model
     public function scopeWithCustomerMaxBid($query, $customer_id)
     {
         $customerMaxBids = $query->addSelect([
-            'max_bids.amount AS current_user_amount', 'max_bids.outbid AS current_user_outbid',
+            'max_bids.amount AS current_user_amount',
+            'max_bids.outbid AS current_user_outbid',
+
         ]);
 
         $customerMaxBids = $query->leftJoin('max_bids', function ($leftJoin) use ($customer_id) {
@@ -282,7 +292,7 @@ class Auction extends Model
          * select "states"."leading_id",
          * "leaderMaxBids"."customer_id"
          * from "auctions"
-         * left join "states" on "auctions"."leading_max_bid_id" = "states"."id"
+         * left join "states" on "auctions"."id" = "states"."id"
          * left join "max_bids" as "leaderMaxBids" on "states"."leading_id" = "leaderMaxBids"."id"
          * left join "customers" on "customers"."id" = "leaderMaxBids"."customer_id"
          *
@@ -294,7 +304,7 @@ class Auction extends Model
                 'states.leading_id',
                 'leaderMaxBids.customer_id as winning_customer_id',
             ]);
-        $query->leftJoin('states', 'auctions.leading_max_bid_id', 'states.id');
+        $query->leftJoin('states', 'auctions.id', 'states.id');
         $query->leftJoin('max_bids as leaderMaxBids', 'states.leading_id', 'leaderMaxBids.id');
         $query->leftJoin('customers', 'customers.id', 'leaderMaxBids.customer_id');
 
