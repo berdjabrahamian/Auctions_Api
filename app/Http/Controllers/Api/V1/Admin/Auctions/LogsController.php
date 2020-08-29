@@ -44,7 +44,5 @@ class LogsController extends AdminController
 
         return new AdminLogsShowResource($logs);
 
-//        return Store::getCurrentStore()->logs()->where(['logs.auction_id' => $auction])->with(['customer', 'auction'])->get();
-
     }
 }
