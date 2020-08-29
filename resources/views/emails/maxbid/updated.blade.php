@@ -82,6 +82,7 @@
                             <tr>
                                 <td style="font-family: sans-serif; font-size: 15px; line-height: 20px; color: #555555; padding-top: 10px;"
                                     class="stack-column-center">
+                                    <h5 style="margin:0 auto 10px;">Your Max Bid: {{$maxBid->amount}}</h5>
                                     <h3 style="margin:0 auto 10px;">Current Price: ${{$auction->current_price}} {{$store->currency}}</h3>
                                     <h5 style="margin:0 auto 15px;">This auction ends on {{$auction->end_date}}</h5>
                                     <a class="button-a button-a-primary" href="{{$product->product_url}}"
