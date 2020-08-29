@@ -29,7 +29,7 @@ class AdminAuctionResource extends JsonResource
             'has_ended'     => $this->has_ended,
             'created_at'    => $this->created_at,
             'updated_at'    => $this->updated_at,
-            'logs'          => new AdminLogsResource($this->whenLoaded('logs')),
+            'logs'          => new AdminLogsCollection($this->whenLoaded('logs')),
         ];
     }
 }
