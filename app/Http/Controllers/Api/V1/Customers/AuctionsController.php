@@ -24,7 +24,8 @@ class AuctionsController extends BaseController
     {
         $customer = Store::getCurrentStore()->customers()->where('platform_id', $request->customer)->firstOrFail();
 
-        $auctionsBidOn = $customer->auctionsBidOn()->with('product')
+        $auctionsBidOn = $customer->auctionsBidOn()->withLeadingBidder()->with('product')
+            ->addSelect('auctions.*')
             ->addSelect('max_bids.outbid')
             ->addSelect('max_bids.amount as max_bid_amount')
             ->get();
