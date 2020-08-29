@@ -51,7 +51,7 @@ class MaxBidController extends BaseController
             'outbid'      => FALSE,
         ]);
 
-        GenerateBids::dispatchNow($customer, $maxBid);
+        (new MaxBid\GenerateMaxBid($customer,$maxBid))->handle();
 
         return new MaxBidsResource($maxBid->load('auction'));
     }
