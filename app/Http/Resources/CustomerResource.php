@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources;
 
+use App\Model\Customer\Customer;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class CustomerResource extends JsonResource
@@ -15,7 +16,7 @@ class CustomerResource extends JsonResource
      */
     public function toArray($request)
     {
-        $customerData = $this->_customer($request);
+        $customerData = $this->_customer();
 
         return [
             'email'       => $customerData['email'],
@@ -27,17 +28,18 @@ class CustomerResource extends JsonResource
     /**
      * @param $request
      *
-     * @see Customer::hideValues()
+     * @var $this Customer
      * @return \Illuminate\Http\Resources\MissingValue|mixed
      */
-    private function _customer($request)
+    private function _customer()
     {
-        $customer = $this;
 
-        if ($request->has('hidden')) {
-            $customer = $customer->hideValues();
+        $storeOptions = $this->store->options;
+
+        if ($storeOptions->customer_data_hidden) {
+            return $this->hideValues();
         }
 
-        return $customer;
+        return $this;
     }
 }

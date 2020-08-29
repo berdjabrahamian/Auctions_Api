@@ -44,6 +44,10 @@ class Store extends Model
         return $this->hasMany(Log::class, 'store_id', 'id');
     }
 
+    public function options() {
+        return $this->hasOne(Options::class, 'store_id', 'id');
+    }
+
 
     public function buyersPremiumPrice($amount)
     {
