@@ -51,6 +51,12 @@ Route::prefix('v1')->group(function () {
                         'index', 'store', 'show', 'update', 'destroy',
                     ]);
                 });
+
+                Route::namespace('Stores')->group(function() {
+                   Route::get('store', 'StoresController')->name('store');
+
+                   Route::resource('store/{store}/options', 'OptionsController')->only(['store', 'update']);
+                });
             });
         });
     });
