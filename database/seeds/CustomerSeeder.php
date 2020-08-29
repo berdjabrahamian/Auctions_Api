@@ -18,6 +18,13 @@ class CustomerSeeder extends Seeder
             'platform_id' => 1,
         ]);
 
+        factory(\App\Model\Customer\Customer::class, 1)->create([
+            'email'       => 'test2@example.com',
+            'first_name'  => 'test2',
+            'last_name'   => 'example2',
+            'platform_id' => 2,
+        ]);
+
 
         factory(\App\Model\Customer\Customer::class, 3)->create();
     }
