@@ -46,7 +46,7 @@ class MaxBidInvoke extends FormRequest
     {
         return [
             'auction_id'     => 'required|numeric|exists:auctions,id',
-            'max_bid.amount' => 'required|numeric',
+            'max_bid.amount' => 'required|gt:0|numeric',
             'customer.id'    => 'required',
             'customer.email' => 'required|email',
         ];
