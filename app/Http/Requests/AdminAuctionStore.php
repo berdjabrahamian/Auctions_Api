@@ -44,6 +44,7 @@ class AdminAuctionStore extends FormRequest
             'auction.buyout_price'   => 'required|integer',
             'auction.start_date'     => 'required|date',
             'auction.end_date'       => 'required|date:after:start_date',
+            'auction.type'           => 'required',
             'product.platform_id'    => 'required',
             'product.sku'            => 'required',
             'product.name'           => 'required',
@@ -65,7 +66,7 @@ class AdminAuctionStore extends FormRequest
      * CHECKS
      * Does product exists - if no product -> then no auction check -> then everything is new and needs to be created
      * Multiple Products same ID -> platform_id should be unique to each product (primary key from the platform) -> and
-     * so there shouldnt be multiple products with the same primary key Sku match -> Sku from the request should match
+     * so there shouldn't be multiple products with the same primary key Sku match -> Sku from the request should match
      * sku already in system
      *
      * @return $this
@@ -107,7 +108,7 @@ class AdminAuctionStore extends FormRequest
 
 
     /**
-     * Run Checks against current store auctions as safegaurds
+     * Run Checks against current store auctions as safe-guards
      *
      * Does product exists based on its product_id
      * Does auction exist based on its connected product

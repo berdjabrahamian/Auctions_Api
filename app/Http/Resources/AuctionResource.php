@@ -28,9 +28,10 @@ class AuctionResource extends JsonResource
             'current_price'        => $this->current_price,
             'bids_count'           => $this->bids_count,
             'auction_end_state'    => $this->auction_end_state,
-            'hammer_price'         => $this->when($this->has_ended, $this->hammer_price, null),
-            'hammer_price_premium' => $this->when($this->has_ended, $this->hammer_price_with_premium, null),
-            'winner_id'            => $this->when($this->winning_customer_id, $this->winning_customer_id, null),
+            'hammer_price'         => $this->when($this->has_ended, $this->hammer_price, NULL),
+            'hammer_price_premium' => $this->when($this->has_ended, $this->hammer_price_with_premium, NULL),
+            'winner_id'            => $this->when($this->winning_customer_id, $this->winning_customer_id, NULL),
+            'type'                 => $this->type,
             'current_user_bid'     => $this->_currentUser($request),
             'product'              => new ProductResource($this->whenLoaded('product')),
         ];

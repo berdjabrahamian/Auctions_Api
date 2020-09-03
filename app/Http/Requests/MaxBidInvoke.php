@@ -1,19 +1,29 @@
 <?php
 
 namespace App\Http\Requests;
-
-use App\Model\Auction\Auction;
-use App\Model\Auction\MaxBid;
-use App\Model\Customer\Customer;
 use App\Model\Store\Store;
 use Illuminate\Foundation\Http\FormRequest;
 
+/**
+ * Class MaxBidInvoke
+ *
+ * @package App\Http\Requests
+ */
 class MaxBidInvoke extends FormRequest
 {
 
+    /**
+     * @var
+     */
     protected $customer;
     protected $maxBid;
     protected $auction;
+    protected $store;
+
+
+    /**
+     * @var
+     */
     protected $maxBidRequestAmount;
 
     /**
@@ -23,14 +33,13 @@ class MaxBidInvoke extends FormRequest
      */
     public function authorize()
     {
-        $auction = Auction::where([
-            ['id', $this->input('auction_id')],
-            ['store_id', Store::getCurrentStore()->id],
+        $auction = Store::getCurrentStore()->auctions()->where([
+            ['id', $this->input('auction_id')]
         ])->first();
 
-        $this->setAuction($auction);
-
         if ($auction && $auction->status == 'Enabled') {
+            $this->setAuction($auction);
+            $this->setStore($auction->store);
             return TRUE;
         } else {
             return FALSE;
@@ -40,13 +49,14 @@ class MaxBidInvoke extends FormRequest
     /**
      * Get the validation rules that apply to the request.
      *
+     *
      * @return array
      */
     public function rules()
     {
         return [
             'auction_id'     => 'required|numeric|exists:auctions,id',
-            'max_bid.amount' => 'required|gt:0|numeric',
+            'max_bid.amount' => ['required', 'gt:0', 'numeric'],
             'customer.id'    => 'required',
             'customer.email' => 'required|email',
         ];
@@ -68,7 +78,6 @@ class MaxBidInvoke extends FormRequest
         $this->setMaxBidRequestAmount($this->input('max_bid.amount'));
     }
 
-
     public function withValidator($validator)
     {
         $validator->after(function () {
@@ -78,15 +87,13 @@ class MaxBidInvoke extends FormRequest
         });
     }
 
-
     /**
      *
      */
     private function _customerChecks()
     {
-        $customer = Customer::where([
+        $customer = Store::getCurrentStore()->customers()->where([
             'platform_id' => $this->input('customer.id'),
-            'store_id'    => Store::getCurrentStore()->id,
             'email'       => $this->input('customer.email'),
         ])->first();
 
@@ -99,7 +106,7 @@ class MaxBidInvoke extends FormRequest
 
         if (!$customer->approved) {
             $this->validator->errors()->add('Customer Not Approved',
-                "Customer account hasnt been approved for bidding");
+                "Customer account hasn't been approved for bidding");
 
             return $this;
         }
@@ -110,13 +117,19 @@ class MaxBidInvoke extends FormRequest
     }
 
 
+    /**
+     * @throws Illuminate\Support\MessageBag Auction hasn't started and not accepting any bids
+     * @throws Illuminate\Support\MessageBag Auction has ended and not accepting any more bids
+     *
+     * @return $this
+     */
     private function _auctionChecks()
     {
         $auction = $this->getAuction();
 
         if (!$auction->has_started) {
-            $this->validator->errors()->add('Auction Hasnt Started',
-                "Auction hasn't started yet, cant place bid.");
+            $this->validator->errors()->add("Auction Hasn't Started",
+                "Auction hasn't started and not accepting any bids");
 
             return $this;
         }
@@ -126,13 +139,6 @@ class MaxBidInvoke extends FormRequest
                 "Auction has ended and not accepting any more bids");
 
             return $this;
-        };
-
-        if ($this->maxBidRequestAmount <= $auction->current_price) {
-            $this->validator->errors()->add('Max Bid Amount',
-                "Max Bid amount cant be less than or equal to the current auction price");
-
-            return $this;
         }
 
         return $this;
@@ -140,32 +146,87 @@ class MaxBidInvoke extends FormRequest
     }
 
     /**
+     * @throws Illuminate\Support\MessageBag Already Set to {Max Bid Amount}
+     * @throws Illuminate\Support\MessageBag Max Bid Amount cant be less than or equal to the current auction price
      *
      * @return $this
      */
     private function _maxBidChecks()
     {
-        $customer = $this->getCustomer();
 
-        if ($customer) {
-            $maxBid = MaxBid::where([
-                'store_id'    => Store::getCurrentStore()->id,
-                'auction_id'  => $this->input('auction_id'),
-                'customer_id' => $this->customer->id,
-            ])->first();
+        $maxBid = Store::getCurrentStore()->maxBids()->where([
+            'auction_id'  => $this->input('auction_id'),
+            'customer_id' => $this->customer->id,
+        ])->first();
 
-            $this->setMaxBid($maxBid);
-        }
+        $this->setMaxBid($maxBid);
 
-        if (!$this->maxBid) {
+        if (!$this->getMaxBid()) {
             return $this;
         }
 
+        // Dont allow setting a bid that is the same as the customer already existing max bid
         if ($this->maxBidRequestAmount == $this->maxBid->amount) {
             $this->validator->errors()->add('Max Bid',
                 "Already set to {$this->maxBidRequestAmount}");
         }
 
+        // Dont allow setting a bid that is lower than the current auction price
+        if ($this->maxBidRequestAmount <= $this->auction->current_price) {
+            $this->validator->errors()->add('Max Bid Amount',
+                "Max Bid amount cant be less than or equal to the current auction price");
+
+            return $this;
+        }
+
+        // SPECIFIC AUCTION CHECKS
+        switch ($this->auction->type){
+            case 'absolute':
+                $this->_absoluteAuctionChecks();
+                    break;
+            case 'max_bid':
+                $this->_maxBidAuctionChecks();
+                break;
+            default:
+                return $this;
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return $this
+     */
+    private function _absoluteAuctionChecks() {
+
+
+        //Bidding more than the allowed amount
+        $allowedMaxBidAmount = $this->getStore()->options->absolute_auction_max_bid_amount;
+
+        if (($this->maxBidRequestAmount - $this->getAuction()->current_price) > $allowedMaxBidAmount) {
+            $this->validator->errors()->add('Bid Amount',
+                "You bid cant be more than \${$allowedMaxBidAmount} of the current auction price");
+            return $this;
+        }
+
+        //Cant bid the same amount
+        if ($this->maxBidRequestAmount == $this->getAuction()->current_price) {
+            $this->validator->errors()->add('Bid Amount',
+                "Your bid cant be the same as the current auction price");
+            return $this;
+        }
+
+        //Customer cant outbid themselves if they are the winner
+//        if ($this->getAuction()->state->leading_id == $this->getMaxBid()->id) {
+//            $this->validator->errors()->add('Bid Amount',
+//                "You cant outbid yourself as the winner");
+//            return $this;
+//        }
+
+        return $this;
+    }
+
+    private function _maxBidAuctionChecks() {
         return $this;
     }
 
@@ -223,6 +284,22 @@ class MaxBidInvoke extends FormRequest
     public function getAuction()
     {
         return $this->auction;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getStore()
+    {
+        return $this->store;
+    }
+
+    /**
+     * @param  mixed  $store
+     */
+    public function setStore($store): void
+    {
+        $this->store = $store;
     }
 
 

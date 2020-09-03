@@ -2,17 +2,17 @@
 
 namespace App\Http\Controllers\Api\V1\Auctions;
 
-use App\Events\GenerateBidsEvent;
+use App\Exceptions\GenerateNewMaxBidException;
+use App\Model\Auction\MaxBid\GenerateMaxBid as GenerateMaxBid;
+use App\Model\Auction\MaxBid\GenerateAbsoluteMaxBid as GenerateAbsoluteMaxBid;
 use App\Http\Controllers\Api\V1\BaseController;
 use App\Http\Requests\MaxBidInvoke;
 use App\Http\Resources\MaxBidsResource;
-use App\Jobs\GenerateBids;
-use App\Model\Auction\Auction;
 use App\Model\Auction\MaxBid;
 use App\Model\Store\Store;
-use App\Model\Customer\Customer;
 use App\Observers\MaxBidObserver;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\DB;
 
 
 class MaxBidController extends BaseController
@@ -22,7 +22,9 @@ class MaxBidController extends BaseController
      *
      * @param  MaxBidInvoke  $request
      *
-     * @return \Illuminate\Http\Response
+     * @throws GenerateNewMaxBidException
+     *
+     * @return MaxBidsResource
      */
     public function __invoke(MaxBidInvoke $request)
     {
@@ -39,6 +41,8 @@ class MaxBidController extends BaseController
          * @see MaxBidObserver::created()
          * @see MaxBidObserver::updated()
          */
+        DB::beginTransaction();
+
         $maxBid = MaxBid::updateOrCreate([
             ['store_id', Store::getCurrentStore()->id],
             ['auction_id', $validated['auction_id']],
@@ -51,9 +55,17 @@ class MaxBidController extends BaseController
             'outbid'      => FALSE,
         ]);
 
-        (new MaxBid\GenerateMaxBid($customer,$maxBid))->handle();
+        if ($maxBid->auction->type == 'absolute') {
+            $generateBid = new GenerateAbsoluteMaxBid($customer, $maxBid);
+        } else {
+            $generateBid = new GenerateMaxBid($customer,$maxBid);
+        }
 
-        return new MaxBidsResource($maxBid->load('auction'));
+        $generateBid->handle();
+
+        DB::commit();
+
+        return new MaxBidsResource($maxBid);
     }
 
 }

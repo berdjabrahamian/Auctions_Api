@@ -16,6 +16,14 @@ class StoreSeeder extends Seeder
             'public_key' => 'pk_12345',
             'secret_key' => 'sk_12345',
         ]);
+
+        $options = new \App\Model\Store\Options([
+           'store_id' => 1,
+           'customer_data_hidden' => true,
+           'absolute_auction_max_bid_amount' => 1000,
+        ]);
+
+        $options->save();
     }
 
 

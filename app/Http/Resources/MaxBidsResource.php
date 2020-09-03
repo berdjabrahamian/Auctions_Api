@@ -21,7 +21,6 @@ class MaxBidsResource extends JsonResource
             'customer_id'  => $this->customer_id,
             'outbid'       => $this->outbid,
             'amount_cents' => $this->amount_cents,
-            'auction'      => $this->whenLoaded('auction', $this->auction),
         ];
     }
 }

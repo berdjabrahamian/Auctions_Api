@@ -13,6 +13,7 @@ class Options extends Model
     protected $fillable = ['customer_data_hidden'];
     protected $attributes = [
       'customer_data_hidden' => false,
+      'absolute_auction_max_bid_amount' => 1000,
     ];
 
 

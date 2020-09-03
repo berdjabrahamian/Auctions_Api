@@ -4,6 +4,7 @@ namespace App\Model\Store;
 
 use App\Model\Auction\Auction;
 use App\Model\Auction\Log;
+use App\Model\Auction\MaxBid;
 use App\Model\Customer\Customer;
 use App\Model\Product\Product;
 use Illuminate\Database\Eloquent\Model;
@@ -46,6 +47,10 @@ class Store extends Model
 
     public function options() {
         return $this->hasOne(Options::class, 'store_id', 'id');
+    }
+
+    public function maxBids() {
+        return $this->hasMany(MaxBid::class, 'store_id', 'id');
     }
 
 

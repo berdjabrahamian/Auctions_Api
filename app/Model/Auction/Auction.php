@@ -44,6 +44,7 @@ class Auction extends Model
         'bids_count'    => 'int',
         'has_started'   => 'bool',
         'has_ended'     => 'bool',
+        'type'          => 'string',
     ];
     protected $dates        = [
         'start_date',
@@ -209,17 +210,17 @@ class Auction extends Model
     public function getAuctionEndStateAttribute(): string
     {
         if (!$this->hasStarted()) {
-            return 'Not Started';
+            return 'not started';
         }
 
         if ($this->hasEnded()) {
             if ($this->leading_max_bid_id) {
-                return 'Won';
+                return 'ended';
             } else {
-                return 'Passed';
+                return 'passed';
             }
         } else {
-            return 'Running';
+            return 'running';
         }
     }
 

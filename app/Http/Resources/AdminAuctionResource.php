@@ -27,6 +27,7 @@ class AdminAuctionResource extends JsonResource
             'end_date'      => $this->end_date,
             'has_started'   => $this->has_started,
             'has_ended'     => $this->has_ended,
+            'type'          => $this->type,
             'created_at'    => $this->created_at,
             'updated_at'    => $this->updated_at,
             'logs'          => new AdminLogsCollection($this->whenLoaded('logs')),

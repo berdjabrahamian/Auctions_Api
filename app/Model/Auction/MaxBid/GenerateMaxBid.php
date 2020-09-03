@@ -5,20 +5,15 @@ namespace App\Model\Auction\MaxBid;
 
 
 use App\Exceptions\GenerateNewBidException;
+use App\Exceptions\GenerateNewMaxBidException;
 use App\Model\Auction\Auction;
 use App\Model\Auction\Bid;
 use App\Model\Auction\MaxBid;
 use App\Model\Auction\State;
 use App\Model\Customer\Customer;
 
-class GenerateMaxBid
-{
-    protected $maxBid;
-    protected $customer;
-    protected $auction;
-    protected $state;
-    public    $stateLeadingBidId;
-    public    $newAuctionPrice;
+class GenerateMaxBid extends GenerateMaxBidAbstract {
+
 
     public function __construct(Customer $customer, MaxBid $maxBid)
     {
@@ -55,6 +50,7 @@ class GenerateMaxBid
     public function handle()
     {
         $this->_calculateNewAuctionPrice();
+
 
         /**
          *
@@ -110,15 +106,8 @@ class GenerateMaxBid
         );
     }
 
-    private function _updateState()
-    {
-        $this->state->update([
-            'leading_id' => $this->maxBid->id,
-            'current_price' => $this->getNewAuctionPrice(),
-        ]);
-    }
 
-    private function _runBidProcess($outbid = FALSE)
+    protected function _runBidProcess($outbid = FALSE)
     {
         if ($outbid) {
             Bid::placeBid($this->maxBid->amount, $this->customer, $this->auction);
@@ -154,11 +143,10 @@ class GenerateMaxBid
         return $this;
     }
 
-
     /**
      * @return mixed
      */
-    private function _calculateNewAuctionPrice()
+    protected function _calculateNewAuctionPrice()
     {
         //Lets see if the current state has a max bid or not
         $stateLeadingMaxBidAmount = $this->state->maxBid ? $this->state->maxBid->amount : 0;
@@ -223,35 +211,4 @@ class GenerateMaxBid
     }
 
 
-    /**
-     * @return mixed
-     */
-    public function getStateLeadingBidId()
-    {
-        return $this->stateLeadingBidId;
-    }
-
-    /**
-     * @param  mixed  $stateLeadingBidId
-     */
-    public function setStateLeadingBidId($stateLeadingBidId): void
-    {
-        $this->stateLeadingBidId = $stateLeadingBidId;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getNewAuctionPrice()
-    {
-        return $this->newAuctionPrice;
-    }
-
-    /**
-     * @param  mixed  $newAuctionPrice
-     */
-    public function setNewAuctionPrice($newAuctionPrice): void
-    {
-        $this->newAuctionPrice = $newAuctionPrice;
-    }
 }
