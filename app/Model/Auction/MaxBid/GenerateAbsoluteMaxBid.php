@@ -4,12 +4,10 @@
 namespace App\Model\Auction\MaxBid;
 
 
-use App\Exceptions\GenerateNewBidException;
 use App\Exceptions\GenerateNewMaxBidException;
 use App\Model\Auction\Auction;
 use App\Model\Auction\Bid;
 use App\Model\Auction\MaxBid;
-use App\Model\Auction\State;
 use App\Model\Customer\Customer;
 
 class GenerateAbsoluteMaxBid extends GenerateMaxBidAbstract
@@ -114,14 +112,11 @@ class GenerateAbsoluteMaxBid extends GenerateMaxBidAbstract
 
         Bid::placeBid($this->getNewAuctionPrice(), $this->customer, $this->auction);
 
-        $this->state->update([
-            'current_price' => $this->getNewAuctionPrice(),
-            'leading_id'    => $this->maxBid->id,
-        ]);
-
         $this->state->maxBid->update([
             'outbid' => TRUE,
         ]);
+
+        $this->_updateState();
 
 
         $this->maxBid->update([
