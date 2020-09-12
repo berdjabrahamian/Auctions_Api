@@ -36,21 +36,21 @@ class AdminAuctionStore extends FormRequest
     public function rules()
     {
         return [
-            'auction.name'           => 'required',
-            'auction.status'         => 'required',
-            'auction.starting_price' => 'required|integer',
-            'auction.min_bid'        => 'required|integer',
-            'auction.is_buyout'      => 'present|boolean',
-            'auction.buyout_price'   => 'required|integer',
-            'auction.start_date'     => 'required|date',
-            'auction.end_date'       => 'required|date:after:start_date',
-            'auction.type'           => 'required',
-            'product.platform_id'    => 'required',
-            'product.sku'            => 'required',
-            'product.name'           => 'required',
-            'product.description'    => 'required',
-            'product.image_url'      => 'required',
-            'product.product_url'    => 'required',
+            'auction.name'           => ['required'],
+            'auction.status'         => ['required'],
+            'auction.starting_price' => ['required', 'integer'],
+            'auction.min_bid'        => ['required', 'integer'],
+            'auction.is_buyout'      => ['present', 'boolean'],
+            'auction.buyout_price'   => ['required', 'integer'],
+            'auction.start_date'     => ['required', 'date'],
+            'auction.end_date'       => ['required', 'date:after:start_date'],
+            'auction.type'           => ['required'],
+            'product.platform_id'    => ['required'],
+            'product.sku'            => ['required'],
+            'product.name'           => ['required'],
+            'product.description'    => ['required'],
+            'product.image_url'      => ['required'],
+            'product.product_url'    => ['required'],
         ];
     }
 
@@ -74,9 +74,8 @@ class AdminAuctionStore extends FormRequest
     protected function _productChecks()
     {
         //Get products that belong to the store and have the same sku
-        $product = Product::where([
+        $product = Store::getCurrentStore()->products()->where([
             ['platform_id', $this->query('product')['platform_id']],
-            ['store_id', Store::getCurrentStore()->id],
         ])->get();
 
 

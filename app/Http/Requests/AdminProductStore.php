@@ -2,7 +2,6 @@
 // TODO: finish this with additional logic
 namespace App\Http\Requests;
 
-use App\Model\Product\Product;
 use App\Model\Store\Store;
 use Illuminate\Foundation\Http\FormRequest;
 
@@ -26,7 +25,7 @@ class AdminProductStore extends FormRequest
     public function rules()
     {
         return [
-            'sku'         => ['required'],
+            'sku'         => ['required', 'unique:products,sku'],
             'platform_id' => ['required'],
             'name'        => ['required'],
             'description' => ['required'],
@@ -54,9 +53,8 @@ class AdminProductStore extends FormRequest
     protected function _productChecks()
     {
         // Product by Platform_ID & Store_ID
-        $product = Product::where([
+        $product = Store::getCurrentStore()->products()->where([
             ['platform_id', $this->query('platform_id')],
-            ['store_id', Store::getCurrentStore()->id],
         ])->get();
 
         //This is good, a product should not exist since we are creating it from scratch
@@ -77,6 +75,8 @@ class AdminProductStore extends FormRequest
 
             return $this;
         }
+
+        return $this;
 
     }
 }
