@@ -23,5 +23,6 @@ $factory->define(Auction::class, function (Faker $faker) {
         'bids_count'    => 0,
         'start_date'    => Carbon::now(),
         'end_date'      => Carbon::now()->addMinutes(15),
+        'type'          => $faker->randomElement(['absolute', 'max_bid']),
     ];
 });
