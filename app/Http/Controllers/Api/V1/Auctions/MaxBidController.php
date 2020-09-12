@@ -55,13 +55,18 @@ class MaxBidController extends BaseController
             'outbid'      => FALSE,
         ]);
 
-        if ($maxBid->auction->type == 'absolute') {
-            $generateBid = new GenerateAbsoluteMaxBid($customer, $maxBid);
-        } else {
-            $generateBid = new GenerateMaxBid($customer,$maxBid);
-        }
 
-        $generateBid->handle();
+        switch ($maxBid->auction->type) {
+            case 'absolute':
+                (new GenerateAbsoluteMaxBid($customer, $maxBid))->handle();
+                break;
+            case 'max_bid':
+                (new GenerateMaxBid($customer,$maxBid))->handle();
+                break;
+            default:
+                (new GenerateMaxBid($customer,$maxBid))->handle();
+                break;
+        }
 
         DB::commit();
 
