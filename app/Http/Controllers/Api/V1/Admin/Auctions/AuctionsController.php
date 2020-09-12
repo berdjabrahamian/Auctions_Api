@@ -21,7 +21,7 @@ class AuctionsController extends AdminController
     {
         $auctions = Store::getCurrentStore()->auctions()->with('bids')->orderBy('id', 'desc');
 
-        return new AdminAuctionCollection($auctions->paginate());
+        return new AdminAuctionCollection($auctions->paginate($request->get('per_page')));
     }
 
 

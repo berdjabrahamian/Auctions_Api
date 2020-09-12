@@ -24,7 +24,7 @@ class AdminAuctionIndex extends FormRequest
     public function rules()
     {
         return [
-            //
+            'per_page' => ['sometimes', 'numeric'],
         ];
     }
 }
