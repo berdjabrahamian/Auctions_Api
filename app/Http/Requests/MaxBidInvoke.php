@@ -199,7 +199,6 @@ class MaxBidInvoke extends FormRequest
      */
     private function _absoluteAuctionChecks() {
 
-
         //Bidding more than the allowed amount
         $allowedMaxBidAmount = $this->getStore()->options->absolute_auction_max_bid_amount;
 
@@ -217,16 +216,22 @@ class MaxBidInvoke extends FormRequest
         }
 
         //Customer cant outbid themselves if they are the winner
-//        if ($this->getAuction()->state->leading_id == $this->getMaxBid()->id) {
-//            $this->validator->errors()->add('Bid Amount',
-//                "You cant outbid yourself as the winner");
-//            return $this;
-//        }
+        if ($this->getAuction()->state->leading_id == $this->getMaxBid()->id) {
+            $this->validator->errors()->add('Bid Amount',
+                "You cant outbid yourself as the winner");
+            return $this;
+        }
 
         return $this;
     }
 
     private function _maxBidAuctionChecks() {
+
+        if (($this->maxBidRequestAmount - $this->getAuction()->current_price) < $this->getAuction()->min_bid) {
+            $this->validator->errors()->add('Max Bid Amount',
+                "The bid you placed is less than the allowed minimum bid for this auction");
+            return $this;
+        }
         return $this;
     }
 
