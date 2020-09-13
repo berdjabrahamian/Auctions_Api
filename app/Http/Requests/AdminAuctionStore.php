@@ -5,6 +5,7 @@ namespace App\Http\Requests;
 use App\Model\Auction\Auction;
 use App\Model\Product\Product;
 use App\Model\Store\Store;
+use App\Rules\AuctionCreateTypeCheck;
 use Carbon\Carbon;
 use Illuminate\Foundation\Http\FormRequest;
 
@@ -44,7 +45,9 @@ class AdminAuctionStore extends FormRequest
             'auction.buyout_price'   => ['required', 'integer'],
             'auction.start_date'     => ['required', 'date'],
             'auction.end_date'       => ['required', 'date:after:start_date'],
-            'auction.type'           => ['required'],
+            // TODO: not sure if im keeping this still
+//            'auction.bid_amount'     => ['exclude_unless:auction.type,min_bid','required_if:auction.type,min_bid', 'integer', 'lte:auction.min_bid'],
+            'auction.type'           => ['required', new AuctionCreateTypeCheck()],
             'product.platform_id'    => ['required'],
             'product.sku'            => ['required'],
             'product.name'           => ['required'],
@@ -88,14 +91,12 @@ class AdminAuctionStore extends FormRequest
         if ($product->count() >= 1) {
             $this->validator->errors()->add('Multiple Products',
                 "There are multiple products that have the same platform_id");
-
             return $this;
         }
 
         if ($product->first()->sku != $this->query('product')['sku']) {
             $this->validator->errors()->add('Existing Product',
                 "A product with the ID of {$product->first()->platform_id} has a different sku that the one provided");
-
             return $this;
         }
 

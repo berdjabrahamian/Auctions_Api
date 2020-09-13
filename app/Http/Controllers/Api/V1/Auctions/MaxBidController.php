@@ -3,8 +3,8 @@
 namespace App\Http\Controllers\Api\V1\Auctions;
 
 use App\Exceptions\GenerateNewMaxBidException;
-use App\Model\Auction\MaxBid\GenerateMaxBid as GenerateMaxBid;
-use App\Model\Auction\MaxBid\GenerateAbsoluteMaxBid as GenerateAbsoluteMaxBid;
+use App\Model\Auction\MaxBid\GenerateMinBid;
+use App\Model\Auction\MaxBid\GenerateAbsoluteBid;
 use App\Http\Controllers\Api\V1\BaseController;
 use App\Http\Requests\MaxBidInvoke;
 use App\Http\Resources\MaxBidsResource;
@@ -58,13 +58,13 @@ class MaxBidController extends BaseController
 
         switch ($maxBid->auction->type) {
             case 'absolute':
-                (new GenerateAbsoluteMaxBid($customer, $maxBid))->handle();
+                (new GenerateAbsoluteBid($customer, $maxBid))->handle();
                 break;
-            case 'max_bid':
-                (new GenerateMaxBid($customer,$maxBid))->handle();
+            case 'min_bid':
+                (new GenerateMinBid($customer,$maxBid))->handle();
                 break;
             default:
-                (new GenerateMaxBid($customer,$maxBid))->handle();
+                (new GenerateMinBid($customer,$maxBid))->handle();
                 break;
         }
 

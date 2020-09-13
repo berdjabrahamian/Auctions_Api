@@ -171,6 +171,15 @@ class Auction extends Model
         return $value / 100;
     }
 
+    // TODO: not sure if im keeping this still
+/*    public function setBidAmountAttribute($value) {
+        $this->attributes['bid_amount'] = $value * 100;
+    }
+
+    public function getBidAmountAttribute($value): int {
+        return $value / 100;
+    }*/
+
     public function setBuyoutPriceAttribute($value)
     {
         $this->attributes['buyout_price'] = $value * 100;

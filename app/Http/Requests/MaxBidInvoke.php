@@ -184,8 +184,8 @@ class MaxBidInvoke extends FormRequest
             case 'absolute':
                 $this->_absoluteAuctionChecks();
                     break;
-            case 'max_bid':
-                $this->_maxBidAuctionChecks();
+            case 'min_bid':
+                $this->_minBidAuctionChecks();
                 break;
             default:
                 return $this;
@@ -225,7 +225,7 @@ class MaxBidInvoke extends FormRequest
         return $this;
     }
 
-    private function _maxBidAuctionChecks() {
+    private function _minBidAuctionChecks() {
 
         if (($this->maxBidRequestAmount - $this->getAuction()->current_price) < $this->getAuction()->min_bid) {
             $this->validator->errors()->add('Max Bid Amount',

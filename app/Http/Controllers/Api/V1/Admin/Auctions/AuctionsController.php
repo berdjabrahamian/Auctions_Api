@@ -53,6 +53,9 @@ class AuctionsController extends AdminController
             'buyout_price'  => $validated['auction.buyout_price'],
             'start_date'    => $validated['auction.start_date'],
             'end_date'      => $validated['auction.end_date'],
+            'type'          => $validated['auction.type'],
+            // TODO: not sure if im keeping this still
+//            'bid_amount'   => $validated['auction.bid_amount'],
         ]);
 
         $auction->store()->associate(Store::getCurrentStore());

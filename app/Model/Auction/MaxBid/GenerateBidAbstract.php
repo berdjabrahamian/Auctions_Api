@@ -6,7 +6,7 @@ namespace App\Model\Auction\MaxBid;
 
 use App\Model\Auction\Bid;
 
-abstract class GenerateMaxBidAbstract
+abstract class GenerateBidAbstract
 {
 
     protected $maxBid;

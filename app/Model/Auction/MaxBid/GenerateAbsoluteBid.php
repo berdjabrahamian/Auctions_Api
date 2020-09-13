@@ -10,7 +10,7 @@ use App\Model\Auction\Bid;
 use App\Model\Auction\MaxBid;
 use App\Model\Customer\Customer;
 
-class GenerateAbsoluteMaxBid extends GenerateMaxBidAbstract
+class GenerateAbsoluteBid extends GenerateBidAbstract
 {
 
 

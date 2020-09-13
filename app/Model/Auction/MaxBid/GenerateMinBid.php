@@ -1,10 +1,12 @@
 <?php
 
 
+// TODO: Fix the comments as the CASES have been shifted
+// TODO: COme back to this as its getting out of hand
+
+
 namespace App\Model\Auction\MaxBid;
 
-
-use App\Exceptions\GenerateNewBidException;
 use App\Exceptions\GenerateNewMaxBidException;
 use App\Model\Auction\Auction;
 use App\Model\Auction\Bid;
@@ -12,7 +14,7 @@ use App\Model\Auction\MaxBid;
 use App\Model\Auction\State;
 use App\Model\Customer\Customer;
 
-class GenerateMaxBid extends GenerateMaxBidAbstract {
+class GenerateMinBid extends GenerateBidAbstract {
 
 
     public function __construct(Customer $customer, MaxBid $maxBid)
@@ -102,7 +104,7 @@ class GenerateMaxBid extends GenerateMaxBidAbstract {
 
 
         throw new GenerateNewBidException(
-            'There was a problem creating a bid. Please try again later'
+            'There was a problem creating a bid. Please try again later.'
         );
     }
 
@@ -144,10 +146,29 @@ class GenerateMaxBid extends GenerateMaxBidAbstract {
     }
 
     /**
+     * HOLY CRAP
+     *
+     * There is a lot of variables here that can make the auction bid go haywire
+     * We need to very specific when a bid is placed on how to calculate new auction price
+     *
+     * CASE 1
+     * First bid placed on auction
+     *
+     * CASE 2
+     * Customer is updating their max bid
+     *
+     * CASE 3 - ####
+     * This gets specific at this point
+     * we need to figure out what happens if the new bid is less than highest max bid
+     * we need to figure out what happens if the new bid is the same as the highest max bid
+     * we need to figure out what happens if the new bid is greater than the highest max bid
+     * all while keeping in mind how the min_bid plays out
+     *
      * @return mixed
      */
     protected function _calculateNewAuctionPrice()
     {
+
         //Lets see if the current state has a max bid or not
         $stateLeadingMaxBidAmount = $this->state->maxBid ? $this->state->maxBid->amount : 0;
 
@@ -158,7 +179,7 @@ class GenerateMaxBid extends GenerateMaxBidAbstract {
          * This is the first bid of an auction
          */
         if (!$this->state->leading_id) {
-            $this->setNewAuctionPrice($this->state->current_price + $this->auction->min_bid);
+            $this->setNewAuctionPrice($this->state->current_price + $this->auction->bid_amount);
             return $this;
         }
 
@@ -174,10 +195,15 @@ class GenerateMaxBid extends GenerateMaxBidAbstract {
 
         /**
          * CASE 3
+         *
+         */
+
+        /**
+         * CASE 3
          * Customers bid is less than the current winners max bid
          */
         if ($this->maxBid->amount < $stateLeadingMaxBidAmount) {
-            $this->setNewAuctionPrice($this->maxBid->amount + $this->auction->min_bid);
+            $this->setNewAuctionPrice($this->maxBid->amount + $this->auction->bid_amount);
             return $this;
         }
 
@@ -195,17 +221,103 @@ class GenerateMaxBid extends GenerateMaxBidAbstract {
          * Customers bid is greater than the current winners max bid
          */
         if ($this->maxBid->amount > $stateLeadingMaxBidAmount) {
-            $this->setNewAuctionPrice($stateLeadingMaxBidAmount + $this->auction->min_bid);
+            $this->setNewAuctionPrice($stateLeadingMaxBidAmount + $this->auction->bid_amount);
             return $this;
         }
+//        //Lets see if the current state has a max bid or not
+//        $stateLeadingMaxBidAmount = $this->state->maxBid ? $this->state->maxBid->amount : 0;
+//
+//        /**
+//         * CASE 1
+//         * First auction bid
+//         *
+//         * This is the first bid of an auction
+//         */
+//        if (!$this->state->leading_id) {
+//            $this->setNewAuctionPrice($this->state->current_price + $this->auction->bid_amount);
+//            return $this;
+//        }
+//
+//        /**
+//         * CASE 2
+//         * Customer updating max bid
+//         * Ths customer is just updating there max bid
+//         */
+//        if ($this->getStateLeadingBidId() == $this->maxBid->id) {
+//            $this->setNewAuctionPrice($this->state->current_price);
+//            return $this;
+//        }
+//
+//
+//        /**
+//         * There are multiple implementations here where we need to be very careful
+//         *
+//         * new_bid = 95
+//         * top_max_bid = 100
+//         * current_auction_price = 90
+//         * bid_amount = 5
+//         * min_bid = 5
+//         *
+//         *
+//         * CASE 1
+//         * new_bid == top_max_bid
+//         * new_auction_price = top_max_bid
+//         *
+//         * CASE 2
+//         * new_bid + min_bid == top_max_bid
+//         * new_auction_price = top_max_bid
+//         *
+//         * CASE 3
+//         * new_bid + min_bid < top_max_bid - min_bid
+//         * new_auction_price = new_bid + min_bid
+//         *
+//         * CASE 4
+//         * new_bid + min_bid > top_max_bid - min_bid
+//         * new_auction_price = top_max_bid
+//         *
+//         *
+//         *
+//         */
+//
+//        // CASE 1
+//        // CASE 2
+//        if ($this->maxBid->amount == $stateLeadingMaxBidAmount) {
+//            $this->setNewAuctionPrice($this->maxBid->amount);
+//            return $this;
+//        }
+//
+//
+//
+//
+//        // Case 3
+//        if ($this->maxBid->amount + $this->auction->min_bid <= $stateLeadingMaxBidAmount - $this->auction->min_bid) {
+//            $this->setNewAuctionPrice($this->maxBid->amount + $this->auction->min_bid);
+//            return $this;
+//        }
+//
+//        // Case 4
+//        if ($this->maxBid->amount + $this->auction->min_bid > $stateLeadingMaxBidAmount - $this->auction->min_bid) {
+//            $this->setNewAuctionPrice($stateLeadingMaxBidAmount);
+//            return $this;
+//        }
+//
+//
+//        /**
+//         * CASE 5
+//         * Customers bid is greater than the current winners max bid
+//         */
+//        if ($this->maxBid->amount > $stateLeadingMaxBidAmount) {
+//            $this->setNewAuctionPrice($stateLeadingMaxBidAmount + $this->auction->min_bid);
+//            return $this;
+//        }
 
 
         /**
          * ERROR
          * None of the above cases matched, so something is wrong
          */
-        throw new GenerateNewBidException(
-            'Unable to generate an auction bid, please try again soon.'
+        throw new GenerateNewMaxBidException(
+            'Unable to generate an auction bid, please try again later.', 409
         );
 
     }
