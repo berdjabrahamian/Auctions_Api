@@ -7,8 +7,8 @@ use App\Http\Requests\AdminAuctionIndex;
 use App\Http\Requests\AdminAuctionShow;
 use App\Http\Requests\AdminAuctionStore;
 use App\Http\Requests\AdminAuctionUpdate;
-use App\Http\Resources\AdminAuctionCollection;
-use App\Http\Resources\AdminAuctionResource;
+use App\Http\Resources\AdminAuctionIndexCollection;
+use App\Http\Resources\AdminAuctionShowResource;
 use App\Model\Product\Product;
 use Illuminate\Http\Request;
 use App\Model\Store\Store;
@@ -21,7 +21,7 @@ class AuctionsController extends AdminController
     {
         $auctions = Store::getCurrentStore()->auctions()->with('bids')->orderBy('id', 'desc');
 
-        return new AdminAuctionCollection($auctions->paginate($request->get('per_page')));
+        return new AdminAuctionIndexCollection($auctions->paginate($request->get('per_page')));
     }
 
 
@@ -33,7 +33,9 @@ class AuctionsController extends AdminController
      *
      * @param  AdminAuctionStore  $request
      *
-     * @return AdminAuctionResource
+     * @return AdminAuctionShowResource
+     *
+     * TODO: fix the resource collection
      */
     public function store(AdminAuctionStore $request)
     {
@@ -62,13 +64,25 @@ class AuctionsController extends AdminController
         $auction->product()->associate($product);
         $auction->save();
 
-        return new AdminAuctionResource($auction);
+        return new AdminAuctionShowResource($auction);
     }
 
 
-    public function show($id)
+    public function show($id, AdminAuctionShow $request)
     {
-        return new AdminAuctionResource(Store::getCurrentStore()->auctions()->find($id)->load(['logs']));
+
+        $auction = Store::getCurrentStore()->auctions()->find($id);
+
+        if ($request->has('product')) {
+            $auction->load('product');
+        }
+
+        if ($request->has('logs')) {
+            $auction->load('logs');
+            $auction->load('logs.customer');
+        }
+
+        return new AdminAuctionShowResource($auction);
     }
 
 
@@ -87,7 +101,7 @@ class AuctionsController extends AdminController
 
         $auction->update($validated);
 
-        return new AdminAuctionResource($auction);
+        return new AdminAuctionShowResource($auction);
     }
 
     /**

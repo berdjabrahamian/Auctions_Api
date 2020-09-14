@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Api\V1\Admin\Auctions;
 
 use App\Http\Controllers\Api\V1\Admin\AdminController;
-use App\Http\Resources\AdminAuctionResource;
+use App\Http\Resources\AdminAuctionShowResource;
 use App\Http\Resources\AdminLogsCollection;
 use App\Http\Resources\AdminLogsResource;
 use App\Http\Resources\AdminLogsShowResource;

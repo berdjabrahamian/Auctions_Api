@@ -24,7 +24,7 @@ class AdminLogsResource extends JsonResource
             'created_at'  => $this->created_at,
             'updated_at'  => $this->updated_at,
             'customer'    => new AdminCustomerResource($this->whenLoaded('customer')),
-            'auction'     => new AdminAuctionResource($this->whenLoaded('auction')),
+            'auction'     => new AdminAuctionShowResource($this->whenLoaded('auction')),
         ];
     }
 }
