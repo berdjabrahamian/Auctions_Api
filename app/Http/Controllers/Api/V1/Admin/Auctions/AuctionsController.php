@@ -35,7 +35,6 @@ class AuctionsController extends AdminController
      *
      * @return AdminAuctionShowResource
      *
-     * TODO: fix the resource collection
      */
     public function store(AdminAuctionStore $request)
     {
