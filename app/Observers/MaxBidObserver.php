@@ -22,9 +22,19 @@ class MaxBidObserver
      */
     public function created(MaxBid $maxBid)
     {
-        //Create a log in the LOGS table that the max bid was created
-        GenerateAuctionLog::dispatch($maxBid->auction_id, 'Max Bid Created',
-            ['customer_id' => $maxBid->customer_id, 'amount' => $maxBid->amount]);
+        $auction = $maxBid->auction;
+
+        //This will manage what type of logs to dispatch based on auction type
+        switch ($auction->type) {
+            case 'min_bid':
+                //Create a log in the LOGS table that the max bid was created
+                GenerateAuctionLog::dispatch($maxBid->auction_id, 'Max Bid Created',
+                    ['customer_id' => $maxBid->customer_id, 'amount' => $maxBid->amount]);
+                break;
+            default:
+                break;
+        }
+
 
         //This will dispatch a job that will Send the MaxBid Created Email
         MaxBidCreatedEmail::dispatchAfterResponse($maxBid);
