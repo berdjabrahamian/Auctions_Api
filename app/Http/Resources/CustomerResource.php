@@ -21,7 +21,6 @@ class CustomerResource extends JsonResource
         return [
             'email'       => $customerData['email'],
             'full_name'   => $customerData['full_name'],
-            'platform_id' => $customerData['platform_id'],
         ];
     }
 
