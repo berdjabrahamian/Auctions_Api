@@ -7,7 +7,7 @@ use Illuminate\Contracts\Validation\Rule;
 class AuctionCreateTypeCheck implements Rule
 {
 
-    private $auctionTypes = ['absolute', 'min_bid'];
+    private $auctionTypes = ['absolute', 'min_bid', 'sealed_bid'];
     /**
      * Create a new rule instance.
      *
