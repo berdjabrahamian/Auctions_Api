@@ -50,6 +50,9 @@ class Auction extends Model
         'start_date',
         'end_date',
     ];
+    protected $hidden = [
+        'store_id',
+    ];
 
 
     public function newEloquentBuilder($query)
