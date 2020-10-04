@@ -39,8 +39,8 @@ class AuctionWonNotification extends Mailable implements ShouldQueue
      */
     public function build()
     {
-        return $this->from($this->store->contact_email)
-            ->to($this->winner->email)
+        return $this->from($this->store->contact_email, $this->store->name)
+            ->to($this->winner->email, $this->winner->full_name)
             ->subject('Congratulations You Won')
             ->view('emails.auction.won');
     }

@@ -39,8 +39,8 @@ class AuctionGotAwayNotification extends Mailable implements ShouldQueue
      */
     public function build()
     {
-        return $this->from($this->store->contact_email)
-            ->to($this->customer->email)
+        return $this->from($this->store->contact_email, $this->store->name)
+            ->to($this->customer->email, $this->customer->full_name)
             ->subject('Auction Got Away')
             ->view('emails.auction.got_away');
     }
