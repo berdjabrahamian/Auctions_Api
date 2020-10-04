@@ -49,12 +49,12 @@ class AdminMaxBidInvoke extends FormRequest
     public function rules()
     {
         return [
-            'auction_id'          => 'required|numeric|exists:auctions,id',
-            'max_bid.amount'      => 'required|numeric',
-            'customer.id'         => 'required',
-            'customer.first_name' => 'required|string',
-            'customer.last_name'  => 'required|string',
-            'customer.email'      => 'required|email',
+            'auction_id'          => ['required', 'numeric', 'exists:auctions,id'],
+            'max_bid.amount'      => ['required', 'numeric'],
+            'customer.id'         => ['required'],
+            'customer.first_name' => ['required', 'string'],
+            'customer.last_name'  => ['required', 'string'],
+            'customer.email'      => ['required', 'email'],
         ];
     }
 

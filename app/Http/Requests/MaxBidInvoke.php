@@ -55,10 +55,10 @@ class MaxBidInvoke extends FormRequest
     public function rules()
     {
         return [
-            'auction_id'     => 'required|numeric|exists:auctions,id',
+            'auction_id'     => ['required', 'numeric', 'exists:auctions,id'],
             'max_bid.amount' => ['required', 'gt:0', 'numeric'],
-            'customer.id'    => 'required',
-            'customer.email' => 'required|email',
+            'customer.id'    => ['required', 'numeric'],
+            'customer.email' => ['required', 'email'],
         ];
     }
 

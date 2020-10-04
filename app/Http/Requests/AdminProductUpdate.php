@@ -34,10 +34,10 @@ class AdminProductUpdate extends FormRequest
     public function rules()
     {
         return [
-            'name'        => 'present|string',
-            'description' => 'present|string',
-            'image_url'   => 'present|url',
-            'product_url' => 'present|url',
+            'name'        => ['present', 'string'],
+            'description' => ['present', 'string'],
+            'image_url'   => ['present', 'url'],
+            'product_url' => ['present', 'url'],
         ];
     }
 }

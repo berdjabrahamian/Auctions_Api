@@ -29,12 +29,12 @@ class AdminProductDuplicate extends FormRequest
     public function rules()
     {
         return [
-            'sku'         => 'required',
-            'name'        => 'required',
-            'description' => 'required',
-            'image_url'   => 'required|url',
-            'product_url' => 'required|url',
-            'platform_id' => 'sometimes',
+            'sku'         => ['required'],
+            'name'        => ['required'],
+            'description' => ['required'],
+            'image_url'   => ['required', 'url'],
+            'product_url' => ['required', 'url'],
+            'platform_id' => ['sometimes'],
         ];
     }
 

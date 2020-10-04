@@ -24,9 +24,9 @@ class AuctionIndex extends FormRequest
     public function rules()
     {
         return [
-            'customer_id' => 'sometimes|integer',
-            'auction_ids' => 'sometimes|exclude_if:product_ids,true',
-            'product_ids' => 'sometimes|exclude_if:auction_ids,true',
+            'customer_id' => ['sometimes', 'integer'],
+            'auction_ids' => ['sometimes', 'exclude_if:product_ids,true'],
+            'product_ids' => ['sometimes', 'exclude_if:auction_ids,true'],
         ];
     }
 }

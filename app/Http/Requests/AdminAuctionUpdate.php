@@ -43,10 +43,10 @@ class AdminAuctionUpdate extends FormRequest
     public function rules()
     {
         return [
-            'name'       => 'sometimes',
-            'status'     => 'sometimes',
-            'end_date'   => 'sometimes',
-            'start_date' => 'sometimes',
+            'name'       => ['sometimes'],
+            'status'     => ['sometimes'],
+            'end_date'   => ['sometimes'],
+            'start_date' => ['sometimes'],
         ];
     }
 
