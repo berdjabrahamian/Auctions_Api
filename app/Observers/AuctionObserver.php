@@ -2,24 +2,19 @@
 
 namespace App\Observers;
 
-use App\Events\Auction\AuctionCreated;
 use App\Events\Auction\AuctionExtended;
 use App\Events\Auction\AuctionExtended as AuctionExtendedAlias;
-use App\Events\CreatedAuctionEvent;
+use App\Jobs\Auction\AuctionCreated as AuctionCreateHandle;
 use App\Jobs\Auction\AuctionEnded;
 use App\Jobs\Auction\AuctionEndedEmail;
 use App\Jobs\Auction\AuctionEndingSoonEmail;
 use App\Jobs\Auction\AuctionExtendedEmail;
 use App\Jobs\AuctionEndingSoonNotification;
 use App\Jobs\GenerateAuctionLog;
-use App\Listeners\NewAuctionState;
 use App\Model\Auction\Auction;
-use App\Model\Auction\State;
+
 use App\Model\Store\Store;
-use Carbon\Carbon;
-use Illuminate\Support\Arr;
-use Illuminate\Support\Facades\Event;
-use Illuminate\Support\Facades\Log;
+
 
 class AuctionObserver
 {
@@ -36,20 +31,7 @@ class AuctionObserver
     public function created(Auction $auction)
     {
         //Init auction state
-        AuctionCreated::dispatch($auction);
-
-        //Generate Log - Auction Created
-        GenerateAuctionLog::dispatch($auction, 'Auction Created');
-
-        //Generate Log - Auction Started
-        //This is delayed to run on the auction start date
-        GenerateAuctionLog::dispatch($auction, 'Auction Started')->delay($auction->start_date);
-
-        //Auction End
-        AuctionEnded::dispatch($auction)->delay($auction->end_date);
-
-        //Send Notification - Ending Soon
-        AuctionEndingSoonEmail::dispatch($auction)->delay(Store::endingSoonThreshold($auction));
+        AuctionCreateHandle::dispatch($auction);
 
     }
 
