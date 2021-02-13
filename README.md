@@ -88,3 +88,77 @@ Each method will have its own set of instructions on what needs to be done.
 Auction state is used to keep track of the state the auction is in, which we use to manage whether there is a winner or a looser
 
 
+
+# Auction Types
+##Absolute
+- Bidders will set the auction price. How this works is that by placing a bid, you are saying "I want this product for $$$$", in which case the auction price will be the amount the person bid it
+- Each high bid will increase the value of the value of the auction by changing its value to that of the highest bid.
+
+##### How it works
+- Auction starts off at $100
+- Customer 1 bids at $110
+- Auction is now at $110
+- Customer 2 bids at $300
+- Auctions is now at $300
+- etc
+
+
+
+
+## Min Bid
+How does this work
+
+auction_current_price = 100 <br/>
+min_bid = 10 <br/>
+bid_amount = 5 <br />
+
+```
+c1_max_bid = 103
+Error this is less than the allowed min_bid
+```
+
+```
+c1_max_bid = 110
+since this is the first bid then its fine
+auction_current_price = 105
+```
+
+```
+c1_max_bid = 120
+since this is the first bid then its fine
+auction_current_price = 105
+```
+
+
+```
+c2_max_bid = 108
+this is not okay, less than min_bid
+```
+
+CASE 1
+```
+c1_max_bid = 120
+c2_max_bid = 115
+gets outbid because c1_max_bid
+auction_current_price = 115
+auction_current_price = 115 + 5  = 120
+```
+
+CASE 2
+```
+auction_current_price = 105
+c1_max_bid = 120
+c2_max_bid = 119
+gets outbid because c1_max_bid
+auction_current_price = 119
+auction_current_price = 119 + 5  = 124 
+This is wrong as the max bid is 120
+so we need to make sure that we make it 120
+```
+
+
+```
+c1 = 200
+c2 = 190
+
+```
