@@ -9,6 +9,7 @@ use App\Jobs\GenerateAuctionLog;
 use App\Jobs\MaxBid\MaxBidCreatedEmail;
 use App\Jobs\MaxBid\MaxBidOutbidEmail;
 use App\Jobs\MaxBid\MaxBidUpdatedEmail;
+use App\Jobs\Notification\Notification;
 use App\Model\Auction\MaxBid;
 
 class MaxBidObserver
@@ -34,7 +35,6 @@ class MaxBidObserver
             default:
                 break;
         }
-
 
         //This will dispatch a job that will Send the MaxBid Created Email
         MaxBidCreatedEmail::dispatchAfterResponse($maxBid);

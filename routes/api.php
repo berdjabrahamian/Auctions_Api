@@ -51,6 +51,9 @@ Route::prefix('v1')->group(function () {
                         'index', 'store', 'show', 'update', 'destroy',
                     ]);
                 });
+                Route::namespace('Notification')->group(function() {
+                    Route::get('notification/{id}', 'ViewController')->name('notification.view.email');
+                });
 
                 Route::namespace('Stores')->group(function() {
                    Route::get('store', 'StoresController')->name('store');

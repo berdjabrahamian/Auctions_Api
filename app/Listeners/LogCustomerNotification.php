@@ -6,6 +6,7 @@ use App\Jobs\GenerateAuctionLog;
 use App\Model\Notification\Notification;
 use Carbon\Carbon;
 use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Mail\Events\MessageSending;
 use Illuminate\Mail\Events\MessageSent;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Support\Arr;
@@ -29,7 +30,7 @@ class LogCustomerNotification
      * @param  object  $event
      * @return void
      */
-    public function handle(MessageSent $event)
+    public function handle(MessageSending $event)
     {
         $messageHeaders = $event->message;
 
