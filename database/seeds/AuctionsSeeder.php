@@ -1,5 +1,6 @@
 <?php
 
+use Carbon\Carbon;
 use Illuminate\Database\Seeder;
 use App\Model\Product\Product;
 use Illuminate\Support\Facades\DB;
@@ -17,6 +18,7 @@ class AuctionsSeeder extends Seeder
             foreach ($products as $product) {
                 factory(\App\Model\Auction\Auction::class)->create([
                     'product_id' => $product->id,
+                    'end_date'      => Carbon::now()->addMinutes(rand(5,60)),
                 ]);
             };
         });

@@ -23,6 +23,7 @@
         "sass": "^1.32.7",
         "sass-loader": "^8.0.0",
         "tailwindcss": "npm:@tailwindcss/postcss7-compat@^2.0.3",
+        "vue": "^2.6.12",
         "vue-template-compiler": "^2.6.12"
     },
     "dependencies": []

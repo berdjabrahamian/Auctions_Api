@@ -29,7 +29,6 @@ class AuctionCreated implements ShouldQueue
     public function __construct(Auction $auction)
     {
         $this->auction = $auction->makeVisible('id');
-        $this->state = new State();
     }
 
     /**
@@ -59,10 +58,12 @@ class AuctionCreated implements ShouldQueue
 
     protected function _newAuctionState()
     {
+        $state = new State();
+        $state->auction_id    = $this->auction->id;
+        $state->current_price = $this->auction->initial_price;
+        $state->save();
 
-        $this->state->auction_id    = $this->auction->id;
-        $this->state->current_price = $this->auction->initial_price;
-        $this->state->save();
+        $this->state = $state;
 
         return $this->state;
     }

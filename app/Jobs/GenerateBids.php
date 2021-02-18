@@ -13,6 +13,12 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 
+/**
+ * Class GenerateBids
+ *
+ * @package App\Jobs
+ * @deprecated Running this as a model and not background task as we need to control if errors happen in realtime
+ */
 class GenerateBids implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
