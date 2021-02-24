@@ -33,4 +33,8 @@
     .section-title {
         @apply font-bold mt-3 mb-5;
     }
+
+    img {
+        @apply rounded-xl object-contain object-center;
+    }
 }

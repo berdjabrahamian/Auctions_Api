@@ -16,3 +16,7 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', function () {
     return view('welcome');
 });
+
+Route::namespace('Frontend\V1')->group(function() {
+    Route::resource('/auctions', 'Auctions\AuctionsController');
+});
