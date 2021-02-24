@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Http\Requests;
+use App\Model\Auction\MaxBid;
 use App\Model\Store\Store;
 use Illuminate\Foundation\Http\FormRequest;
 
@@ -37,7 +38,7 @@ class MaxBidInvoke extends FormRequest
             ['id', $this->input('auction_id')]
         ])->first();
 
-        if ($auction && $auction->status == 'Enabled') {
+        if ($auction && $auction->status == 'enabled') {
             $this->setAuction($auction);
             $this->setStore($auction->store);
             return TRUE;
@@ -125,16 +126,14 @@ class MaxBidInvoke extends FormRequest
      */
     private function _auctionChecks()
     {
-        $auction = $this->getAuction();
-
-        if (!$auction->has_started) {
+        if (!$this->getAuction()->has_started) {
             $this->validator->errors()->add("Auction Hasn't Started",
                 "Auction hasn't started and not accepting any bids");
 
             return $this;
         }
 
-        if ($auction->has_ended) {
+        if ($this->getAuction()->has_ended) {
             $this->validator->errors()->add('Auction Ended',
                 "Auction has ended and not accepting any more bids");
 
@@ -153,24 +152,6 @@ class MaxBidInvoke extends FormRequest
      */
     private function _maxBidChecks()
     {
-
-        $maxBid = Store::getCurrentStore()->maxBids()->where([
-            'auction_id'  => $this->input('auction_id'),
-            'customer_id' => $this->customer->id,
-        ])->first();
-
-        $this->setMaxBid($maxBid);
-
-        if (!$this->getMaxBid()) {
-            return $this;
-        }
-
-        // Dont allow setting a bid that is the same as the customer already existing max bid
-        if ($this->maxBidRequestAmount == $this->maxBid->amount) {
-            $this->validator->errors()->add('Max Bid',
-                "Already set to {$this->maxBidRequestAmount}");
-        }
-
         // Dont allow setting a bid that is lower than the current auction price
         if ($this->maxBidRequestAmount <= $this->auction->current_price) {
             $this->validator->errors()->add('Max Bid Amount',
@@ -179,11 +160,38 @@ class MaxBidInvoke extends FormRequest
             return $this;
         }
 
+        // Bid cant be less than the Auction Current Price + Min Bid
+        if (($this->getAuction()->current_price + $this->getAuction()->min_bid) > $this->maxBidRequestAmount) {
+            $this->validator->errors()->add('Max Bid Amount',
+                "The bid you placed is less than the allowed minimum bid for this auction");
+            return $this;
+        }
+
+
+        $maxBid = Store::getCurrentStore()->maxBids()->where([
+            'auction_id'  => $this->input('auction_id'),
+            'customer_id' => $this->customer->id,
+        ])->first();
+
+
+        if (is_null($maxBid)) {
+            return $this;
+        }
+
+        $this->setMaxBid($maxBid);
+
+
+        // Dont allow setting a bid that is the same as the customers already existing max bid
+        if ($this->maxBidRequestAmount == $this->maxBid->amount) {
+            $this->validator->errors()->add('Max Bid',
+                "Already set to {$this->maxBidRequestAmount}");
+        }
+
         // SPECIFIC AUCTION CHECKS
         switch ($this->auction->type){
             case 'absolute':
                 $this->_absoluteAuctionChecks();
-                    break;
+                break;
             case 'min_bid':
                 $this->_minBidAuctionChecks();
                 break;
@@ -227,11 +235,6 @@ class MaxBidInvoke extends FormRequest
 
     private function _minBidAuctionChecks() {
 
-        if (($this->maxBidRequestAmount - $this->getAuction()->current_price) < $this->getAuction()->min_bid) {
-            $this->validator->errors()->add('Max Bid Amount',
-                "The bid you placed is less than the allowed minimum bid for this auction");
-            return $this;
-        }
         return $this;
     }
 

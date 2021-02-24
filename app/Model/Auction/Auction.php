@@ -11,7 +11,6 @@ use App\Model\Auction\Log as Log;
 use App\Model\Auction\Bid as Bid;
 use App\Model\Store\Store;
 use App\Scope\StoreScope;
-use App\Traits\Enums;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
@@ -20,20 +19,12 @@ use Illuminate\Support\Facades\DB;
 
 class Auction extends Model
 {
-    use Enums;
+    const AUCTION_TYPES = ['absolute', 'min_bid', 'sealed_bid'];
 
-    protected $enumStatuses = [
-        'enabled'  => 'Enabled',
-        'disabled' => 'Disabled',
-    ];
     protected $table        = 'auctions';
     public    $timestamps   = TRUE;
     protected $perPage      = 100;
-    protected $guarded      = [
-        'id',
-        'store_id',
-        'product_id',
-    ];
+    protected $guarded      = [];
     protected $appends      = [
         'initial_price',
         'has_ended',
@@ -174,15 +165,6 @@ class Auction extends Model
         return $value / 100;
     }
 
-    // TODO: not sure if im keeping this still
-/*    public function setBidAmountAttribute($value) {
-        $this->attributes['bid_amount'] = $value * 100;
-    }
-
-    public function getBidAmountAttribute($value): int {
-        return $value / 100;
-    }*/
-
     public function setBuyoutPriceAttribute($value)
     {
         $this->attributes['buyout_price'] = $value * 100;
@@ -192,7 +174,6 @@ class Auction extends Model
     {
         return $value / 100;
     }
-
 
     public function getBidsCountAttribute($value): int
     {

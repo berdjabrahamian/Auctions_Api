@@ -53,7 +53,6 @@ class GenerateMinBid extends GenerateBidAbstract {
     {
         $this->_calculateNewAuctionPrice();
 
-
         /**
          *
          * CASE 1
@@ -151,19 +150,6 @@ class GenerateMinBid extends GenerateBidAbstract {
      * There is a lot of variables here that can make the auction bid go haywire
      * We need to very specific when a bid is placed on how to calculate new auction price
      *
-     * CASE 1
-     * First bid placed on auction
-     *
-     * CASE 2
-     * Customer is updating their max bid
-     *
-     * CASE 3 - ####
-     * This gets specific at this point
-     * we need to figure out what happens if the new bid is less than highest max bid
-     * we need to figure out what happens if the new bid is the same as the highest max bid
-     * we need to figure out what happens if the new bid is greater than the highest max bid
-     * all while keeping in mind how the min_bid plays out
-     *
      * @return mixed
      */
     protected function _calculateNewAuctionPrice()
@@ -195,15 +181,10 @@ class GenerateMinBid extends GenerateBidAbstract {
 
         /**
          * CASE 3
-         *
-         */
-
-        /**
-         * CASE 3
          * Customers bid is less than the current winners max bid
          */
         if ($this->maxBid->amount < $stateLeadingMaxBidAmount) {
-            $this->setNewAuctionPrice($this->maxBid->amount + $this->auction->bid_amount);
+            $this->setNewAuctionPrice($this->maxBid->amount + $this->auction->min_bid);
             return $this;
         }
 
@@ -221,9 +202,11 @@ class GenerateMinBid extends GenerateBidAbstract {
          * Customers bid is greater than the current winners max bid
          */
         if ($this->maxBid->amount > $stateLeadingMaxBidAmount) {
-            $this->setNewAuctionPrice($stateLeadingMaxBidAmount + $this->auction->bid_amount);
+            $this->setNewAuctionPrice($stateLeadingMaxBidAmount + $this->auction->min_bid);
             return $this;
         }
+
+
 //        //Lets see if the current state has a max bid or not
 //        $stateLeadingMaxBidAmount = $this->state->maxBid ? $this->state->maxBid->amount : 0;
 //

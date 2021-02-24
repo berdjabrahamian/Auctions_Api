@@ -43,10 +43,8 @@ class AdminAuctionStore extends FormRequest
             'auction.min_bid'        => ['required', 'integer'],
             'auction.is_buyout'      => ['present', 'boolean'],
             'auction.buyout_price'   => ['required', 'integer'],
-            'auction.start_date'     => ['required', 'date'],
-            'auction.end_date'       => ['required', 'date:after:start_date'],
-            // TODO: not sure if im keeping this still
-//            'auction.bid_amount'     => ['exclude_unless:auction.type,min_bid','required_if:auction.type,min_bid', 'integer', 'lte:auction.min_bid'],
+            'auction.start_date'     => ['required', 'date', 'before:auction.end_date'],
+            'auction.end_date'       => ['required', 'date', 'after:auction.start_date'],
             'auction.type'           => ['required', new AuctionCreateTypeCheck()],
             'product.platform_id'    => ['required'],
             'product.sku'            => ['required'],
@@ -67,7 +65,7 @@ class AdminAuctionStore extends FormRequest
 
     /**
      * CHECKS
-     * Does product exists - if no product -> then no auction check -> then everything is new and needs to be created
+     * Does product exists
      * Multiple Products same ID -> platform_id should be unique to each product (primary key from the platform) -> and
      * so there shouldn't be multiple products with the same primary key Sku match -> Sku from the request should match
      * sku already in system
@@ -79,10 +77,10 @@ class AdminAuctionStore extends FormRequest
         //Get products that belong to the store and have the same sku
         $product = Store::getCurrentStore()->products()->where([
             ['platform_id', $this->query('product')['platform_id']],
-        ])->get();
+        ])->first();
 
 
-        if (!$product->count()) {
+        if (!$product) {
             $this->validator->errors()->add('Product Not Found',
                 "Product doesnt exist in system, please create a product before assigning it to an auction");
             return $this;

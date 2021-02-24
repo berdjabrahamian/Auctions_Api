@@ -17,13 +17,17 @@ use Illuminate\Support\Arr;
 
 class AuctionsController extends AdminController
 {
+
     public function index(AdminAuctionIndex $request)
     {
-        $auctions = Store::getCurrentStore()->auctions()->with('bids')->orderBy('id', 'desc');
+        $auctions = Store::getCurrentStore()->auctions()->orderBy('id', 'desc');
+
+        if ($request->has('product')) {
+            $auctions->with('product');
+        }
 
         return new AdminAuctionIndexCollection($auctions->paginate($request->get('per_page')));
     }
-
 
     /**
      * Grab an already imported product or create a new one if it doesnt exist
@@ -45,6 +49,13 @@ class AuctionsController extends AdminController
          */
         $product = $request->getProduct();
 
+
+        //If no product exists then create a new one before we assign a new auction
+        if (!$product) {
+            $product = new Product([
+
+            ]);
+        }
         $auction = new Auction([
             'name'          => $validated['auction.name'],
             'status'        => $validated['auction.status'],
@@ -55,8 +66,6 @@ class AuctionsController extends AdminController
             'start_date'    => $validated['auction.start_date'],
             'end_date'      => $validated['auction.end_date'],
             'type'          => $validated['auction.type'],
-            // TODO: not sure if im keeping this still
-//            'bid_amount'   => $validated['auction.bid_amount'],
         ]);
 
         $auction->store()->associate(Store::getCurrentStore());

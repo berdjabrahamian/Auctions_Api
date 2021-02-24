@@ -14,7 +14,7 @@ $factory->define(Auction::class, function (Faker $faker) {
     return [
         'product_id'    => $faker->randomElement([1, 2, 3, 4, 5, 6, 7, 8, 9, 0]),
         'store_id'      => 1,
-        'name'          => $faker->text,
+        'name'          => $faker->text(40),
         'status'        => 'enabled',
         'initial_price' => $price,
         'min_bid'       => 1,
@@ -22,9 +22,7 @@ $factory->define(Auction::class, function (Faker $faker) {
         'buyout_price'  => 9999,
         'bids_count'    => 0,
         'start_date'    => Carbon::now(),
-        'end_date'      => Carbon::now()->addMinutes(60),
+        'end_date'      => Carbon::now()->addMinutes(25),
         'type'          => $faker->randomElement(['absolute', 'min_bid', 'sealed_bid']),
-        // TODO: not sure if im keeping this still
-        //'bid_amount'    => $faker->randomElement([1,2,3,4,5,6,7,8,9,10,50,100]),
     ];
 });

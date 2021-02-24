@@ -30,6 +30,9 @@ class AdminAuctionIndexResource extends JsonResource
             'type'          => $this->type,
             'created_at'    => $this->created_at,
             'updated_at'    => $this->updated_at,
+            'relationships' => [
+                'product' => new AdminAuctionShowProduct($this->whenLoaded('product')),
+            ],
         ];
     }
 }

@@ -2,12 +2,15 @@
 
 namespace App\Rules;
 
+use App\Model\Auction\Auction;
 use Illuminate\Contracts\Validation\Rule;
 
 class AuctionCreateTypeCheck implements Rule
 {
 
-    private $auctionTypes = ['absolute', 'min_bid', 'sealed_bid'];
+    private $auctionTypes;
+
+
     /**
      * Create a new rule instance.
      *
@@ -15,7 +18,7 @@ class AuctionCreateTypeCheck implements Rule
      */
     public function __construct()
     {
-        //
+        $this->auctionTypes = Auction::AUCTION_TYPES;
     }
 
     /**

@@ -25,6 +25,7 @@ class AdminAuctionIndex extends FormRequest
     {
         return [
             'per_page' => ['sometimes', 'numeric'],
+            'product'  => ['nullable'],
         ];
     }
 }

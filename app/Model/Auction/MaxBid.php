@@ -10,13 +10,9 @@ class MaxBid extends Model
 {
     protected $table      = 'max_bids';
     public    $timestamps = TRUE;
-    protected $fillable   = [
-        'store_id',
-        'auction_id',
-        'customer_id',
-        'amount',
-        'outbid',
-    ];
+
+    protected $guarded = [];
+
     protected $appends    = [
         'amount_cents',
     ];

@@ -29,10 +29,16 @@ class MaxBidController extends BaseController
     public function __invoke(MaxBidInvoke $request)
     {
         $validated = Arr::dot($request->validated());
+
         /**
          * Crate or update customer
          */
         $customer = $request->getCustomer();
+
+        $maxBid = Store::getCurrentStore()->maxBids()->where([
+            'auction_id'  => $validated['auction_id'],
+            'customer_id' => $customer->id,
+        ])->first();
 
         /**
          * Create or update customers max bid
@@ -41,34 +47,38 @@ class MaxBidController extends BaseController
          * @see MaxBidObserver::created()
          * @see MaxBidObserver::updated()
          */
-        DB::beginTransaction();
+        DB::transaction(function () use ($validated, $customer, &$maxBid) {
 
-        $maxBid = MaxBid::updateOrCreate([
-            ['store_id', Store::getCurrentStore()->id],
-            ['auction_id', $validated['auction_id']],
-            ['customer_id', $customer->id],
-        ], [
-            'store_id'    => Store::getCurrentStore()->id,
-            'auction_id'  => $validated['auction_id'],
-            'customer_id' => $customer->id,
-            'amount'      => $validated['max_bid.amount'],
-            'outbid'      => FALSE,
-        ]);
+            if (is_null($maxBid)) {
+                $maxBid              = new MaxBid();
+                $maxBid->store_id    = Store::getCurrentStore()->id;
+                $maxBid->auction_id  = $validated['auction_id'];
+                $maxBid->customer_id = $customer->id;
+                $maxBid->amount      = $validated['max_bid.amount'];
+                $maxBid->outbid      = FALSE;
+            } else {
+                $maxBid->update([
+                    'amount' => $validated['max_bid.amount'],
+                    'outbid' => FALSE,
+                ]);
+            }
+
+            $maxBid->save();
 
 
-        switch ($maxBid->auction->type) {
-            case 'absolute':
-                (new GenerateAbsoluteBid($customer, $maxBid))->handle();
-                break;
-            case 'min_bid':
-                (new GenerateMinBid($customer,$maxBid))->handle();
-                break;
-            default:
-                (new GenerateMinBid($customer,$maxBid))->handle();
-                break;
-        }
+            switch ($maxBid->auction->type) {
+                case 'absolute':
+                    (new GenerateAbsoluteBid($customer, $maxBid))->handle();
+                    break;
+                case 'min_bid':
+                    (new GenerateMinBid($customer, $maxBid))->handle();
+                    break;
+                default:
+                    (new GenerateMinBid($customer, $maxBid))->handle();
+                    break;
+            }
 
-        DB::commit();
+        });
 
         return new MaxBidsResource($maxBid);
     }
