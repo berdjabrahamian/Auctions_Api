@@ -25,11 +25,11 @@ class AdminProductStore extends FormRequest
     public function rules()
     {
         return [
-            'sku'         => ['required', 'unique:products,sku'],
+            'sku'         => ['required'],
             'platform_id' => ['required'],
             'name'        => ['required'],
             'description' => ['required'],
-            'image_url'   => ['required'],
+            'image_url'   => ['required', 'url'],
             'product_url' => ['required'],
         ];
     }
@@ -37,28 +37,23 @@ class AdminProductStore extends FormRequest
     public function withValidator($validator)
     {
         $validator->after(function () {
-            $this->_productChecks();
+//            $this->_productChecks();
         });
     }
 
     /**
      * Check to see if there is an existing products with the same sku, platform id, and store
-     *
-     * Things to note:
-     * Can you have a product with the same sku and different id?
-     * Can you have a product with that has a different sku and same id?
-     *
-     * Technically you cant have multiple of the same platform_id's that means some sort of cheating or bad data
      */
     protected function _productChecks()
     {
         // Product by Platform_ID & Store_ID
         $product = Store::getCurrentStore()->products()->where([
-            ['platform_id', $this->query('platform_id')],
-        ])->get();
+            ['sku', $this->input('sku')],
+            ['platform_id', $this->input('platform_id')],
+        ])->first();
 
         //This is good, a product should not exist since we are creating it from scratch
-        if (!$product->first()) {
+        if (!$product) {
             return $this;
         }
 

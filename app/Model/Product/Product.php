@@ -5,11 +5,15 @@ namespace App\Model\Product;
 use App\Model\Auction\Auction;
 use App\Model\Store\Store;
 use App\Scope\StoreScope;
+use App\Traits\PublicId;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
 
 class Product extends Model
 {
+    use PublicId;
+
+
     protected $table      = 'products';
     public    $timestamps = TRUE;
     protected $perPage    = 100;
@@ -46,7 +50,7 @@ class Product extends Model
      */
     public function scopeWithProductIds($query, $productIds)
     {
-        $withProductIds = $query->whereRaw("products.id in ({$productIds})");
+        $withProductIds = $query->whereRaw("products.pub_id in ({$productIds})");
 
         return $withProductIds;
     }

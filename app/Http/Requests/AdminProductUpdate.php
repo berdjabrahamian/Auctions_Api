@@ -15,15 +15,7 @@ class AdminProductUpdate extends FormRequest
      */
     public function authorize()
     {
-        $product = Store::getCurrentStore()->products()->where([
-            ['id', $this->product],
-        ])->firstOrFail();
-
-        if (!$product) {
-            return FALSE;
-        } else {
-            return TRUE;
-        }
+       return TRUE;
     }
 
     /**
@@ -34,10 +26,9 @@ class AdminProductUpdate extends FormRequest
     public function rules()
     {
         return [
-            'name'        => ['present', 'string'],
-            'description' => ['present', 'string'],
-            'image_url'   => ['present', 'url'],
-            'product_url' => ['present', 'url'],
+            'name'        => ['sometimes', 'string'],
+            'description' => ['sometimes', 'required', 'string'],
+            'image_url'   => ['sometimes', 'url'],
         ];
     }
 }

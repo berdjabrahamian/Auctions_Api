@@ -16,7 +16,7 @@ class AdminProductsResource extends JsonResource
     public function toArray($request)
     {
         return [
-            'id'                => $this->id,
+            'id'                => $this->pub_id,
             'sku'               => $this->sku,
             'platform_id'       => $this->platform_id,
             'name'              => $this->name,

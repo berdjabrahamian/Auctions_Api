@@ -10,13 +10,18 @@ use App\Http\Resources\AdminProductCollection;
 use App\Http\Resources\AdminProductsResource;
 use App\Model\Product\Product;
 use App\Model\Store\Store;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class ProductsController extends AdminController
 {
     /**
-     * Display a listing of the resource.
+     * Display all products
+     *
+     * @param  AdminProductIndex  $request
      *
      * @return AdminProductCollection
+     *
+     * Done
      */
     public function index(AdminProductIndex $request)
     {
@@ -38,6 +43,8 @@ class ProductsController extends AdminController
      * @param  AdminProductStore  $request
      *
      * @return AdminProductsResource
+     *
+     * DONE
      */
     public function store(AdminProductStore $request)
     {
@@ -63,38 +70,60 @@ class ProductsController extends AdminController
      * @param  int  $id
      *
      * @return \Illuminate\Http\Response
+     *
+     * Done
      */
     public function show($id)
     {
-        $product = Store::getCurrentStore()->products()->find($id);
+        try {
+            $product = Store::getCurrentStore()->products()->where('pub_id', $id)->firstOrFail();
 
-        return new AdminProductsResource($product);
+            return new AdminProductsResource($product);
+
+        } catch (ModelNotFoundException $e) {
+            return response()->json(['error' => 'Product Not Found'], 404);
+        }
+
     }
 
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int                       $id
+     * @param  AdminProductUpdate  $request
+     * @param  int                 $id
      *
      * @return \Illuminate\Http\Response
+     *
+     * DONE
      */
     public function update(AdminProductUpdate $request, $id)
     {
         $validated = $request->validated();
 
-        $product = Store::getCurrentStore()->products()->where([
-            'id' => $id,
-        ])->firstOrFail();
+        try {
+            $product = Store::getCurrentStore()->products()->where([
+                'pub_id' => $id,
+            ])->firstOrFail();
 
-        $product->name        = $validated['name'];
-        $product->description = $validated['description'];
-        $product->image_url   = $validated['image_url'];
-        $product->product_url = $validated['product_url'];
 
-        $product->save();
+            if (isset($validated['name'])) {
+                $product->name = $validated['name'];
+            }
+            if (isset($validated['description'])) {
+                $product->description = $validated['description'];
+            }
+            if (isset($validated['image_url'])) {
+                $product->image_url = $validated['image_url'];
+            }
 
-        return $product;
+            $product->save();
+
+            return $product;
+
+        } catch (ModelNotFoundException $exception) {
+            return response()->json(['error' => 'Product Not Found'], 404);
+
+        }
     }
 
     /**
@@ -107,6 +136,6 @@ class ProductsController extends AdminController
      */
     public function destroy($id)
     {
-        return response()->json('Error', 422);
+        return response()->json(['error' => 'Unauthorized'], 422);
     }
 }

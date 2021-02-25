@@ -15,9 +15,10 @@ class CreateProductsTable extends Migration
     {
         Schema::create('products', function (Blueprint $table) {
             $table->id();
+            $table->char('pub_id', 14);
             $table->integer('store_id')->nullable();
             $table->string('sku');
-            $table->integer('platform_id');
+            $table->integer('platform_id')->nullable()->comment('Only used for products outside of the api');
             $table->string('name');
             $table->string('description');
             $table->string('image_url');
