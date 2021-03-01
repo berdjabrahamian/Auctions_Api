@@ -47,11 +47,6 @@ class AdminAuctionStore extends FormRequest
             'auction.end_date'       => ['required', 'date', 'after:auction.start_date'],
             'auction.type'           => ['required', new AuctionCreateTypeCheck()],
             'product.platform_id'    => ['required'],
-            'product.sku'            => ['required'],
-            'product.name'           => ['required'],
-            'product.description'    => ['required'],
-            'product.image_url'      => ['required'],
-            'product.product_url'    => ['required'],
         ];
     }
 

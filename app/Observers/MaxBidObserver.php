@@ -6,6 +6,7 @@ use App\Events\MaxBid\Created;
 use App\Events\MaxBid\Outbid;
 use App\Events\MaxBid\Updated;
 use App\Jobs\GenerateAuctionLog;
+use App\Jobs\LogCustomerNotification;
 use App\Jobs\MaxBid\MaxBidCreatedEmail;
 use App\Jobs\MaxBid\MaxBidOutbidEmail;
 use App\Jobs\MaxBid\MaxBidUpdatedEmail;

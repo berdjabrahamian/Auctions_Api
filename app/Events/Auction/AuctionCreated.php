@@ -12,11 +12,12 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 
-class AuctionCreated
+class AuctionCreated implements ShouldBroadcast
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
     public $auction;
+
 
     /**
      * Create a new event instance.
@@ -35,6 +36,25 @@ class AuctionCreated
      */
     public function broadcastOn()
     {
-        return new PrivateChannel('channel-name');
+        return new Channel('auctions');
+
+//        return new PrivateChannel('channel-name');
+    }
+
+    public function broadcastWith()
+    {
+        return [
+            'auction' => [
+                'id'            => $this->auction->id,
+                'name'          => $this->auction->name,
+                'status'        => $this->auction->status,
+                'initial_price' => $this->auction->initial_price,
+                'start_date'    => $this->auction->start_date,
+                'end_date'      => $this->auction->end_date,
+                'type'          => $this->auction->type,
+                'image'         => $this->auction->product->image_url,
+            ],
+            'message' => 'Auction Created',
+        ];
     }
 }

@@ -18,7 +18,7 @@ class AuctionsSeeder extends Seeder
             foreach ($products as $product) {
                 factory(\App\Model\Auction\Auction::class)->create([
                     'product_id' => $product->id,
-                    'end_date'      => Carbon::now()->addMinutes(60),
+                    'end_date'      => Carbon::now()->addMinutes(5),
                 ]);
             };
         });

@@ -28,6 +28,7 @@ Route::prefix('v1')->group(function () {
 
         Route::namespace('Customers')->group(function () {
             Route::get('customers/{customer}/auctions', 'AuctionsController')->name('customer.auctions');
+            Route::get('customers/{customer}/notifications', 'NotificationsController')->name('customer.notifications');
         });
 
         Route::namespace('Admin')->name('admin.')->group(function () {

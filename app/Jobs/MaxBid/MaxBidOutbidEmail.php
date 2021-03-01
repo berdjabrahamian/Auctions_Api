@@ -2,6 +2,7 @@
 
 namespace App\Jobs\MaxBid;
 
+use App\Jobs\LogCustomerNotification;
 use App\Mail\MaxBidOutbid;
 use App\Model\Auction\MaxBid;
 use Illuminate\Bus\Queueable;
@@ -36,6 +37,8 @@ class MaxBidOutbidEmail implements ShouldQueue
     public function handle()
     {
         Mail::send(new MaxBidOutbid($this->maxBid));
+        LogCustomerNotification::dispatchAfterResponse(new MaxBidOutbid($this->maxBid));
+
     }
 
     // TODO: Handle Failed Job

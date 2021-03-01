@@ -30,7 +30,7 @@ class ProductsController extends AdminController
         $products = Store::getCurrentStore()->products();
 
         if (isset($validated['product_ids'])) {
-            $products->withProductIds($validated['product_ids']);
+            $products->withPlatformIds($validated['product_ids']);
         }
 
         return new AdminProductCollection($products->paginate());
@@ -76,7 +76,7 @@ class ProductsController extends AdminController
     public function show($id)
     {
         try {
-            $product = Store::getCurrentStore()->products()->where('pub_id', $id)->firstOrFail();
+            $product = Store::getCurrentStore()->products()->where('platform_id', $id)->firstOrFail();
 
             return new AdminProductsResource($product);
 

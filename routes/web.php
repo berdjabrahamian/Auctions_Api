@@ -1,5 +1,7 @@
 <?php
 
+use App\Jobs\LogCustomerNotification;
+use App\Mail\MaxBidCreated;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -17,6 +19,14 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::namespace('Frontend\V1')->group(function() {
+
+Route::get('/belig', function () {
+    $auction = \App\Model\Auction\Auction::all()->first();
+
+    \App\Events\Auction\AuctionCreated::dispatch($auction);
+    \App\Events\Auction\AuctionEnded::dispatch($auction);
+});
+
+Route::namespace('Frontend\V1')->group(function () {
     Route::resource('/auctions', 'Auctions\AuctionsController');
 });

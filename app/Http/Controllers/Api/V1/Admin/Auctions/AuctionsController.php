@@ -18,6 +18,13 @@ use Illuminate\Support\Arr;
 class AuctionsController extends AdminController
 {
 
+    /**
+     * @param  AdminAuctionIndex  $request
+     *
+     * @return AdminAuctionIndexCollection
+     *
+     * DONE
+     */
     public function index(AdminAuctionIndex $request)
     {
         $auctions = Store::getCurrentStore()->auctions()->orderBy('id', 'desc');
@@ -87,7 +94,6 @@ class AuctionsController extends AdminController
 
         if ($request->has('logs')) {
             $auction->load('logs');
-            $auction->load('logs.customer');
         }
 
         return new AdminAuctionShowResource($auction);

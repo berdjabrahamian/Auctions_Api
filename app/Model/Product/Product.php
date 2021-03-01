@@ -48,13 +48,18 @@ class Product extends Model
      *
      * @return mixed
      */
-    public function scopeWithProductIds($query, $productIds)
+    public function scopeWithPublicIds($query, $publicIds)
     {
-        $withProductIds = $query->whereRaw("products.pub_id in ({$productIds})");
+        $withPublicIds = $query->whereRaw("products.pub_id in ({$publicIds})");
 
-        return $withProductIds;
+        return $withPublicIds;
     }
 
+    public function scopeWithPlatformIds($query, $platformIds) {
+        $withPlatformIds = $query->whereRaw("products.platform_id in ({$platformIds})");
+
+        return $withPlatformIds;
+    }
 }
 
 

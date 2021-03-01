@@ -17,6 +17,7 @@ class GenerateAuctionLog implements ShouldQueue
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     public $tries = 3;
+    public $maxExceptions = 3;
 
     public $auction;
     public $activity;
@@ -29,6 +30,7 @@ class GenerateAuctionLog implements ShouldQueue
      */
     public function __construct($auction, string $activity, array $opts = NULL)
     {
+        $this->queue = 'logs';
         $this->auction  = $auction;
         $this->activity = $activity;
         $this->opts     = collect($opts);

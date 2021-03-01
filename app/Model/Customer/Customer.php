@@ -4,7 +4,9 @@ namespace App\Model\Customer;
 
 use App\Model\Auction\Auction;
 use App\Model\Auction\MaxBid;
+use App\Model\Notification\Notification;
 use App\Model\Store\Store;
+use App\Traits\PublicId;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Log;
@@ -13,6 +15,8 @@ use Illuminate\Support\Str;
 
 class Customer extends Model
 {
+    use PublicId;
+    
     protected $hideArray = ['email', 'first_name', 'last_name', 'full_name'];
     protected $table     = 'customers';
     protected $perPage   = 100;
@@ -35,6 +39,10 @@ class Customer extends Model
     {
 
         return $this->hasManyThrough(Auction::class, MaxBid::class, 'customer_id', 'id', 'id', 'auction_id')->orderBy('id', 'desc');
+    }
+
+    public function notifications() {
+        return $this->hasMany(Notification::class, 'customer_id', 'id');
     }
 
     public function getFullNameAttribute()

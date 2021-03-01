@@ -2,11 +2,14 @@
 
 namespace App\Jobs\MaxBid;
 
+use App\Jobs\LogCustomerNotification;
 use App\Mail\MaxBidCreated;
 use App\Model\Auction\MaxBid;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
+use Illuminate\Mail\Mailable;
+use Illuminate\Mail\Mailer;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Mail;
@@ -16,6 +19,8 @@ class MaxBidCreatedEmail implements ShouldQueue
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     public $tries = 3;
+    public $maxExceptions = 3;
+
     public $maxBid;
 
     /**
@@ -36,6 +41,9 @@ class MaxBidCreatedEmail implements ShouldQueue
     public function handle()
     {
         Mail::send(new MaxBidCreated($this->maxBid));
+
+        LogCustomerNotification::dispatchAfterResponse(new MaxBidCreated($this->maxBid));
+
     }
 
     // TODO: Handle Failed Job
@@ -43,4 +51,5 @@ class MaxBidCreatedEmail implements ShouldQueue
     {
 
     }
+
 }

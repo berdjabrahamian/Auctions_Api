@@ -2,6 +2,7 @@
 
 namespace App\Jobs\Auction;
 
+use App\Jobs\LogCustomerNotification;
 use App\Mail\EndingSoonNotification;
 use App\Model\Auction\Auction;
 use Exception;
@@ -49,6 +50,7 @@ class AuctionEndingSoonEmail implements ShouldQueue
         if ($this->customers) {
             foreach ($this->customers as $customer) {
                 Mail::send(new EndingSoonNotification($customer, $this->auction));
+                LogCustomerNotification::dispatchAfterResponse(new EndingSoonNotification($customer, $this->auction));
             }
         }
 

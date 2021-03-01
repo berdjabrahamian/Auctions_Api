@@ -13,19 +13,6 @@ class Notification extends Model
 {
     protected $table = 'customer_notifications';
 
-    protected $fillable = [
-        'type',
-        'store_id',
-        'customer_id',
-        'auction_id',
-        'subject',
-        'body',
-        'to_address',
-        'from_address',
-        'scheduled_at',
-        'sent',
-    ];
-
 
     public function store()
     {

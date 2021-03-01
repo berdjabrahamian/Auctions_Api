@@ -2,6 +2,7 @@
 
 namespace App\Jobs\Auction;
 
+use App\Jobs\LogCustomerNotification;
 use App\Mail\Auction\AuctionGotAwayNotification;
 use App\Mail\Auction\AuctionWonNotification;
 use App\Model\Auction\Auction;
@@ -52,9 +53,11 @@ class AuctionEndedEmail implements ShouldQueue
             $participants = $this->customers->except($winner->id);
 
             Mail::send(new AuctionWonNotification($winner, $this->auction));
+            LogCustomerNotification::dispatchAfterResponse(new AuctionWonNotification($winner, $this->auction));
 
             foreach ($participants as $participant) {
                 Mail::send(new AuctionGotAwayNotification($participant, $this->auction));
+                LogCustomerNotification::dispatchAfterResponse(new AuctionGotAwayNotification($participant, $this->auction));
             }
         }
 

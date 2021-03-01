@@ -2,6 +2,7 @@
 
 namespace App\Jobs\Auction;
 
+use App\Jobs\LogCustomerNotification;
 use App\Mail\Auction\AuctionExtendedNotification;
 use App\Model\Auction\Auction;
 use Illuminate\Bus\Queueable;
@@ -44,6 +45,7 @@ class AuctionExtendedEmail implements ShouldQueue
         if ($this->customers) {
             foreach ($this->customers as $customer) {
                 Mail::send(new AuctionExtendedNotification($customer, $this->auction));
+                LogCustomerNotification::dispatchAfterResponse(new AuctionExtendedNotification($customer, $this->auction));
             }
         }
 

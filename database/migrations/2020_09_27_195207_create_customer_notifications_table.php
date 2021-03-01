@@ -26,8 +26,7 @@ class CreateCustomerNotificationsTable extends Migration
             $table->longText('body');
             $table->string('to_address');
             $table->string('from_address');
-            $table->dateTimeTz('scheduled_at');
-//            $table->boolean('delivered')->nullable();
+            $table->boolean('viewed')->default(FALSE);
             $table->timestamps();
         });
     }

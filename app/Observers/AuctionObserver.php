@@ -2,6 +2,7 @@
 
 namespace App\Observers;
 
+use App\Events\Auction\AuctionCreated;
 use App\Events\Auction\AuctionExtended;
 use App\Events\Auction\AuctionExtended as AuctionExtendedAlias;
 use App\Jobs\Auction\AuctionCreated as AuctionCreateHandle;
@@ -32,7 +33,8 @@ class AuctionObserver
     {
         //Init auction state
         AuctionCreateHandle::dispatch($auction);
-
+        //TODO: This needs to be based on the store it actually belongs to
+        AuctionCreated::dispatch($auction);
     }
 
     public function updating(Auction $auction)

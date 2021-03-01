@@ -10,7 +10,7 @@ use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 
-class AuctionExtended
+class AuctionExtended implements ShouldBroadcast
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
@@ -33,6 +33,24 @@ class AuctionExtended
      */
     public function broadcastOn()
     {
-        return new PrivateChannel('channel-name');
+        return new Channel('auction-'.$this->auction->id);
+
+//        return new PrivateChannel('channel-name');
+    }
+
+
+    public function broadcastWith()
+    {
+        return [
+            'auction' => [
+                'id'           => $this->auction->id,
+                'name'         => $this->auction->name,
+                'has_ended'    => $this->auction->has_ended,
+                'hammer_price' => $this->auction->hammer_price,
+                'bids_count'   => $this->auction->bids_count,
+                'image'        => $this->auction->product->image_url,
+            ],
+            'message' => 'Auction Ended',
+        ];
     }
 }
