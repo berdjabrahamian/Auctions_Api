@@ -15,7 +15,7 @@ class AuctionsController extends Controller
      */
     public function index()
     {
-        $auctions = Auction::with(['store:id,name,url','product:id,sku,image_url'])->get();
+        $auctions = Auction::with(['store:id,name,url','product:id,sku,image_url'])->orderBy('id', 'desc')->get();
 
         return view('v1.auctions.index', ['auctions' => $auctions]);
     }

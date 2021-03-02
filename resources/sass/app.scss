@@ -38,3 +38,20 @@
         @apply object-contain object-center rounded;
     }
 }
+
+
+.auctionCard {
+    .auctionBlock {
+        [data-auction_price] {
+            &::before {
+                content: '$';
+            }
+        }
+        [data-auction_bid_count] {
+            &::after {
+                content: 'BIDS';
+                @apply text-sm ml-1 font-normal;
+            }
+        }
+    }
+}
