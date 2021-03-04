@@ -28,5 +28,5 @@ Route::get('/belig', function () {
 });
 
 Route::namespace('Frontend\V1')->group(function () {
-    Route::resource('/auctions', 'Auctions\AuctionsController');
+    Route::resource('/auctions', 'Auctions\AuctionsController')->names(['index' => 'auctions.index']);
 });

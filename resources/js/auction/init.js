@@ -2,7 +2,7 @@ import {countdown} from "./countdown";
 
 (function Auction() {
 
-    let auctions = document.querySelectorAll('.auctionBlock');
+    let auctions = document.querySelectorAll('.auction');
 
     let init = function () {
 
@@ -12,6 +12,7 @@ import {countdown} from "./countdown";
         });
 
     }
+
 
     init();
 

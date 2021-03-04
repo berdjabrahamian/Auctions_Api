@@ -1,10 +1,8 @@
 
 export function countdown(block) {
 
-
-
     let countdown = document.createElement('div');
-    countdown.classList.add('countdown');
+    countdown.classList.add("countdown", "h-5");
 
     let auctionTimeLeft = document.createElement('div');
     auctionTimeLeft.classList.add('auctionTimeLeft');
@@ -14,7 +12,6 @@ export function countdown(block) {
 
     setAuctionEndDate(auctionTimeLeft);
     startCountdown(countdown);
-
 }
 
 
@@ -34,12 +31,19 @@ let getTimeRemaining = function (endTime) {
 
 
 let setAuctionEndDate = function (block) {
-    block.innerText = new Date(block.parentElement.getAttribute('data-auction_end_date')).toLocaleDateString('en-US', timeOptions);
+    let auctionBlock = block.closest('.auction');
+
+    if (auctionBlock.getAttribute('data-auction_status') == 'not-started') {
+        block.innerText = new Date(block.parentElement.getAttribute('data-auction_start_date')).toLocaleDateString('en-US', timeOptions);
+    } else {
+        block.innerText = new Date(block.parentElement.getAttribute('data-auction_end_date')).toLocaleDateString('en-US', timeOptions);
+    }
 };
 
 let startCountdown = function (block, update = false) {
 
     let parent = block.parentElement;
+    let auctionBlock = block.closest('.auction');
     let now;
     let distance;
     let days, hours, minutes, seconds;
@@ -47,6 +51,11 @@ let startCountdown = function (block, update = false) {
     let time;
     let timeout = 1000;
 
+    if (auctionBlock.getAttribute('data-auction_status') == 'not-started') {
+        console.log(auctionBlock);
+        block.innerHTML = 'Start Date';
+        return;
+    }
 
     if (update) {
         clearInterval(block.getAttribute('timer'));
@@ -59,13 +68,13 @@ let startCountdown = function (block, update = false) {
         // We need to times it by 1000 because JS time runs in milliseconds while the php zend date is giving it in seconds
         distance = (parent.getAttribute('data-auction_countdown') * 1000) - now;
 
-        console.log(distance);
         //Lets not run this and remove all traces of the timer
         if (distance <= 0) {
             if (block.hasAttribute('timer')) {
                 clearInterval(block.getAttribute('timer'));
                 block.removeAttribute('timer');
-                block.classList.remove('ending-soon');
+                auctionBlock.classList.remove('ending-soon');
+                auctionBlock.setAttribute('data-auction_status', 'ended');
             }
 
             if (block.parentElement.hasAttribute('has-ended')) {
@@ -76,7 +85,7 @@ let startCountdown = function (block, update = false) {
                 }
             }
 
-            block.innerHTML = '';
+            block.innerHTML = 'Auction Ended';
 
             return;
         }
@@ -112,15 +121,21 @@ let startCountdown = function (block, update = false) {
 
         // I believe this is 15 min - this is all in epoch time
         if (distance <= 600000) {
-            block.classList.add('ending-soon');
-        } else {
-            block.classList.remove('ending-soon');
+            auctionBlock.classList.add('ending-soon');
         }
 
     };
-
     timer();
 
     instance = setInterval(timer, timeout);
     block.setAttribute('timer', instance);
+
 };
+
+let animateTheBlock = function(block) {
+    block.classList.add('actionHappened');
+
+    setTimeout(function () {
+        block.classList.remove('bidPlaced');
+    }, 2000);
+}

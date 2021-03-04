@@ -10,7 +10,7 @@
     }
 
     h2 {
-        @apply  text-4xl;
+        @apply text-4xl;
     }
 
     h3 {
@@ -41,17 +41,91 @@
 
 
 .auctionCard {
-    .auctionBlock {
-        [data-auction_price] {
-            &::before {
-                content: '$';
-            }
+
+    &.actionHappened {
+        -webkit-animation-name: animateTheBlock;
+        -webkit-animation-duration: 0.5s;
+        -webkit-animation-iteration-count: 4;
+        animation-name: animateTheBlock;
+        animation-duration: 0.5s;
+        animation-iteration-count: infinite;
+    }
+
+    [data-auction_price] {
+    }
+
+    [data-auction_bid_count] {
+    }
+
+    [data-auction_button] {
+        @apply bg-auction-blue text-white;
+    }
+
+
+    .countdown {
+        @apply w-full uppercase;
+    }
+
+    .auctionTimeLeft {
+        @apply text-sm block w-full;
+    }
+
+
+    &[data-auction_status='running'] {
+
+    }
+
+    &[data-auction_status='not-started'],
+    &[data-auction_status='ended'] {
+        .countdown,
+        .auctionTimeLeft {
+            @apply text-gray-500;
         }
-        [data-auction_bid_count] {
-            &::after {
-                content: 'BIDS';
-                @apply text-sm ml-1 font-normal;
-            }
+
+        .countdown {
+            @apply text-xs;
         }
+    }
+
+
+    &.ending-soon {
+        .countdown {
+            @apply text-auction-red;
+        }
+    }
+}
+
+
+
+.auctionCard {
+    opacity:0;
+    transition: opacity 0.4s;
+
+    &.intoView {
+        opacity:1;
+    }
+}
+
+@keyframes animateTheBlock {
+    0% {
+        @apply shadow-dp0
+    }
+    50% {
+        @apply shadow-dp4
+    }
+    100% {
+        @apply shadow-dp10
+    }
+}
+
+@-webkit-keyframes animateTheBlock {
+    0% {
+        @apply shadow-dp0
+    }
+    50% {
+        @apply shadow-dp4
+    }
+    100% {
+        @apply shadow-dp10
     }
 }

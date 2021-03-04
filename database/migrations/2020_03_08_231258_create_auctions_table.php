@@ -15,9 +15,11 @@ class CreateAuctionsTable extends Migration
     {
         Schema::create('auctions', function (Blueprint $table) {
             $table->id();
+            $table->char('pub_id', 14);
             $table->integer('product_id')->nullable();
             $table->integer('store_id');
             $table->string('name');
+            $table->string('slug');
             $table->string('status');
             $table->integer('initial_price')->comment('Initial Starting Price');
             $table->integer('min_bid')->comment('Minimum Bid on Auction');
