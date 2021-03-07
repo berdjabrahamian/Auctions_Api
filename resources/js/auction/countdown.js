@@ -52,7 +52,6 @@ let startCountdown = function (block, update = false) {
     let timeout = 1000;
 
     if (auctionBlock.getAttribute('data-auction_status') == 'not-started') {
-        console.log(auctionBlock);
         block.innerHTML = 'Start Date';
         return;
     }

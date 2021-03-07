@@ -46,6 +46,8 @@ class Auction extends Model
     protected $dates        = [
         'start_date',
         'end_date',
+        'created_at',
+        'updated_at',
     ];
     protected $hidden = [
         'store_id',

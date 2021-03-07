@@ -227,6 +227,9 @@ return [
         'URL' => Illuminate\Support\Facades\URL::class,
         'Validator' => Illuminate\Support\Facades\Validator::class,
         'View' => Illuminate\Support\Facades\View::class,
+        'MaxBidCreated'=> \App\Mail\MaxBidCreated::class,
+        'MaxBidUpdated' => \App\Mail\MaxBidUpdated::class,
+        'MaxBidOutbid' => \App\Mail\MaxBidUpdated::class,
 
     ],
 

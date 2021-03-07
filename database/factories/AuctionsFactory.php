@@ -22,7 +22,7 @@ $factory->define(Auction::class, function (Faker $faker) {
         'buyout_price'  => 9999,
         'bids_count'    => 0,
         'start_date'    => Carbon::now()->addMinutes(rand(0, 2)),
-        'end_date'      => Carbon::now()->addMinutes(10),
+        'end_date'      => Carbon::now()->addMinutes(rand(10,15)),
         'type'          => $faker->randomElement(['absolute', 'min_bid', 'sealed_bid']),
     ];
 });

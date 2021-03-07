@@ -3,6 +3,16 @@
 @tailwind utilities;
 
 
+//ACCESSIBILITY CHECKS
+img:not([alt]),
+img[alt=""] {
+    border: 5px dashed red;
+}
+
+
+
+
+
 @layer base {
 
     h1 {
@@ -36,42 +46,25 @@
 
     img {
         @apply object-contain object-center rounded;
+
+        &::before {
+           @apply text-center block py-10;
+        }
     }
 }
 
 
-.auctionCard {
 
-    &.actionHappened {
-        -webkit-animation-name: animateTheBlock;
-        -webkit-animation-duration: 0.5s;
-        -webkit-animation-iteration-count: 4;
-        animation-name: animateTheBlock;
-        animation-duration: 0.5s;
-        animation-iteration-count: infinite;
-    }
-
-    [data-auction_price] {
-    }
-
-    [data-auction_bid_count] {
-    }
-
-    [data-auction_button] {
-        @apply bg-auction-blue text-white;
-    }
-
-
-    .countdown {
-        @apply w-full uppercase;
-    }
-
-    .auctionTimeLeft {
-        @apply text-sm block w-full;
-    }
-
-
+.auction {
     &[data-auction_status='running'] {
+
+    }
+
+    &[data-auction_status='not-started'] {
+
+    }
+
+    &[data-auction_status='ended'] {
 
     }
 
@@ -88,10 +81,43 @@
     }
 
 
+    .auctionBlock {
+        [data-auction_price] {
+        }
+
+        [data-auction_bid_count] {
+        }
+    }
+
     &.ending-soon {
         .countdown {
             @apply text-auction-red;
         }
+    }
+
+
+    &.actionHappened {
+        -webkit-animation-name: animateTheBlock;
+        -webkit-animation-duration: 0.5s;
+        -webkit-animation-iteration-count: 4;
+        animation-name: animateTheBlock;
+        animation-duration: 0.5s;
+        animation-iteration-count: infinite;
+    }
+
+
+
+    [data-auction_button] {
+        @apply bg-auction-blue text-white;
+    }
+
+
+    .countdown {
+        @apply w-full uppercase;
+    }
+
+    .auctionTimeLeft {
+        @apply text-sm block w-full;
     }
 }
 
@@ -99,10 +125,13 @@
 
 .auctionCard {
     opacity:0;
-    transition: opacity 0.4s;
+    transform: scale(0.9);
+    transition: all 0.2s, opacity 0.4s;
+
 
     &.intoView {
         opacity:1;
+        transform: scale(1);
     }
 }
 

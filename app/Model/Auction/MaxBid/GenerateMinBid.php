@@ -126,10 +126,7 @@ class GenerateMinBid extends GenerateBidAbstract {
             Bid::placeBid($this->state->maxBid->amount, $this->state->customer, $this->auction);
             Bid::placeBid($this->getNewAuctionPrice(), $this->customer, $this->auction);
 
-            $this->state->update([
-                'current_price' => $this->getNewAuctionPrice(),
-                'leading_id'    => $this->maxBid->id,
-            ]);
+            $this->_updateState();
 
             $this->state->maxBid->update([
                 'outbid' => TRUE,
@@ -165,7 +162,7 @@ class GenerateMinBid extends GenerateBidAbstract {
          * This is the first bid of an auction
          */
         if (!$this->state->leading_id) {
-            $this->setNewAuctionPrice($this->state->current_price + $this->auction->bid_amount);
+            $this->setNewAuctionPrice($this->state->current_price + $this->auction->min_bid);
             return $this;
         }
 

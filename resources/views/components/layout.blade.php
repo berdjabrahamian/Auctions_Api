@@ -12,14 +12,19 @@
     <!-- Scripts -->
     <script src="{{ mix('js/app.js') }}" defer></script>
 
+
     <!-- Styles -->
     <link href="{{ mix('css/app.css') }}" rel="stylesheet">
 </head>
 <body class="{{\Illuminate\Support\Facades\Request::segment(1)}} text-base px-10">
 
+<header>Header</header>
+
 <div class="container mx-auto">
     {{ $slot }}
 </div>
+
+<footer>Footer</footer>
 
 </body>
 </html>

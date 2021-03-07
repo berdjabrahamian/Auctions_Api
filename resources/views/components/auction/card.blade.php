@@ -1,10 +1,10 @@
 <?php /** @see \App\View\Components\Auction\Card */ ?>
-<div class="lg:w-1/4 md:w-1/2 w-full p-2 hover:z-10 text-auction-blue auctionCard">
+<div class="xl:w-1/4 lg:w-1/3 md:w-1/2 w-full p-2 hover:z-10 text-auction-blue auctionCard">
     <div class="auction border rounded shadow-dp0 hover:shadow-dp8 transform transition duration-200 flex align-middle flex-col p-4 text-left h-full bg-white auction_{{$status}}"
          data-auction_id="{{$auction->id}}"
          data-auction_status="{{$status}}">
         <a href="{{route('auctions.show', $auction->pub_id)}}">
-            <img src="" data-src="{{$auction->product->image_url}}" alt="{{$auction->name}}" class="rounded-0"/>
+            <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHZpZXdCb3g9JzAgMCAzIDInPjwvc3ZnPg==" data-src="{{$auction->product->image_url}}" alt="{{$auction->name}}" class="rounded-0"/>
         </a>
 
         <a href="{{route('auctions.show', $auction->id)}}"
@@ -22,14 +22,14 @@
                 @endif
             </div>
 
-            <div class="flex justify-start content-center align-middle flex-wrap flex-col mb-3"
-                 data-auction_countdown="{{$countdown}}"
-                 data-auction_end_date="{{$auction->end_date}}"
-                 data-auction_start_date="{{$auction->start_date}}"></div>
+
+            <x-auction.countdown end_date="{{$auction->end_date->toIso8601String()}}" start_date="{{$auction->start_date->toIso8601String()}}" timestamp="{{$auction->end_date->getTimestamp()}}"/>
+
+
         </div>
 
         <a href="{{route('auctions.show', $auction->pub_id)}}"
-           class="w-full py-3 block text-center font-bold uppercase my-2 bottom-0 " data-auction_button>{{$button_text}}</a>
+           class="w-full py-3 block text-center font-bold uppercase my-2 bottom-0" data-auction_button>{{$button_text}}</a>
 
     </div>
 

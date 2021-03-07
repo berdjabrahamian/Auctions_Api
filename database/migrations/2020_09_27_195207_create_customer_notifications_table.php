@@ -15,19 +15,17 @@ class CreateCustomerNotificationsTable extends Migration
     {
         Schema::create('customer_notifications', function (Blueprint $table) {
             $table->id();
-            //$table->string('type');
+            $table->string('type');
             $table->unsignedInteger('store_id');
             $table->foreign('store_id')->references('id')->on('stores');
             $table->unsignedInteger('customer_id');
             $table->foreign('customer_id')->references('id')->on('customers');
             $table->unsignedInteger('auction_id');
             $table->foreign('auction_id')->references('id')->on('auctions');
-            $table->string('subject');
-            $table->longText('body');
-            $table->string('to_address');
-            $table->string('from_address');
+            $table->unsignedInteger('max_bid_id');
+            $table->foreign('max_bid_id')->references('id')->on('max_bids');
             $table->boolean('viewed')->default(FALSE);
-            $table->timestamps();
+            $table->timestamp('created_at', 0)->nullable();
         });
     }
 
