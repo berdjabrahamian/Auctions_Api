@@ -57,14 +57,27 @@ img[alt=""] {
 
 .auction {
     &[data-auction_status='running'] {
-
+        [data-auction_price],
+        [data-auction_bid_count]
+        {
+            @apply text-auction-blue;
+        }
     }
 
     &[data-auction_status='not-started'] {
-
+        [data-auction_price],
+        [data-auction_bid_count]
+        {
+            @apply text-auction-blue;
+        }
     }
 
     &[data-auction_status='ended'] {
+        [data-auction_price],
+        [data-auction_bid_count]
+        {
+            @apply text-auction-red;
+        }
 
     }
 
@@ -72,17 +85,17 @@ img[alt=""] {
     &[data-auction_status='ended'] {
         .countdown,
         .auctionTimeLeft {
-            @apply text-gray-500;
-        }
-
-        .countdown {
-            @apply text-xs;
+            @apply text-gray-700;
         }
     }
 
 
     .auctionBlock {
         [data-auction_price] {
+            &::before {
+                content: '$';
+                @apply text-xl relative -top-1.5 mr-0.5;
+            }
         }
 
         [data-auction_bid_count] {

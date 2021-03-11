@@ -6,6 +6,7 @@ use Illuminate\View\Component;
 
 class Countdown extends Component
 {
+    public $state;
     public $endDate;
     public $startDate;
     public $timestamp;
@@ -15,8 +16,9 @@ class Countdown extends Component
      *
      * @return void
      */
-    public function __construct($endDate, $startDate, $timestamp)
+    public function __construct($state, $endDate, $startDate, $timestamp)
     {
+        $this->state = $state;
         $this->endDate = $endDate;
         $this->startDate = $startDate;
         $this->timestamp = $timestamp;

@@ -11,7 +11,7 @@ class Card extends Component
 {
 
     public $auction;
-    public $user;
+    public $url;
 
     /**
      * Create a new component instance.
@@ -21,6 +21,8 @@ class Card extends Component
     public function __construct(Auction $auction)
     {
         $this->auction = $auction;
+        $this->url     = $auction->slug;
+
 
     }
 
@@ -33,8 +35,6 @@ class Card extends Component
     {
         return view('components.auction.card', [
             'button_text' => $this->getButtonText(),
-            'status'      => $this->getStatus(),
-            'countdown'   => Carbon::createFromTimeString($this->auction->end_date)->getTimestamp(),
 
         ]);
     }
@@ -45,19 +45,6 @@ class Card extends Component
             return 'View';
         } else {
             return 'View & Bid';
-        }
-    }
-
-    protected function getStatus()
-    {
-        if (!$this->auction->hasStarted()) {
-            return 'not-started';
-        } else {
-            if (!$this->auction->hasEnded()) {
-                return 'running';
-            } else {
-                return 'ended';
-            }
         }
     }
 }

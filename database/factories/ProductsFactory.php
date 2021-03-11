@@ -10,7 +10,7 @@ $factory->define(Product::class, function (Faker $faker) {
     return [
         'store_id'    => 1,
         'sku'         => $faker->bothify('##??#?#?##?'),
-        'name'        => $faker->text,
+        'name'        => $faker->realText(),
         'description' => $faker->sentence,
         'platform_id' => $faker->bothify('######'),
         'image_url'   => 'https://i.picsum.photos/id/0/5616/3744.jpg?hmac=3GAAioiQziMGEtLbfrdbcoenXoWAW-zlyEAMkfEdBzQ',

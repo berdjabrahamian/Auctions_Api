@@ -1,14 +1,10 @@
 
 export function countdown(block) {
 
-    let countdown = document.createElement('div');
-    countdown.classList.add("countdown", "h-5");
 
-    let auctionTimeLeft = document.createElement('div');
-    auctionTimeLeft.classList.add('auctionTimeLeft');
 
-    block.appendChild(countdown);
-    block.appendChild(auctionTimeLeft);
+    let countdown = block.querySelector('.countdown');
+    let auctionTimeLeft = block.querySelector('.auctionTimer');
 
     setAuctionEndDate(auctionTimeLeft);
     startCountdown(countdown);
@@ -118,7 +114,7 @@ let startCountdown = function (block, update = false) {
             }
         }
 
-        // I believe this is 15 min - this is all in epoch time
+        // I believe this is 15 min - this is all in epoch time - 6000000
         if (distance <= 600000) {
             auctionBlock.classList.add('ending-soon');
         }

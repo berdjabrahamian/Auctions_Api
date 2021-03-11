@@ -15,7 +15,7 @@ class AuctionsController extends Controller
      */
     public function index()
     {
-        $auctions = Auction::with(['store:id,name,url','product:id,sku,image_url'])->orderBy('id', 'desc')->get();
+        $auctions = Auction::with(['store:id,name,url', 'product:id,sku,image_url'])->orderBy('id', 'desc')->get();
 
         return view('v1.auctions.index', ['auctions' => $auctions]);
     }
@@ -46,17 +46,22 @@ class AuctionsController extends Controller
      *
      *
      * @param  int  $id
+     *
      * @return \Illuminate\Http\Response
      */
     public function show(Auction $auction, Request $request)
     {
-        return view('v1.auctions.show', ['auction' => $auction->load('product')]);
+
+        $auctionInfo = $auction->load(['product']);
+
+        return view('v1.auctions.show', ['auction' => $auctionInfo]);
     }
 
     /**
      * Show the form for editing the specified resource.
      *
      * @param  int  $id
+     *
      * @return \Illuminate\Http\Response
      */
     public function edit($id)
@@ -68,7 +73,8 @@ class AuctionsController extends Controller
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
+     * @param  int                       $id
+     *
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, $id)
@@ -80,6 +86,7 @@ class AuctionsController extends Controller
      * Remove the specified resource from storage.
      *
      * @param  int  $id
+     *
      * @return \Illuminate\Http\Response
      */
     public function destroy($id)
